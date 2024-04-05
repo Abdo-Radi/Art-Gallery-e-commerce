@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const Admin = require("../models/Admin");
 
-
 const addAdmin = async (req, res) => {
   const { firstName, lastName, email, username, password } = req.body;
 
@@ -13,8 +12,7 @@ const addAdmin = async (req, res) => {
       lastName,
       email,
       username,
-      password: hashedPassword,
-      creationDate: new Date(),
+      password: hashedPassword
     });
 
     res.status(201).json(newAdmin);
@@ -24,9 +22,9 @@ const addAdmin = async (req, res) => {
   }
 };
 const updateAdmin = async (req, res) => {
-    const id = req.params.id;
-    const { firstName, lastName, email, password } = req.body;
-    hashedPassword = await bcrypt.hash(password, 10);
+  const id = req.params.id;
+  const { firstName, lastName, email, password } = req.body;
+  hashedPassword = await bcrypt.hash(password, 10);
   try {
     const updatedAdmin = await Admin.findByIdAndUpdate(
       id,
@@ -39,7 +37,7 @@ const updateAdmin = async (req, res) => {
       },
       { new: true }
     );
-      console.log(updatedAdmin)
+    console.log(updatedAdmin);
     if (!updatedAdmin) {
       return res.status(404).json({ message: "Admin not found" });
     }
@@ -69,7 +67,7 @@ const deleteAdmin = async (req, res) => {
 };
 
 module.exports = {
-  addAdmin,  
+  addAdmin,
   updateAdmin,
   deleteAdmin,
 };
