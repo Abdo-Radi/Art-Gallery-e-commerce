@@ -2,44 +2,31 @@ const Customer = require('../models/Customer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const register = async (req, res) => {
-    try {
-        const data = req.body;
-        const newCustomer = await Customer.create(data);
-        console.log('Customer created successfully', newCustomer);
-        res.status(201).json(newCustomer);
-    } catch (error) {
-        console.error(error);
-        res.status(400).json({ message: 'Error creating customer', error: error.message });
-    }
-};
 
-const login = async (req, res) => {
+
+const getCustomers = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const user = await Customer.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        if (user.password !== password) {
-            return res.status(401).json({ message: 'Incorrect password' });
-        }
-        const TOKEN = jwt.sign({ name: user.name, id: user._id }, process.env.SECRET_KEY);
-        console.log(TOKEN);
-        return res.status(200).json({ message: 'Login successful!' });
+        const page = parseInt(req.query.page) || 1; 
+        const limit = parseInt(req.query.limit) || 10; 
+        const skip = (page - 1) * limit;
+
+        const totalCustomers = await Customer.countDocuments();
+        const totalPages = Math.ceil(totalCustomers / limit);
+
+        const customers = await Customer.find()
+            .skip(skip)
+            .limit(limit);
+
+        res.status(200).json({
+            customers,
+            totalPages,
+            currentPage: page
+        });
     } catch (error) {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
-const getCustomer = async (req, res) => {
-    try {
-        const customers = await Customer.find();
-        res.status(200).json(customers);
-    } catch (error) {
-        res.status(500).json({ message: 'Internal server error', error: error.message });
-    }
-};
 
 const getCustomerById = async (req, res) => {
     try {
@@ -85,4 +72,4 @@ const deleteCustomer = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getCustomer, getCustomerById, searchCustomer, updateCustomer, deleteCustomer };
+module.exports = {  getCustomers, getCustomerById, searchCustomer, updateCustomer, deleteCustomer };
