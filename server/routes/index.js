@@ -1,7 +1,9 @@
 const router = require('express').Router();
 
-const authRouters = require('./authRoutes');
+const authRoutes = require('./authRoutes');
+const adminRoutes = require('./adminRoutes');
 
-router.use(authRouters);
+router.use(authRoutes);
+router.use('/admins', adminRoutes);
 
 module.exports = router;

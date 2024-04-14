@@ -32,14 +32,12 @@ const registerHandler = async (req, res, next) => {
             password: hashedPassword
         });
 
-        return res.json({
-            status: "success",
+        return res.status(200).json({
             message: "User created successfully"
         });
     } catch (error) {
         if (error.code === 11000) {
             return res.status(409).json({
-                status: "fail",
                 message: "User already exists"
             });
         }
@@ -58,19 +56,17 @@ const loginHandler = async (req, res, next) => {
         });
 
         if (user && await validatePassword(password, user.password)) {
-            const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            const token = jwt.sign({ userId: user._id, accountType: accountType }, process.env.JWT_SECRET, { expiresIn: '1d' });
             res.cookie('token', token, cookieOptions);
             res.cookie('loggedIn', true, {
                 ...cookieOptions,
                 httpOnly: false,
             });
             return res.status(200).json({
-                status: "success",
                 message: "Login successful"
             });
         } else {
             return res.status(401).json({
-                status: "fail",
                 message: "Invalid username or email or password"
             });
         }
@@ -84,8 +80,7 @@ const logoutHandler = (req, res, next) => {
         res.cookie('token', '', { maxAge: 1 });
         res.cookie('loggedIn', '', { maxAge: 1 });
 
-        return res.json({
-            status: "success",
+        return res.status(200).json({
             message: "You logged out successfully"
         })
     } catch (error) {
