@@ -1,13 +1,11 @@
 const Artwork = require("../models/Artwork");
 const mongoose = require("mongoose");
 
-// Create a new artwork
 const createArtwork = async (req, res) => {
   try {
     const { artistId, categoryId, title, description, price, imageUrl } =
       req.body;
 
-    // Create a new Artwork instance
     const newArtwork = new Artwork({
       artistId,
       categoryId,
@@ -17,7 +15,6 @@ const createArtwork = async (req, res) => {
       imageUrl,
     });
 
-    // Save the new Artwork to the database
     const savedArtwork = await newArtwork.save();
 
     res.status(201).json(savedArtwork);
@@ -27,18 +24,32 @@ const createArtwork = async (req, res) => {
   }
 };
 
-// Get list of artworks
-const getArtworks = async (req, res) => {
+const getArtworks = async (req, res, next) => {
   try {
-    const artworks = await Artwork.find();
-    res.status(200).json(artworks);
+    const limit = 10; 
+    const page = parseInt(req.query.page) || 1; 
+    const skipCount = (page - 1) * limit; 
+
+    const totalArtworksCount = await Artwork.countDocuments(); 
+
+    const artworks = await Artwork.find().skip(skipCount).limit(limit);
+
+    if (artworks.length === 0) {
+      return res.status(404).json({ message: "No artworks found" });
+    }
+
+    res.status(200).json({
+      status: 200,
+      data: artworks,
+      totalPages: Math.ceil(totalArtworksCount / limit), 
+      currentPage: page, 
+    });
   } catch (error) {
-    console.error("Error getting Artworks:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
 
-// Get an artwork by ID
+
 const getArtworkById = async (req, res) => {
   try {
     const artworkId = req.params.id;
@@ -66,7 +77,6 @@ const getArtworkById = async (req, res) => {
   }
 };
 
-// Search for artworks
 const searchArtworks = async (req, res) => {
   try {
     const query = req.query.query;
@@ -85,8 +95,6 @@ const searchArtworks = async (req, res) => {
   }
 };
 
-// Update an artwork
-// Update an artwork
 const updateArtwork = async (req, res) => {
   try {
     const artworkId = req.params.id;
@@ -108,12 +116,10 @@ const updateArtwork = async (req, res) => {
       });
     }
 
-    // Update the artwork data
     Object.keys(updateFields).forEach((field) => {
       artwork[field] = updateFields[field];
     });
 
-    // Save the updated artwork to the database
     const updatedArtwork = await artwork.save();
 
     res.status(200).json(updatedArtwork);
@@ -122,12 +128,10 @@ const updateArtwork = async (req, res) => {
     res.status(500).json({ status: 500, message: "Internal server Error" });
   }
 };
-// Delete an artwork by ID
 const deleteArtworkById = async (req, res) => {
   const artworkId = req.params.id;
 
   try {
-    // Delete the artwork by ID
     const deletedArtwork = await Artwork.findByIdAndDelete(artworkId);
 
     if (!deletedArtwork) {

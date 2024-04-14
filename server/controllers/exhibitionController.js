@@ -23,16 +23,30 @@ const createExhibition = async (req, res) => {
   }
 };
 
-// Get list of exhibitions
-const getExhibitions = async (req, res) => {
+const getExhibitions = async (req, res, next) => {
   try {
-    const exhibitions = await Exhibition.find();
-    res.status(200).json(exhibitions);
+    const limit = 10;
+    const page = parseInt(req.query.page) || 1;
+    const skipCount = (page - 1) * limit;
+
+    const totalExhibitionsCount = await Exhibition.countDocuments();
+    const exhibitions = await Exhibition.find().skip(skipCount).limit(limit);
+
+    if (exhibitions.length === 0) {
+      return res.status(404).json({ message: "No exhibitions found" });
+    }
+
+    res.status(200).json({
+      status: 200,
+      data: exhibitions,
+      totalPages: Math.ceil(totalExhibitionsCount / limit),
+      currentPage: page,
+    });
   } catch (error) {
-    console.error("Error getting Exhibitions:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
+
 
 // Get an exhibition by ID
 const getExhibitionById = async (req, res) => {

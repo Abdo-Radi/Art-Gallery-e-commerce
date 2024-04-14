@@ -23,16 +23,30 @@ const recordPayment = async (req, res) => {
   }
 };
 
-// Get list of payments
-const getPayments = async (req, res) => {
+const getPayments = async (req, res, next) => {
   try {
-    const payments = await Payment.find();
-    res.status(200).json(payments);
+    const limit = 10;
+    const page = parseInt(req.query.page) || 1;
+    const skipCount = (page - 1) * limit;
+
+    const totalPaymentsCount = await Payment.countDocuments();
+    const payments = await Payment.find().skip(skipCount).limit(limit);
+
+    if (payments.length === 0) {
+      return res.status(404).json({ message: "No payments found" });
+    }
+
+    res.status(200).json({
+      status: 200,
+      data: payments,
+      totalPages: Math.ceil(totalPaymentsCount / limit),
+      currentPage: page,
+    });
   } catch (error) {
-    console.error("Error getting Payments:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
+
 
 // Get a payment by ID
 const getPaymentById = async (req, res) => {

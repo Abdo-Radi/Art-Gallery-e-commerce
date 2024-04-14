@@ -23,18 +23,30 @@ const createTicket = async (req, res) => {
   }
 };
 
-// Get list of tickets
-const getTickets = async (req, res) => {
+const getTickets = async (req, res, next) => {
   try {
-    const tickets = await Ticket.find();
-    res.status(200).json(tickets);
+    const limit = 10;
+    const page = parseInt(req.query.page) || 1;
+    const skipCount = (page - 1) * limit;
+
+    const totalTicketsCount = await Ticket.countDocuments();
+    const tickets = await Ticket.find().skip(skipCount).limit(limit);
+
+    if (tickets.length === 0) {
+      return res.status(404).json({ message: "No tickets found" });
+    }
+
+    res.status(200).json({
+      status: 200,
+      data: tickets,
+      totalPages: Math.ceil(totalTicketsCount / limit),
+      currentPage: page,
+    });
   } catch (error) {
-    console.error("Error getting Tickets:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
 
-// Get a ticket by ID
 const getTicketById = async (req, res) => {
   try {
     const ticketId = req.params.id;
@@ -62,7 +74,6 @@ const getTicketById = async (req, res) => {
   }
 };
 
-// Update a ticket's details
 const updateTicket = async (req, res) => {
   try {
     const ticketId = req.params.id;
@@ -84,7 +95,6 @@ const updateTicket = async (req, res) => {
       });
     }
 
-    // Update the ticket data
     if (exhibitionId !== undefined) {
       ticket.exhibitionId = exhibitionId;
     }
@@ -97,7 +107,6 @@ const updateTicket = async (req, res) => {
       ticket.quantity = quantity;
     }
 
-    // Save the updated ticket to the database
     const updatedTicket = await ticket.save();
 
     res.status(200).json(updatedTicket);
@@ -107,12 +116,10 @@ const updateTicket = async (req, res) => {
   }
 };
 
-// Delete a ticket by ID
 const deleteTicketById = async (req, res) => {
   const ticketId = req.params.id;
 
   try {
-    // Delete the ticket by ID
     const deletedTicket = await Ticket.findByIdAndDelete(ticketId);
 
     if (!deletedTicket) {

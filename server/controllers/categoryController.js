@@ -5,7 +5,6 @@ const createCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
 
-    // Check if the category name already exists
     const existingCategory = await Category.findOne({ name });
 
     if (existingCategory) {
@@ -15,13 +14,11 @@ const createCategory = async (req, res) => {
       });
     }
 
-    // Create a new Category instance
     const newCategory = new Category({
       name,
       description,
     });
 
-    // Save the new Category to the database
     const savedCategory = await newCategory.save();
 
     res.status(201).json(savedCategory);
@@ -31,18 +28,32 @@ const createCategory = async (req, res) => {
   }
 };
 
-// Get list of Categories
-const getCategories = async (req, res) => {
+const getCategories = async (req, res, next) => {
   try {
-    const categories = await Category.find();
-    res.status(200).json(categories);
+    const limit = 10; 
+    const page = parseInt(req.query.page) || 1; 
+    const skipCount = (page - 1) * limit; 
+
+    const totalCategoriesCount = await Category.countDocuments(); 
+
+    const categories = await Category.find().skip(skipCount).limit(limit);
+
+    if (categories.length === 0) {
+      return res.status(404).json({ message: "No categories found" });
+    }
+
+    res.status(200).json({
+      status: 200,
+      data: categories,
+      totalPages: Math.ceil(totalCategoriesCount / limit), 
+      currentPage: page, 
+    });
   } catch (error) {
-    console.error("Error getting Categories:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
 
-// Get a category by ID
+
 const getCategoryById = async (req, res) => {
   try {
     const categoryId = req.params.id;
@@ -70,7 +81,6 @@ const getCategoryById = async (req, res) => {
   }
 };
 
-// Update a category
 const updateCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
@@ -92,7 +102,6 @@ const updateCategory = async (req, res) => {
       });
     }
 
-    // Update the category data
     if (name) {
       category.name = name;
     }
@@ -101,7 +110,6 @@ const updateCategory = async (req, res) => {
       category.description = description;
     }
 
-    // Save the updated category to the database
     const updatedCategory = await category.save();
 
     res.status(200).json(updatedCategory);
@@ -112,7 +120,6 @@ const updateCategory = async (req, res) => {
 };
 
 
-// Delete a category
 const deleteCategoryById = async (req, res) => {
   const categoryId = req.params.id;
 

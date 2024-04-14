@@ -25,16 +25,30 @@ const createOrder = async (req, res) => {
   }
 };
 
-// Get list of orders
-const getOrders = async (req, res) => {
+const getOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find();
-    res.status(200).json(orders);
+    const limit = 10;
+    const page = parseInt(req.query.page) || 1;
+    const skipCount = (page - 1) * limit;
+
+    const totalOrdersCount = await Order.countDocuments();
+    const orders = await Order.find().skip(skipCount).limit(limit);
+
+    if (orders.length === 0) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+
+    res.status(200).json({
+      status: 200,
+      data: orders,
+      totalPages: Math.ceil(totalOrdersCount / limit),
+      currentPage: page,
+    });
   } catch (error) {
-    console.error("Error getting Orders:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
+
 
 // Get an order by ID
 const getOrderById = async (req, res) => {

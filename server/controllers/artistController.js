@@ -3,41 +3,31 @@ const bcrypt = require("bcrypt");
 const Artist = require("../models/Artist");
 
 
-const addArtist = async (req, res) => {
-  const { firstName, lastName, email, username, password, bio } = req.body;
-
+const getArtists = async (req, res, next) => {
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const limit = 10; // Define the limit of items per page
+    const page = parseInt(req.query.page) || 1; // Extract the page number from the request query parameters
+    const skipCount = (page - 1) * limit; // Calculate the number of items to skip
 
-    const newArtist = await Artist.create({
-      firstName,
-      lastName,
-      email,
-      username,
-      password: hashedPassword,
-      bio,
-      active: true,
-      creationDate: new Date(),
-    });
+    const totalArtistsCount = await Artist.countDocuments(); // Get the total count of artists
 
-    res.status(201).json(newArtist);
-  } catch (error) {
-    res.status(500).json({ message: "Registration failed" });
-  }
-};
+    const artists = await Artist.find().skip(skipCount).limit(limit);
 
-const getArtists = async (req, res) => {
-  try {
-    const artists = await Artist.find();
+    if (artists.length === 0) {
+      return res.status(404).json({ message: "No artists found" });
+    }
 
     res.status(200).json({
       status: 200,
       data: artists,
+      totalPages: Math.ceil(totalArtistsCount / limit), // Calculate the total number of pages
+      currentPage: page, // Provide the current page number in the response
     });
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving artists" });
+    next(error);
   }
 };
+
 
 const getArtistById = async (req, res) => {
   try {
