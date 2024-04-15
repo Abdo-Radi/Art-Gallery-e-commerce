@@ -1,5 +1,5 @@
+const Admin = require('../models/Admin');
 const bcrypt = require("bcrypt");
-const Admin = require("../models/Admin");
 
 const addAdmin = async (req, res) => {
   const { firstName, lastName, email, username, password } = req.body;
@@ -21,6 +21,21 @@ const addAdmin = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+const getAdmins = async (req, res, next) => {
+    try {
+        const admins = await Admin.find();
+
+        if (admins.length === 0) {
+            return res.status(404).json({ message: "No admins found" });
+        }
+
+        return res.status(200).json(admins);
+    } catch (error) {
+        next(error);
+    }
+};
+
 const updateAdmin = async (req, res) => {
   const id = req.params.id;
   const { firstName, lastName, email, password } = req.body;
@@ -68,6 +83,7 @@ const deleteAdmin = async (req, res) => {
 
 module.exports = {
   addAdmin,
+  getAdmins,
   updateAdmin,
   deleteAdmin,
 };
