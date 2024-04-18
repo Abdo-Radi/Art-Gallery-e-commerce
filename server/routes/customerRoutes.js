@@ -1,14 +1,13 @@
+const router = require('express').Router();
+const { getCustomers, getCustomerById, searchCustomer, updateCustomer, deleteCustomer } = require('../controllers/customerController');
+const { isAuthorized } = require('../middleware/authorization');
 
-const express = require('express');
-const Router = express.Router();
-const { getCustomers,getCustomerById,searchCustomer, updateCustomer,deleteCustomer } = require('../controllers/customerController')
+router.use(isAuthorized('admin'));
 
+router.get('/', getCustomers);
+router.get('/:id', getCustomerById);
+router.get('/search', searchCustomer);
+router.put('/:id', updateCustomer);
+router.delete('/:id', deleteCustomer);
 
-Router.get('/', getCustomers)
-Router.get('/:id', getCustomerById)
-Router.get('/search', searchCustomer)
-Router.put('/:id', updateCustomer)
-Router.delete('/:id', deleteCustomer)
-
-
-module.exports= Router;
+module.exports = router;

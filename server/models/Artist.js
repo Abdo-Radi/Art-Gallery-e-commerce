@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const artistSchema = new mongoose.Schema({
   firstName: {
@@ -38,4 +38,4 @@ const artistSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Artist", artistSchema);
+module.exports = mongoose.model('Artist', artistSchema);

@@ -1,9 +1,9 @@
-const Artwork = require("../models/Artwork");
-const mongoose = require("mongoose");
+const Artwork = require('../models/Artwork');
+const mongoose = require('mongoose');
 
-const createArtwork = async (req, res) => {
+const createArtwork = async (req, res, next) => {
   try {
-    const { artistId, categoryId, title, description, price, imageUrl } =
+    const { artistId, categoryId, title, description, price, images } =
       req.body;
 
     const newArtwork = new Artwork({
@@ -12,25 +12,24 @@ const createArtwork = async (req, res) => {
       title,
       description,
       price,
-      imageUrl,
+      images
     });
 
     const savedArtwork = await newArtwork.save();
 
     res.status(201).json(savedArtwork);
   } catch (error) {
-    console.error("Error creating Artwork:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
 
 const getArtworks = async (req, res, next) => {
   try {
-    const limit = 10; 
-    const page = parseInt(req.query.page) || 1; 
-    const skipCount = (page - 1) * limit; 
+    const limit = 10;
+    const page = parseInt(req.query.page) || 1;
+    const skipCount = (page - 1) * limit;
 
-    const totalArtworksCount = await Artwork.countDocuments(); 
+    const totalArtworksCount = await Artwork.countDocuments();
 
     const artworks = await Artwork.find().skip(skipCount).limit(limit);
 
@@ -39,41 +38,33 @@ const getArtworks = async (req, res, next) => {
     }
 
     res.status(200).json({
-      status: 200,
       data: artworks,
-      totalPages: Math.ceil(totalArtworksCount / limit), 
-      currentPage: page, 
+      totalPages: Math.ceil(totalArtworksCount / limit),
+      currentPage: page
     });
   } catch (error) {
     next(error);
   }
 };
 
-
 const getArtworkById = async (req, res) => {
   try {
     const artworkId = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(artworkId)) {
-      return res.status(400).json({
-        status: 400,
-        message: "Invalid artwork ID",
-      });
+      return res.status(400).json({ message: "Invalid artwork ID" });
     }
 
     const artwork = await Artwork.findById(artworkId);
 
     if (!artwork) {
-      return res.status(404).json({
-        status: 404,
-        message: "Artwork not found",
-      });
+      return res.status(404).json({ message: "Artwork not found" });
     }
 
     res.status(200).json(artwork);
   } catch (error) {
-    console.error("Error getting Artwork by ID:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
+
   }
 };
 
@@ -90,8 +81,7 @@ const searchArtworks = async (req, res) => {
 
     res.status(200).json(artworks);
   } catch (error) {
-    console.error("Error searching Artworks:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
 
@@ -100,20 +90,10 @@ const updateArtwork = async (req, res) => {
     const artworkId = req.params.id;
     const updateFields = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(artworkId)) {
-      return res.status(400).json({
-        status: 400,
-        message: "Invalid artwork ID",
-      });
-    }
-
     const artwork = await Artwork.findById(artworkId);
 
     if (!artwork) {
-      return res.status(404).json({
-        status: 404,
-        message: "Artwork not found",
-      });
+      return res.status(404).json({ message: "Artwork not found" });
     }
 
     Object.keys(updateFields).forEach((field) => {
@@ -124,10 +104,10 @@ const updateArtwork = async (req, res) => {
 
     res.status(200).json(updatedArtwork);
   } catch (error) {
-    console.error("Error updating Artwork:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
+
 const deleteArtworkById = async (req, res) => {
   const artworkId = req.params.id;
 
@@ -140,9 +120,7 @@ const deleteArtworkById = async (req, res) => {
 
     return res.status(200).json({ message: "Artwork deleted successfully." });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error deleting artwork", error: error.message });
+    next(error);
   }
 };
 
@@ -152,5 +130,5 @@ module.exports = {
   getArtworkById,
   searchArtworks,
   updateArtwork,
-  deleteArtworkById,
+  deleteArtworkById
 };

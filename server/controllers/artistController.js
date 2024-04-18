@@ -1,15 +1,13 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const Artist = require("../models/Artist");
-
+const Artist = require('../models/Artist');
+const { hash } = require('../utils/passwordUtils');
 
 const getArtists = async (req, res, next) => {
   try {
-    const limit = 10; // Define the limit of items per page
-    const page = parseInt(req.query.page) || 1; // Extract the page number from the request query parameters
-    const skipCount = (page - 1) * limit; // Calculate the number of items to skip
+    const limit = 10;
+    const page = parseInt(req.query.page) || 1;
+    const skipCount = (page - 1) * limit;
 
-    const totalArtistsCount = await Artist.countDocuments(); // Get the total count of artists
+    const totalArtistsCount = await Artist.countDocuments();
 
     const artists = await Artist.find().skip(skipCount).limit(limit);
 
@@ -18,10 +16,9 @@ const getArtists = async (req, res, next) => {
     }
 
     res.status(200).json({
-      status: 200,
       data: artists,
-      totalPages: Math.ceil(totalArtistsCount / limit), // Calculate the total number of pages
-      currentPage: page, // Provide the current page number in the response
+      totalPages: Math.ceil(totalArtistsCount / limit),
+      currentPage: page,
     });
   } catch (error) {
     next(error);
@@ -29,7 +26,7 @@ const getArtists = async (req, res, next) => {
 };
 
 
-const getArtistById = async (req, res) => {
+const getArtistById = async (req, res, next) => {
   try {
     const id = req.params.id;
 
@@ -39,20 +36,17 @@ const getArtistById = async (req, res) => {
       return res.status(404).json({ message: "Artist not found" });
     }
 
-    res.status(200).json({
-      status: 200,
-      data: artist,
-    });
+    res.status(200).json(artist);
   } catch (error) {
-    res.status(400).json({ message: "Cannot find artist" });
+    next(error);
   }
 };
 
 const searchArtists = async (req, res) => {
-    const { query } = req.query;
+  const { query } = req.query;
 
   try {
-      const regexQuery = new RegExp(query, "i");
+    const regexQuery = new RegExp(query, "i");
 
     const filteredArtists = await Artist.find({
       $or: [
@@ -64,21 +58,19 @@ const searchArtists = async (req, res) => {
       ],
     });
 
-    res.status(200).json({
-      status: 200,
-      data: filteredArtists,
-    });
+    res.status(200).json({ data: filteredArtists });
   } catch (error) {
-    console.error("Error searching artists:", error);
-    res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 };
 
 const updateArtist = async (req, res) => {
   const id = req.params.id;
   const { firstName, lastName, email, bio, active, password } = req.body;
-  hashedPassword = await bcrypt.hash(password, 10);
+
   try {
+    const hashedPassword = await hash(password);
+
     const update = await Artist.findByIdAndUpdate(id, {
       firstName,
       lastName,
@@ -95,8 +87,7 @@ const updateArtist = async (req, res) => {
 
     res.status(200).json({ message: "Artist updated successfully" });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -110,21 +101,16 @@ const deleteArtist = async (req, res) => {
       return res.status(404).json({ message: "Artist not found" });
     }
 
-    res.status(200).json({
-      status: 200,
-      message: "Artist deleted successfully",
-    });
+    res.status(200).json({ message: "Artist deleted successfully" });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
 module.exports = {
-  addArtist,
   getArtists,
   getArtistById,
   searchArtists,
   updateArtist,
-  deleteArtist,
+  deleteArtist
 };

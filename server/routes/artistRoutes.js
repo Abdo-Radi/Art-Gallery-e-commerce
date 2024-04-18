@@ -1,11 +1,14 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const artistController = require("../controllers/artistController");
+const artistController = require('../controllers/artistController');
+const { isAuthorized } = require('../middleware/authorization');
 
-router.get("/", artistController.getArtists);
-router.get("/search", artistController.searchArtists);
-router.get("/:id", artistController.getArtistById);
-router.put("/:id", artistController.updateArtist);
-router.delete("/:id", artistController.deleteArtist);
+router.use(isAuthorized('admin'));
+
+router.get('/', artistController.getArtists);
+router.get('/search', artistController.searchArtists);
+router.get('/:id', artistController.getArtistById);
+router.put('/:id', artistController.updateArtist);
+router.delete('/:id', artistController.deleteArtist);
 
 module.exports = router;

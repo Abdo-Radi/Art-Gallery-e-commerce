@@ -1,15 +1,15 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const artworkSchema = new mongoose.Schema({
   artistId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "Artist",
+    ref: 'Artist',
   },
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "Category",
+    ref: 'Category',
   },
   title: {
     type: String,
@@ -29,4 +29,4 @@ const artworkSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Artwork", artworkSchema);
+module.exports = mongoose.model('Artwork', artworkSchema);
