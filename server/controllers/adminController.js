@@ -35,7 +35,20 @@ const getAdmins = async (req, res, next) => {
   }
 };
 
-const updateAdmin = async (req, res) => {
+const getAdminById = async (req, res, next) => {
+  try {
+    const adminId = req.params.id;
+    const admin = await Admin.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+    res.status(200).json(admin);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateAdmin = async (req, res, next) => {
   const id = req.params.id;
   const { firstName, lastName, email, password } = req.body;
 
@@ -63,7 +76,7 @@ const updateAdmin = async (req, res) => {
   }
 };
 
-const deleteAdmin = async (req, res) => {
+const deleteAdmin = async (req, res, next) => {
   const id = req.params.id;
 
   try {
@@ -82,6 +95,7 @@ const deleteAdmin = async (req, res) => {
 module.exports = {
   addAdmin,
   getAdmins,
+  getAdminById,
   updateAdmin,
   deleteAdmin
 };

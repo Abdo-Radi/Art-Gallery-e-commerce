@@ -12,7 +12,7 @@ const getArtists = async (req, res, next) => {
     const artists = await Artist.find().skip(skipCount).limit(limit);
 
     if (artists.length === 0) {
-      return res.status(404).json({ message: "No artists found" });
+      return res.status(204).json({ message: "No artists found" });
     }
 
     res.status(200).json({
@@ -25,6 +25,24 @@ const getArtists = async (req, res, next) => {
   }
 };
 
+const addArtist = async (req, res, next) => {
+  try {
+    const { password } = req.body;
+
+    const hashedPassword = await hash(password);
+
+    const newArtist = new Artist({
+      ...req.body,
+      password: hashedPassword
+    });
+
+    const savedArtist = await newArtist.save();
+
+    res.status(201).json(savedArtist);
+  } catch (error) {
+    next(error);
+  }
+};
 
 const getArtistById = async (req, res, next) => {
   try {
@@ -91,7 +109,7 @@ const updateArtist = async (req, res) => {
   }
 };
 
-const deleteArtist = async (req, res) => {
+const deleteArtist = async (req, res, next) => {
   const id = req.params.id;
 
   try {
@@ -109,6 +127,7 @@ const deleteArtist = async (req, res) => {
 
 module.exports = {
   getArtists,
+  addArtist,
   getArtistById,
   searchArtists,
   updateArtist,

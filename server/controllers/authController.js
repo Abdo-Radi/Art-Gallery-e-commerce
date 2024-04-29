@@ -4,11 +4,6 @@ const Admin = require('../models/Admin');
 const Artist = require('../models/Artist');
 const Customer = require('../models/Customer');
 
-const cookieOptions = {
-    maxAge: 86400 * 1000,
-    httpOnly: true,
-};
-
 const getModel = (type) => {
     switch (type) {
         case 'admin':
@@ -53,12 +48,10 @@ const loginHandler = async (req, res, next) => {
 
         if (user && await validatePassword(password, user.password)) {
             const token = jwt.sign({ userId: user._id, accountType: accountType }, process.env.JWT_SECRET, { expiresIn: '1d' });
-            res.cookie('token', token, cookieOptions);
-            res.cookie('loggedIn', true, {
-                ...cookieOptions,
-                httpOnly: false,
+            return res.status(200).json({
+                message: "Login successful",
+                token: token
             });
-            return res.status(200).json({ message: "Login successful" });
         } else {
             return res.status(401).json({ message: "Invalid username, email or password" });
         }
