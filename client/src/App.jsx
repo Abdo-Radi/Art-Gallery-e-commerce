@@ -4,6 +4,8 @@ import Artist from "./pages/admin/Artist"
 import AdminLayout from "./layout/AdminLayout"
 import SignIn from "./pages/admin/SignIn"
 import AdminRoutes from "./routes/AdminRoutes"
+import Admin from "./pages/admin/Admin"
+import CustomerPage from "./pages/admin/Customer"
 
 const App = () => {
   return (
@@ -13,6 +15,8 @@ const App = () => {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="artists" element={<Artist />} />
+          <Route path="admins" element={<Admin />} />
+          <Route path="customers" element={<CustomerPage />} />
         </Route>
       </Route>
     </Routes>

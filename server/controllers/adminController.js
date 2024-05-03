@@ -1,7 +1,7 @@
 const Admin = require('../models/Admin');
 const { hash } = require('../utils/passwordUtils');
 
-const addAdmin = async (req, res) => {
+const addAdmin = async (req, res, next) => {
   const { firstName, lastName, email, username, password } = req.body;
 
   try {
