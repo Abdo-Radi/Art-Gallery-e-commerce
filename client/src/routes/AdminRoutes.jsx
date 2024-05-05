@@ -1,30 +1,27 @@
-import { useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { jwtDecode } from "jwt-decode"
-import { Navigate, Outlet } from "react-router-dom"
-import { getUser } from "../redux/features/user"
-import axiosInstance from "../api/axiosInstance"
+import { Route, Routes } from "react-router-dom"
+import ProtectedA from "../helpers/ProtectedA"
+import Dashboard from "../pages/admin/Dashboard"
+import Artist from "../pages/admin/Artist"
+import AdminLayout from "../layout/AdminLayout"
+import SignIn from "../pages/admin/SignIn"
+import Category from "../pages/admin/Category"
+import Artwork from "../pages/admin/Artwork"
 
 const AdminRoutes = () => {
-    const { check, loggedIn } = useSelector(state => state.user)
-    const token = localStorage.getItem("token")
 
-    if (!token) return <Navigate to="admin/login" />
-
-    axiosInstance.interceptors.request.use(function (config) {
-        config.headers.Authorization = `Bearer ${token}`
-
-        return config
-    })
-
-    const dispatch = useDispatch()
-    const payload = jwtDecode(token)
-
-    useEffect(() => {
-        dispatch(getUser(payload))
-    }, [])
-
-    return check ? loggedIn && <Outlet /> : <Navigate to="admin/login" />
+    return (
+        <Routes>
+            <Route path="/admin/login" element={<SignIn />} />
+            <Route element={<ProtectedA />}>
+                <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="artists" element={<Artist />} />
+                    <Route path="categories" element={<Category />} />
+                    <Route path="artworks" element={<Artwork />} />
+                </Route>
+            </Route>
+        </Routes>
+    )
 }
 
 export default AdminRoutes

@@ -57,7 +57,7 @@ const Sidebar = () => {
     return (
         <aside className="hidden absolute left-0 top-0 z-9999 lg:flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0">
             <div className="px-6 py-5.5 lg:py-6.5">
-                <Link to="/" className="text-white text-title-xl2">Horizons</Link>
+                <Link to="/admin" className="text-white text-title-xl2">Horizons</Link>
             </div>
             <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
                 {/* <!-- Sidebar Menu --> */}
@@ -70,8 +70,8 @@ const Sidebar = () => {
 
                         <ul className="mt-4">
                             {navLinks.map((link, index) => (
-                                <li key={index} className="my-2">
-                                    <Link to={link.to} className="relative flex gap-2.5 rounded-sm py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:text-white">
+                                <li key={index} className="my-1">
+                                    <Link to={link.to} className="relative flex gap-2.5 rounded-sm py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:text-primary">
                                         {link.icon}
                                         {link.name}
                                     </Link>

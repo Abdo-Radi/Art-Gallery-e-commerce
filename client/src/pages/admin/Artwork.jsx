@@ -1,14 +1,17 @@
-import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { deleteArtist, getArtists } from "../../redux/features/artist"
-import AddArtist from "../../components/admin/Artist/AddArtist"
+import { deleteArtwork, getArtworks } from "../../redux/features/artwork"
+import { useState, useEffect } from "react"
+import AddArtwork from "../../components/admin/Artwork/AddArtwork"
+import EditArtwork from "../../components/admin/Artwork/EditArtwork"
 
-const Artist = () => {
-    const { artists } = useSelector(state => state.artist)
+const Artwork = () => {
+    const { artworks } = useSelector(state => state.artwork)
     const dispatch = useDispatch()
 
 
     const [addForm, setAddForm] = useState(false)
+    const [editForm, setEditForm] = useState(false)
+    const [editedArtwork, setEditedArtwork] = useState(null)
 
     const showAddForm = () => {
         setAddForm(true)
@@ -18,12 +21,22 @@ const Artist = () => {
         setAddForm(false)
     }
 
+
+    const showEditForm = (artwork) => {
+        setEditedArtwork(artwork)
+        setEditForm(true)
+    }
+
+    const hideEditForm = () => {
+        setEditForm(false)
+    }
+
     const handleDelete = async (id) => {
-        dispatch(deleteArtist(id))
+        dispatch(deleteArtwork(id))
     }
 
     useEffect(() => {
-        dispatch(getArtists())
+        dispatch(getArtworks())
     }, [])
 
     return (
@@ -31,10 +44,10 @@ const Artist = () => {
             <div className="max-w-full">
                 <div className="mb-6 flex items-center justify-between">
                     <h2 className="text-title-lg font-semibold text-black dark:text-white">
-                        Artists
+                        Artworks
                     </h2>
                     <button onClick={showAddForm} className="bg-primary py-2 px-6 text-white">
-                        Add Artist
+                        Add Artwork
                     </button>
                 </div>
                 <div className="overflow-x-auto">
@@ -42,13 +55,16 @@ const Artist = () => {
                         <thead>
                             <tr className="bg-gray-2 text-left dark:bg-meta-4">
                                 <th className="p-4 font-medium text-black dark:text-white">
-                                    Name
+                                    Artwork Title
                                 </th>
                                 <th className="p-4 font-medium text-black dark:text-white">
-                                    Username
+                                    Artist
                                 </th>
                                 <th className="p-4 font-medium text-black dark:text-white">
-                                    Email
+                                    Category
+                                </th>
+                                <th className="p-4 font-medium text-black dark:text-white">
+                                    Price
                                 </th>
                                 <th className="p-4 font-medium text-black dark:text-white">
                                     Actions
@@ -56,29 +72,40 @@ const Artist = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {artists && artists.map((artist, key) => (
+                            {artworks && artworks.map((artwork, key) => (
                                 <tr key={key}>
-                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark flex items-center gap-3">
+                                        <div className="h-12.5 w-15 flex items-center justify-center">
+                                            <img
+                                                src={`http://localhost:3002/images/${artwork.image}`}
+                                                className="h-full"
+                                                alt="" />
+                                        </div>
                                         <p className="text-black dark:text-white">
-                                            {artist.firstName} {artist.lastName}
+                                            {artwork.title}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <p className="text-black dark:text-white">
-                                            {artist.username}
+                                            {artwork.artist.firstName} {artwork.artist.lastName}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <p className="text-black dark:text-white">
-                                            {artist.email}
+                                            {artwork.category.name}
+                                        </p>
+                                    </td>
+                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                        <p className="text-black dark:text-white">
+                                            {artwork.price}
                                         </p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <div className="flex items-center text-lg gap-2.5">
-                                            <button>
+                                            <button onClick={()=> showEditForm(artwork)}>
                                                 <i className="ri-edit-box-line hover:text-primary"></i>
                                             </button>
-                                            <button onClick={() => handleDelete(artist._id)}>
+                                            <button onClick={() => handleDelete(artwork._id)}>
                                                 <i className="ri-delete-bin-6-line hover:text-primary"></i>
                                             </button>
                                         </div>
@@ -91,11 +118,16 @@ const Artist = () => {
             </div>
             {addForm && (
                 <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-                    {<AddArtist onCancel={hideAddForm} />}
+                    {<AddArtwork onCancel={hideAddForm} />}
+                </div>
+            )}
+            {editForm && (
+                <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+                    {<EditArtwork artwork={editedArtwork} onCancel={hideEditForm} />}
                 </div>
             )}
         </div>
     )
 }
 
-export default Artist
+export default Artwork

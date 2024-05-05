@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import axiosInstance from "../../api/axiosInstance";
 
-export const getUser = createAsyncThunk("user/getUser", async (payload, { rejectWithValue }) => {
-    return axiosInstance.get(`${payload.accountType}s/${payload.userId}`)
+export const getUser = createAsyncThunk("user/getUser", async ({ accountType, userId }, { rejectWithValue }) => {
+    return axiosInstance.get(`${accountType}s/${userId}`)
         .then((res) => {
             return res.data
         })
@@ -13,7 +13,7 @@ export const getUser = createAsyncThunk("user/getUser", async (payload, { reject
 const initialState = {
     user: null,
     loggedIn: false,
-    check: true
+    isLoading: true
 }
 
 const userSlice = createSlice({
@@ -23,12 +23,13 @@ const userSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getUser.fulfilled, (state, action) => {
+                state.isLoading = false
                 state.loggedIn = true
                 state.user = action.payload
             })
             .addCase(getUser.rejected, (state) => {
+                state.isLoading = false
                 state.loggedIn = false
-                state.check = false
             })
     }
 })
