@@ -1,11 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit"
-import artistReducer from "./features/artist"
 import userReducer from "./features/user"
+import artistReducer from "./features/artist"
+import categoryReducer from "./features/category"
+import artworkReducer from "./features/artwork"
 
 export const store = configureStore({
     reducer: {
+        user: userReducer,
         artist: artistReducer,
-        user: userReducer
+        category: categoryReducer,
+        artwork: artworkReducer
     },
 })
 

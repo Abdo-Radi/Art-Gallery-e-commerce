@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
-import { useSelector } from "react-redux";
 
 
 const SignIn = () => {
@@ -52,14 +51,14 @@ const SignIn = () => {
                     <div>
                         <div className="mb-4.5">
                             <label className="mb-2.5 block text-black dark:text-white">
-                                Email <span className="text-meta-1">*</span>
+                                Identifier <span className="text-meta-1">*</span>
                             </label>
                             <input
                                 {...register("identifier")}
                                 value={formData.email}
                                 onChange={handleChange}
                                 type="text"
-                                placeholder="Enter your email address"
+                                placeholder="Enter your email or username"
                                 className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                             />
                             <p className="text-sm text-meta-1">

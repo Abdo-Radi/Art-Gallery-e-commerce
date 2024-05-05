@@ -3,21 +3,25 @@ const mongoose = require('mongoose');
 
 const createArtwork = async (req, res, next) => {
   try {
-    const { artistId, categoryId, title, description, price, images } =
-      req.body;
+    const { artist, category, title, description, price } = req.body;
+    const image = req.file.filename;
 
     const newArtwork = new Artwork({
-      artistId,
-      categoryId,
+      artist,
+      category,
       title,
       description,
       price,
-      images
+      image
     });
 
-    const savedArtwork = await newArtwork.save();
+    let savedArtwork = await newArtwork.save();
 
-    res.status(201).json(savedArtwork);
+    const dataToSend = await Artwork.findById(savedArtwork._id)
+      .populate({ path: 'category', select: 'name' })
+      .populate({ path: 'artist', select: ['firstName', 'lastName'] });
+
+    res.status(201).json(dataToSend);
   } catch (error) {
     next(error);
   }
@@ -31,10 +35,14 @@ const getArtworks = async (req, res, next) => {
 
     const totalArtworksCount = await Artwork.countDocuments();
 
-    const artworks = await Artwork.find().skip(skipCount).limit(limit);
+    const artworks = await Artwork.find()
+      .populate({ path: 'category', select: 'name' })
+      .populate({ path: 'artist', select: ['firstName', 'lastName'] })
+      .skip(skipCount)
+      .limit(limit);
 
     if (artworks.length === 0) {
-      return res.status(404).json({ message: "No artworks found" });
+      return res.status(204).json({ message: "No artworks found" });
     }
 
     res.status(200).json({
@@ -85,7 +93,7 @@ const searchArtworks = async (req, res) => {
   }
 };
 
-const updateArtwork = async (req, res) => {
+const updateArtwork = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
     const updateFields = req.body;
@@ -100,9 +108,16 @@ const updateArtwork = async (req, res) => {
       artwork[field] = updateFields[field];
     });
 
-    const updatedArtwork = await artwork.save();
+    if (req.file)
+      artwork["image"] = req.file.filename
 
-    res.status(200).json(updatedArtwork);
+    let updateArtwork = await artwork.save();
+
+    const dataToSend = await Artwork.findById(updateArtwork._id)
+      .populate({ path: 'category', select: 'name' })
+      .populate({ path: 'artist', select: ['firstName', 'lastName'] });
+
+    res.status(200).json(dataToSend);
   } catch (error) {
     next(error);
   }
