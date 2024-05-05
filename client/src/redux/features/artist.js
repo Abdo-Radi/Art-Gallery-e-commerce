@@ -67,7 +67,7 @@ const artistSlice = createSlice({
             // Delete
             .addCase(deleteArtist.pending, (state) => { state.isLoading = true })
             .addCase(deleteArtist.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoading = true;
                 state.artists = state.artists.filter(artist => artist._id != action.payload)
             })
             .addCase(deleteArtist.rejected, (state, action) => {
