@@ -52,7 +52,7 @@ const loginHandler = async (req, res, next) => {
                 token: token
             });
         } else {
-            return res.status(401).json({ message: "Invalid username, email or password" });
+            return res.status(401).json({ message: "Invalid identifier or password" });
         }
     } catch (error) {
         next(error);

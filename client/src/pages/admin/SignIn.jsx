@@ -1,10 +1,11 @@
 import * as z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../api/axiosInstance";
-
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import axiosInstance from "../../api/axiosInstance"
+import { ToastContainer, toast, Bounce } from "react-toastify"
+import 'react-toastify/dist/ReactToastify.css'
 
 const SignIn = () => {
     const [formData, setFormData] = useState({
@@ -19,8 +20,8 @@ const SignIn = () => {
     }
 
     const schema = z.object({
-        identifier: z.string(),
-        password: z.string()
+        identifier: z.string().nonempty("Required field"),
+        password: z.string().nonempty("Required field")
     })
 
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -28,6 +29,10 @@ const SignIn = () => {
     })
 
     const navigate = useNavigate()
+
+    const showErrorMessage = (message) => {
+        toast.error(message)
+    }
 
     const login = async (data) => {
         try {
@@ -38,7 +43,7 @@ const SignIn = () => {
             localStorage.setItem("token", token)
             navigate("/admin")
         } catch (error) {
-            console.log(error.message)
+            showErrorMessage(error.response.data.message)
         }
     }
 
@@ -56,14 +61,14 @@ const SignIn = () => {
                             </label>
                             <input
                                 {...register("identifier")}
-                                value={formData.email}
+                                value={formData.identifier}
                                 onChange={handleChange}
                                 type="text"
                                 placeholder="Enter your email or username"
                                 className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                             />
                             <p className="text-sm text-meta-1">
-                                {errors.email && <span>{errors.email.message}</span>}
+                                {errors.identifier && <span>{errors.identifier.message}</span>}
                             </p>
                         </div>
 
@@ -90,6 +95,19 @@ const SignIn = () => {
                     </div>
                 </form>
             </div>
+            <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable={false}
+                pauseOnHover
+                theme="light"
+                transition:Bounce
+            />
         </div>
     )
 }
