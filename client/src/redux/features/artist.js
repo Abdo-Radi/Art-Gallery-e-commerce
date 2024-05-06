@@ -43,7 +43,9 @@ export const editArtist = createAsyncThunk(
   "artist/editArtist",
   async ({ id, body }, { rejectWithValue }) => {
     try {
+      console.log(id,body)
       const response = await axiosInstance.put(`/artists/${id}`, body);
+      
       return response.data;
     } catch (error) {
       rejectWithValue(error);

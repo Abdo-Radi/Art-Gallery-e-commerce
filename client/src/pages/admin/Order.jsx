@@ -79,9 +79,6 @@ const OrderPage = () => {
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
                       <div className="flex items-center text-lg gap-2.5">
-                        <button>
-                          <i className="ri-edit-box-line hover:text-primary"></i>
-                        </button>
                         <button onClick={() => handleDelete(order._id)}>
                           <i className="ri-delete-bin-6-line hover/text-primary"></i>
                         </button>
