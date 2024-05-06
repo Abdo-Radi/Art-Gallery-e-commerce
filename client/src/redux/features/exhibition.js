@@ -41,6 +41,19 @@ export const deleteExhibition = createAsyncThunk(
   }
 );
 
+// Async action to edit an exhibition
+export const editExhibition = createAsyncThunk(
+  "exhibition/editExhibition",
+  async ({ id, body }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(`/exhibitions/${id}`, body);
+      return response.data;
+    } catch (error) {
+      rejectWithValue(error);
+    }
+  }
+);
+
 const initialState = {
   exhibitions: [],
   isLoading: false,
@@ -88,6 +101,20 @@ const exhibitionSlice = createSlice({
         );
       })
       .addCase(deleteExhibition.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // Update
+      .addCase(editExhibition.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editExhibition.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.exhibitions = state.exhibitions.map((exhibition) =>
+          exhibition._id === action.payload._id ? action.payload : exhibition
+        );
+      })
+      .addCase(editExhibition.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });

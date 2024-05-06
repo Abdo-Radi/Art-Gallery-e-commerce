@@ -66,7 +66,6 @@ const updateTicket = async (req, res, next) => {
   try {
     const ticketId = req.params.id;
     const { exhibitionId, price, quantity } = req.body;
-
     if (!mongoose.Types.ObjectId.isValid(ticketId)) {
       return res.status(400).json({ message: "Invalid ticket ID" });
     }

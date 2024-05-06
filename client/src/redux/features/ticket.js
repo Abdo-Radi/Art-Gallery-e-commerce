@@ -37,6 +37,18 @@ export const deleteTicket = createAsyncThunk(
   }
 );
 
+export const editTicket = createAsyncThunk(
+  "tickets/editTicket",
+  async ({ id, body }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(`/tickets/${id}`, body);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error editing ticket");
+    }
+  }
+);
+
 const initialState = {
   tickets: [],
   isLoading: false,
@@ -82,6 +94,19 @@ const ticketSlice = createSlice({
         );
       })
       .addCase(deleteTicket.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload.message;
+      })
+      .addCase(editTicket.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editTicket.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.tickets = state.tickets.map((ticket) =>
+          ticket._id === action.payload._id ? action.payload : ticket
+        );
+      })
+      .addCase(editTicket.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload.message;
       });

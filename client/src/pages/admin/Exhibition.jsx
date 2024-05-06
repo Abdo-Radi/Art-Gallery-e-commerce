@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getExhibitions,
   deleteExhibition,
-} from "../../redux/features/exhibition"; // Adjust import if necessary
-import AddExhibition from "../../components/admin/Exhibition/AddExhibition"; // Your component for adding exhibitions
+} from "../../redux/features/exhibition";
+import AddExhibition from "../../components/admin/Exhibition/AddExhibition";
+import EditExhibition from "../../components/admin/Exhibition/EditExhibition";
 
 const Exhibition = () => {
   const dispatch = useDispatch();
@@ -14,23 +15,32 @@ const Exhibition = () => {
   );
 
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editedExhibition, setEditedExhibition] = useState(null);
 
   useEffect(() => {
-    // Fetch exhibitions when the component mounts
     dispatch(getExhibitions());
   }, [dispatch]);
 
   const handleDelete = (id) => {
     dispatch(deleteExhibition(id)).then(() => {
-      // Re-fetch exhibitions after successful deletion
       dispatch(getExhibitions());
     });
   };
 
   const handleExhibitionCreated = () => {
-    // Reload exhibitions after a new one is created
     dispatch(getExhibitions());
-    setShowAddForm(false); // Hide the Add Exhibition form
+    setShowAddForm(false);
+  };
+
+  const handleEdit = (exhibition) => {
+    setEditedExhibition(exhibition);
+    setShowEditForm(true);
+  };
+
+  const handleExhibitionEdited = () => {
+    dispatch(getExhibitions());
+    setShowEditForm(false);
   };
 
   return (
@@ -85,7 +95,7 @@ const Exhibition = () => {
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <div className="flex items-center gap-2.5 text-lg">
-                        <button>
+                        <button onClick={() => handleEdit(exhibition)}>
                           <i className="ri-edit-box-line hover:text-primary"></i>
                         </button>
                         <button onClick={() => handleDelete(exhibition._id)}>
@@ -105,6 +115,16 @@ const Exhibition = () => {
             <AddExhibition
               onCancel={() => setShowAddForm(false)}
               onExhibitionCreated={handleExhibitionCreated}
+            />
+          </div>
+        )}
+
+        {showEditForm && (
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+            <EditExhibition
+              exhibition={editedExhibition}
+              onCancel={() => setShowEditForm(false)}
+              onExhibitionEdited={handleExhibitionEdited}
             />
           </div>
         )}

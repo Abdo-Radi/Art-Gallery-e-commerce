@@ -1,28 +1,55 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTickets, deleteTicket } from "../../redux/features/ticket"; 
-import AddTicket from "../../components/admin/Ticket/AddTicket"
+import {
+  fetchTickets,
+  deleteTicket,
+  editTicket,
+} from "../../redux/features/ticket";
+import AddTicket from "../../components/admin/Ticket/AddTicket";
+import EditTicket from "../../components/admin/Ticket/EditTicket"; // Import EditTicket component
 
 const TicketPage = () => {
   const { tickets, isLoading, error } = useSelector((state) => state.ticket);
   const dispatch = useDispatch();
 
   const [showAddForm, setShowAddForm] = useState(false);
-  const [refreshFlag, setRefreshFlag] = useState(false); // To trigger re-fetch
+  const [showEditForm, setShowEditForm] = useState(false); // State for showing/hiding edit form
+  const [editedTicket, setEditedTicket] = useState(null); // State to hold edited ticket data
 
   // Function to trigger data re-fetch
   const reloadTickets = () => {
     dispatch(fetchTickets());
   };
 
-  // Re-fetch tickets every time refreshFlag changes
+  // Re-fetch tickets every time component mounts
   useEffect(() => {
-    reloadTickets(); // Fetch tickets on component mount and when refreshFlag changes
-  }, [dispatch, refreshFlag]); // Added refreshFlag as a dependency
+    reloadTickets();
+  }, [dispatch]);
 
   const handleDelete = (ticketId) => {
     dispatch(deleteTicket(ticketId));
-    setRefreshFlag((prev) => !prev); // Toggle refreshFlag to trigger re-fetch
+  };
+
+  // Function to handle editing ticket
+  const handleEdit = (ticket) => {
+    setEditedTicket(ticket); // Set the ticket to be edited
+    setShowEditForm(true); // Show the edit form
+  };
+
+  // Function to handle cancelling edit
+  const cancelEdit = () => {
+    setShowEditForm(false); // Hide the edit form
+    setEditedTicket(null); // Clear edited ticket data
+  };
+
+  // Function to handle updating ticket
+  const updateTicket = (updatedTicketData) => {
+    dispatch(
+      editTicket({ ticketId: editedTicket._id, ticketData: updatedTicketData })
+    );
+    setShowEditForm(false); // Hide the edit form after update
+    setEditedTicket(null); // Clear edited ticket data
+    reloadTickets(); // Reload tickets after update
   };
 
   return (
@@ -33,10 +60,7 @@ const TicketPage = () => {
             Tickets
           </h2>
           <button
-            onClick={() => {
-              setShowAddForm(true);
-              setRefreshFlag((prev) => !prev); // Toggle refreshFlag to trigger re-fetch after adding
-            }}
+            onClick={() => setShowAddForm(true)}
             className="bg-primary py-2 px-6 text-white"
           >
             Add Ticket
@@ -83,7 +107,9 @@ const TicketPage = () => {
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
                       <div className="flex items-center text-lg gap-2.5">
-                        <button>
+                        <button onClick={() => handleEdit(ticket)}>
+                          {" "}
+                          {/* Button to initiate edit */}
                           <i className="ri-edit-box-line hover:text-primary"></i>
                         </button>
                         <button onClick={() => handleDelete(ticket._id)}>
@@ -101,6 +127,16 @@ const TicketPage = () => {
       {showAddForm && (
         <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
           <AddTicket onCancel={() => setShowAddForm(false)} />
+        </div>
+      )}
+
+      {showEditForm && (
+        <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+          <EditTicket
+            ticket={editedTicket}
+            onCancel={cancelEdit}
+            onUpdate={updateTicket}
+          />
         </div>
       )}
     </div>

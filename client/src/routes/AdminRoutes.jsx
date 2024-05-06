@@ -9,7 +9,8 @@ import Artwork from "../pages/admin/Artwork"
 import Exhibition from "../pages/admin/Exhibition";
 import Order from "../pages/admin/Order";
 import Ticket from "../pages/admin/Ticket";
-
+import Admin from "../pages/admin/Admin";
+import CustomerPage from "../pages/admin/Customer";
 const AdminRoutes = () => {
 
     return (
@@ -24,6 +25,8 @@ const AdminRoutes = () => {
             <Route path="exhibitions" element={<Exhibition />} />
             <Route path="orders" element={<Order />} />
             <Route path="tickets" element={<Ticket />} />
+            <Route path="admins" element={<Admin />} />
+            <Route path="customers" element={<CustomerPage />} />
           </Route>
         </Route>
       </Routes>
