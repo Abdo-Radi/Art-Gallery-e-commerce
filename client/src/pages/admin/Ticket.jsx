@@ -6,50 +6,55 @@ import {
   editTicket,
 } from "../../redux/features/ticket";
 import AddTicket from "../../components/admin/Ticket/AddTicket";
-import EditTicket from "../../components/admin/Ticket/EditTicket"; // Import EditTicket component
+import EditTicket from "../../components/admin/Ticket/EditTicket";
 
 const TicketPage = () => {
-  const { tickets, isLoading, error } = useSelector((state) => state.ticket);
   const dispatch = useDispatch();
+  const { tickets, isLoading, error } = useSelector((state) => state.ticket);
+
+  const [limit, setLimit] = useState(5); // Items per page
+  const [currPage, setCurrPage] = useState(0); // Current page
+  const totalPages = Math.ceil(tickets.length / limit); // Total number of pages
+  const paginatedTickets = tickets.slice(
+    currPage * limit,
+    (currPage + 1) * limit
+  ); // Tickets for the current page
 
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false); // State for showing/hiding edit form
-  const [editedTicket, setEditedTicket] = useState(null); // State to hold edited ticket data
+  const [showEditForm, setShowEditForm] = useState(false); // State to show/hide the edit form
+  const [editedTicket, setEditedTicket] = useState(null); // State to hold the ticket being edited
 
-  // Function to trigger data re-fetch
-  const reloadTickets = () => {
-    dispatch(fetchTickets());
-  };
-
-  // Re-fetch tickets every time component mounts
   useEffect(() => {
-    reloadTickets();
+    dispatch(fetchTickets()); // Fetch tickets on component mount
   }, [dispatch]);
 
   const handleDelete = (ticketId) => {
-    dispatch(deleteTicket(ticketId));
+    dispatch(deleteTicket(ticketId)); // Delete the ticket by ID
+    dispatch(fetchTickets()); // Refresh the tickets after deletion
   };
 
-  // Function to handle editing ticket
   const handleEdit = (ticket) => {
     setEditedTicket(ticket); // Set the ticket to be edited
     setShowEditForm(true); // Show the edit form
   };
 
-  // Function to handle cancelling edit
   const cancelEdit = () => {
     setShowEditForm(false); // Hide the edit form
-    setEditedTicket(null); // Clear edited ticket data
+    setEditedTicket(null); // Clear the edited ticket
   };
 
-  // Function to handle updating ticket
   const updateTicket = (updatedTicketData) => {
     dispatch(
       editTicket({ ticketId: editedTicket._id, ticketData: updatedTicketData })
-    );
+    ); // Update the ticket
     setShowEditForm(false); // Hide the edit form after update
-    setEditedTicket(null); // Clear edited ticket data
-    reloadTickets(); // Reload tickets after update
+    setEditedTicket(null); // Clear the edited ticket
+    dispatch(fetchTickets()); // Refresh the tickets after update
+  };
+
+  // Change page when a pagination button is clicked
+  const handlePageChange = (page) => {
+    setCurrPage(page);
   };
 
   return (
@@ -66,79 +71,99 @@ const TicketPage = () => {
             Add Ticket
           </button>
         </div>
-        {isLoading && <p>Loading tickets...</p>}
-        {error && <p className="text-red-500">Error: {error}</p>}
-        <div className="overflow-x-auto">
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Ticket ID
-                </th>
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Exhibition ID
-                </th>
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Price
-                </th>
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Quantity
-                </th>
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {tickets &&
-                tickets.map((ticket) => (
-                  <tr key={ticket._id}>
-                    <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
-                      {ticket._id}
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
-                      {ticket.exhibitionId}
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
-                      {ticket.price.toFixed(2)}
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
-                      {ticket.quantity}
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
-                      <div className="flex items-center text-lg gap-2.5">
-                        <button onClick={() => handleEdit(ticket)}>
-                          {" "}
-                          {/* Button to initiate edit */}
-                          <i className="ri-edit-box-line hover:text-primary"></i>
-                        </button>
-                        <button onClick={() => handleDelete(ticket._id)}>
-                          <i className="ri-delete-bin-6-line hover:text-primary"></i>
-                        </button>
-                      </div>
-                    </td>
+
+        {isLoading ? (
+          <p>Loading tickets...</p>
+        ) : error ? (
+          <p className="text-red-500">Error: {error}</p>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full table-auto">
+                <thead>
+                  <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                    <th className="p-4 font-medium text-black dark/text-white">
+                      Ticket ID
+                    </th>
+                    <th className="p-4 font-medium text-black dark/text-white">
+                      Exhibition ID
+                    </th>
+                    <th className="p-4 font-medium text-black dark/text-white">
+                      Price
+                    </th>
+                    <th className="p-4 font-medium text-black dark/text-white">
+                      Quantity
+                    </th>
+                    <th className="p-4 font-medium text-black dark/text-white">
+                      Actions
+                    </th>
                   </tr>
+                </thead>
+                <tbody>
+                  {paginatedTickets.map((ticket) => (
+                    <tr key={ticket._id}>
+                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                        {ticket._id}
+                      </td>
+                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                        {ticket.exhibitionId}
+                      </td>
+                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                        {ticket.price.toFixed(2)}
+                      </td>
+                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                        {ticket.quantity}
+                      </td>
+                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                        <div className="flex items-center text-lg gap-2.5">
+                          <button onClick={() => handleEdit(ticket)}>
+                            <i className="ri-edit-box-line hover/text-primary"></i>
+                          </button>
+                          <button onClick={() => handleDelete(ticket._id)}>
+                            <i className="ri-delete-bin-6-line hover/text-primary"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {totalPages > 1 && (
+              <div className="mt-4 flex justify-center space-x-4">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handlePageChange(i)}
+                    className={`px-3 py-1 ${
+                      currPage === i ? "bg-primary text-white" : "bg-gray-200"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
                 ))}
-            </tbody>
-          </table>
-        </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {showAddForm && (
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+            <AddTicket onCancel={() => setShowAddForm(false)} />
+          </div>
+        )}
+
+        {showEditForm && (
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+            <EditTicket
+              ticket={editedTicket}
+              onCancel={cancelEdit}
+              onUpdate={updateTicket}
+            />
+          </div>
+        )}
       </div>
-
-      {showAddForm && (
-        <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-          <AddTicket onCancel={() => setShowAddForm(false)} />
-        </div>
-      )}
-
-      {showEditForm && (
-        <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-          <EditTicket
-            ticket={editedTicket}
-            onCancel={cancelEdit}
-            onUpdate={updateTicket}
-          />
-        </div>
-      )}
     </div>
   );
 };

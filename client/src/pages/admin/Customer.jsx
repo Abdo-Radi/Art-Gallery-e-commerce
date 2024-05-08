@@ -7,34 +7,57 @@ import EditCustomer from "../../components/admin/Customer/EditCustomer";
 const CustomerPage = () => {
   const { customers } = useSelector((state) => state.customer);
   const dispatch = useDispatch();
+
+  const [limit, setLimit] = useState(5);
+  const [currPage, setCurrPage] = useState(0);
+  const [search, setSearch] = useState(""); // New state for search
+
+  const totalPages = Math.ceil(customers.length / limit);
+
+  // Update the search field
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setCurrPage(0); // Reset to the first page when searching
+  };
+
+  // Filter customers based on the search keyword
+  const filteredCustomers = customers.filter((customer) =>
+    `${customer.firstName} ${customer.lastName}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+  // Calculate paginated customers based on the filtered list
+  const paginatedCustomers = filteredCustomers.slice(
+    currPage * limit,
+    (currPage + 1) * limit
+  );
+
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
   const [editedCustomer, setEditedCustomer] = useState(null);
 
-  const showAddForm = () => {
-    setAddForm(true);
-  };
-
-  const hideAddForm = () => {
-    setAddForm(false);
-  };
+  const showAddForm = () => setAddForm(true);
+  const hideAddForm = () => setAddForm(false);
 
   const showEditForm = (customer) => {
     setEditedCustomer(customer);
     setEditForm(true);
   };
 
-  const hideEditForm = () => {
-    setEditForm(false);
-  };
+  const hideEditForm = () => setEditForm(false);
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
     dispatch(deleteCustomer(id));
   };
 
   useEffect(() => {
     dispatch(getCustomers());
   }, [dispatch]);
+
+  const handlePageChange = (page) => {
+    setCurrPage(page);
+  };
 
   return (
     <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -43,6 +66,13 @@ const CustomerPage = () => {
           <h2 className="text-title-lg font-semibold text-black dark:text-white">
             Customers
           </h2>
+          <input
+            type="text"
+            placeholder="Search customers"
+            value={search}
+            onChange={handleSearchChange}
+            className="border py-2 px-4 text-black dark:text-white"
+          />
           <button
             onClick={showAddForm}
             className="bg-primary py-2 px-6 text-white"
@@ -57,60 +87,68 @@ const CustomerPage = () => {
                 <th className="p-4 font-medium text-black dark:text-white">
                   Name
                 </th>
-                <th className="p-4 font-medium text-black dark:text-white">
+                <th class="p-4 font-medium text-black dark:text-white">
                   Username
                 </th>
-                <th className="p-4 font-medium text-black dark:text-white">
+                <th class="p-4 font-medium text-black dark:text-white">
                   Email
                 </th>
-                <th className="p-4 font-medium text-black dark:text-white">
+                <th class="p-4 font-medium text-black dark:text-white">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody>
-              {customers &&
-                customers.map((customer, key) => (
-                  <tr key={key}>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">
-                        {customer.firstName} {customer.lastName}
-                      </p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">
-                        {customer.username}
-                      </p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">
-                        {customer.email}
-                      </p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <div className="flex items-center text-lg gap-2.5">
-                        <button onClick={() => showEditForm(customer)}>
-                          <i className="ri-edit-box-line hover:text-primary"></i>
-                        </button>
-                        <button onClick={() => handleDelete(customer._id)}>
-                          <i className="ri-delete-bin-6-line hover:text-primary"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+              {paginatedCustomers.map((customer, key) => (
+                <tr key={key}>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    {customer.firstName} {customer.lastName}
+                  </td>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    {customer.username}
+                  </td>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    {customer.email}
+                  </td>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    <div className="flex items-center text-lg gap-2.5">
+                      <button onClick={() => showEditForm(customer)}>
+                        <i className="ri-edit-box-line hover:text-primary"></i>
+                      </button>
+                      <button onClick={() => handleDelete(customer._id)}>
+                        <i className="ri-delete-bin-6-line hover:text-primary"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div className="mt-4 flex justify-center space-x-4">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => handlePageChange(i)}
+                className={`px-3 py-1 ${
+                  currPage === i ? "bg-primary text-white" : "bg-gray-200"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       {addForm && (
         <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-          {<AddCustomer onCancel={hideAddForm} />}
+          <AddCustomer onCancel={hideAddForm} />
         </div>
       )}
       {editForm && (
         <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-          {<EditCustomer customer={editedCustomer} onCancel={hideEditForm} />}
+          <EditCustomer customer={editedCustomer} onCancel={hideEditForm} />
         </div>
       )}
     </div>

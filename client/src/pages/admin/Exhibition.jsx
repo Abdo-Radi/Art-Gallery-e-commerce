@@ -9,18 +9,30 @@ import EditExhibition from "../../components/admin/Exhibition/EditExhibition";
 
 const Exhibition = () => {
   const dispatch = useDispatch();
-
   const { exhibitions, isLoading, error } = useSelector(
     (state) => state.exhibition
+  );
+
+  // Pagination and search state
+  const [limit, setLimit] = useState(5); // Items per page
+  const [currPage, setCurrPage] = useState(0); // Current page
+  const [searchQuery, setSearchQuery] = useState(""); // Search input state
+
+  // Filter exhibitions based on the search query
+  const filteredExhibitions = exhibitions.filter((exhibition) =>
+    exhibition.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Pagination based on filtered results
+  const totalPages = Math.ceil(filteredExhibitions.length / limit);
+  const paginatedExhibitions = filteredExhibitions.slice(
+    currPage * limit,
+    (currPage + 1) * limit
   );
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editedExhibition, setEditedExhibition] = useState(null);
-
-  useEffect(() => {
-    dispatch(getExhibitions());
-  }, [dispatch]);
 
   const handleDelete = (id) => {
     dispatch(deleteExhibition(id)).then(() => {
@@ -30,7 +42,7 @@ const Exhibition = () => {
 
   const handleExhibitionCreated = () => {
     dispatch(getExhibitions());
-    setShowAddForm(false);
+    setShowAddForm(false); // Close the form after creating
   };
 
   const handleEdit = (exhibition) => {
@@ -40,7 +52,20 @@ const Exhibition = () => {
 
   const handleExhibitionEdited = () => {
     dispatch(getExhibitions());
-    setShowEditForm(false);
+    setShowEditForm(false); // Close the form after editing
+  };
+
+  useEffect(() => {
+    dispatch(getExhibitions());
+  }, [dispatch]);
+
+  const handlePageChange = (page) => {
+    setCurrPage(page);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrPage(0); // Reset to the first page when searching
   };
 
   return (
@@ -50,12 +75,23 @@ const Exhibition = () => {
           <h2 className="text-title-lg font-semibold text-black dark:text-white">
             Exhibitions
           </h2>
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="bg-primary py-2 px-6 text-white"
-          >
-            Add Exhibition
-          </button>
+          <div className="flex items-center gap-3">
+            {" "}
+            {/* Align with consistent spacing */}
+            <input
+              type="text"
+              placeholder="Search exhibitions..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="border py-2 px-4 text-black dark:text-white mr-80"
+            />
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="bg-primary py-2 px-6 text-white"
+            >
+              Add Exhibition
+            </button>
+          </div>
         </div>
 
         {isLoading ? (
@@ -82,7 +118,7 @@ const Exhibition = () => {
                 </tr>
               </thead>
               <tbody>
-                {exhibitions.map((exhibition) => (
+                {paginatedExhibitions.map((exhibition) => (
                   <tr key={exhibition._id}>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       {exhibition.name}
@@ -96,10 +132,10 @@ const Exhibition = () => {
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <div className="flex items-center gap-2.5 text-lg">
                         <button onClick={() => handleEdit(exhibition)}>
-                          <i className="ri-edit-box-line hover:text-primary"></i>
+                          <i className="ri-edit-box-line hover-text-primary"></i>
                         </button>
                         <button onClick={() => handleDelete(exhibition._id)}>
-                          <i className="ri-delete-bin-6-line hover:text-primary"></i>
+                          <i className="ri-delete-bin-6-line hover-text-primary"></i>
                         </button>
                       </div>
                     </td>
@@ -110,12 +146,25 @@ const Exhibition = () => {
           </div>
         )}
 
+        {totalPages > 1 && (
+          <div className="mt-4 flex justify-center space-x-4">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => handlePageChange(i)}
+                className={`px-3 py-1 ${
+                  currPage === i ? "bg-primary text-white" : "bg-gray-200"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
+
         {showAddForm && (
           <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-            <AddExhibition
-              onCancel={() => setShowAddForm(false)}
-              onExhibitionCreated={handleExhibitionCreated}
-            />
+            <AddExhibition onCancel={() => setShowAddForm(false)} />
           </div>
         )}
 
@@ -124,7 +173,6 @@ const Exhibition = () => {
             <EditExhibition
               exhibition={editedExhibition}
               onCancel={() => setShowEditForm(false)}
-              onExhibitionEdited={handleExhibitionEdited}
             />
           </div>
         )}

@@ -5,9 +5,11 @@ import axiosInstance from "../../api/axiosInstance";
 // Async Thunks
 export const getCustomers = createAsyncThunk(
   "customer/getCustomers",
-  async (_, { rejectWithValue }) => {
+  async (searchQuery = "", { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/customers");
+      const response = await axiosInstance.get(
+        `/customers?search=${searchQuery}`
+      );
       return response.data.data;
     } catch (error) {
       rejectWithValue(error);
@@ -56,13 +58,18 @@ const initialState = {
   customers: [],
   isLoading: false,
   error: null,
+  searchQuery: "", // Add searchQuery to initial state
 };
 
 // Slice
 const customerSlice = createSlice({
   name: "customer",
   initialState,
-  reducers: {},
+  reducers: {
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Read
@@ -122,5 +129,7 @@ const customerSlice = createSlice({
       });
   },
 });
+
+export const { setSearchQuery } = customerSlice.actions; // Extract the action creator
 
 export default customerSlice.reducer;
