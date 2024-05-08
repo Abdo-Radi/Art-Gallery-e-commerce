@@ -1,24 +1,12 @@
 import * as z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../../api/axiosInstance"
-import { ToastContainer, toast, Bounce } from "react-toastify"
+import { ToastContainer, toast } from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css'
 
 const SignIn = () => {
-    const [formData, setFormData] = useState({
-        identifier: "", password: ""
-    })
-
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData(prev => ({
-            ...prev, [name]: value
-        }))
-    }
-
     const schema = z.object({
         identifier: z.string().nonempty("Required field"),
         password: z.string().nonempty("Required field")
@@ -60,8 +48,6 @@ const SignIn = () => {
                             </label>
                             <input
                                 {...register("identifier")}
-                                value={formData.identifier}
-                                onChange={handleChange}
                                 type="text"
                                 placeholder="Enter your email or username"
                                 className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -77,8 +63,6 @@ const SignIn = () => {
                             </label>
                             <input
                                 {...register("password")}
-                                value={formData.password}
-                                onChange={handleChange}
                                 type="password"
                                 placeholder="Enter your password"
                                 className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"

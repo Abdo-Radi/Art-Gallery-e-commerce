@@ -23,6 +23,7 @@ const Category = () => {
     }
 
     useEffect(() => {
+        console.log(document);
         dispatch(getCategories())
     }, [])
 

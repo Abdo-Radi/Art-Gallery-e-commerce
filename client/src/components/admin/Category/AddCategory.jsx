@@ -1,25 +1,13 @@
 import * as z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { addCategory } from "../../../redux/features/category"
 
 const AddCategory = ({ onCancel }) => {
-    const [formData, setFormData] = useState({
-        name: "", description: ""
-    })
-
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData(prev => ({
-            ...prev, [name]: value
-        }))
-    }
-
     const schema = z.object({
-        name: z.string(),
-        description: z.string()
+        name: z.string().nonempty("Required field"),
+        description: z.string().nonempty("Required field")
     })
 
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -51,8 +39,6 @@ const AddCategory = ({ onCancel }) => {
                         </label>
                         <input
                             {...register("name")}
-                            value={formData.firstName}
-                            onChange={handleChange}
                             type="text"
                             placeholder="Name"
                             className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -68,8 +54,6 @@ const AddCategory = ({ onCancel }) => {
                         </label>
                         <input
                             {...register("description")}
-                            value={formData.lastName}
-                            onChange={handleChange}
                             type="text"
                             placeholder="Description"
                             className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
