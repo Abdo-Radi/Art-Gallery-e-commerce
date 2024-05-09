@@ -1,7 +1,7 @@
 const Order = require('../models/Order');
 const mongoose = require('mongoose');
 
-const createOrder = async (req, res) => {
+const createOrder = async (req, res,next) => {
   try {
     const { customerId, items, totalAmount, status, date } = req.body;
 

@@ -1,4 +1,25 @@
 const Customer = require('../models/Customer');
+const { hash } = require('../utils/passwordUtils');
+
+const addCustomer = async (req, res, next) => {
+    const { firstName, lastName, email, username, password } = req.body;
+  
+    try {
+      const hashedPassword = await hash(password);
+  
+      const newCustomer = await Customer.create({
+        firstName,
+        lastName,
+        email,
+        username,
+        password: hashedPassword
+      });
+  
+      res.status(201).json(newCustomer);
+    } catch (error) {
+      next(error);
+    }
+  };
 
 const getCustomers = async (req, res) => {
     try {
@@ -68,4 +89,4 @@ const deleteCustomer = async (req, res) => {
     }
 };
 
-module.exports = { getCustomers, getCustomerById, searchCustomer, updateCustomer, deleteCustomer };
+module.exports = { addCustomer, getCustomers, getCustomerById, searchCustomer, updateCustomer, deleteCustomer };

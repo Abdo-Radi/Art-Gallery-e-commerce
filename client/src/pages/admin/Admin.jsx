@@ -1,55 +1,57 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  deleteCategory,
-  getCategories,
-  editCategory,
-} from "../../redux/features/category";
-import AddCategory from "../../components/admin/Category/AddCategory";
-import EditCategory from "../../components/admin/Category/EditCategory";
+import { deleteAdmin, getAdmins } from "../../redux/features/admin";
+import AddAdmin from "../../components/admin/Admin/AddAdmin";
+import EditAdmin from "../../components/admin/Admin/EditAdmin";
 
-const Category = () => {
-  const { categories } = useSelector((state) => state.category);
+const AdminPage = () => {
+  const { admins } = useSelector((state) => state.admin);
   const dispatch = useDispatch();
 
-  // Pagination state
-  const [limit, setLimit] = useState(5); // Items per page
+  // State for pagination
+  const [limit, setLimit] = useState(5); // Limit of items per page
   const [currPage, setCurrPage] = useState(0); // Current page
-  const totalPages = Math.ceil(categories.length / limit); // Total number of pages
-  const paginatedCategories = categories.slice(
+
+  // Derived data for pagination
+  const totalPages = Math.ceil(admins.length / limit); // Total number of pages
+  const paginatedAdmins = admins.slice(
     currPage * limit,
     (currPage + 1) * limit
-  );
+  ); // Data for the current page
 
+  // State for managing forms
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  const [editedCategory, setEditedCategory] = useState(null);
+  const [editedAdmin, setEditedAdmin] = useState(null);
 
+  // Form control functions
   const showAddForm = () => setAddForm(true);
   const hideAddForm = () => setAddForm(false);
 
-  const showEditForm = (category) => {
-    setEditedCategory(category);
+  const showEditForm = (admin) => {
+    setEditedAdmin(admin);
     setEditForm(true);
   };
 
   const hideEditForm = () => setEditForm(false);
 
-  const handleDelete = async (id) => {
-    dispatch(deleteCategory(id));
+  // Deletion handler
+  const handleDelete = (id) => {
+    dispatch(deleteAdmin(id));
   };
 
+  // Fetch admins on component load and re-fetch when editedAdmin changes
   useEffect(() => {
-    dispatch(getCategories());
+    dispatch(getAdmins());
   }, [dispatch]);
 
-  const handleEdit = async (category) => {
-    const { _id, ...rest } = category;
-    dispatch(editCategory({ id: _id, body: rest }));
-    setEditForm(false); // Close edit form after submitting
-  };
+  useEffect(() => {
+    if (editedAdmin) {
+      dispatch(getAdmins()); // Refresh the list after editing
+    }
+  }, [editedAdmin, dispatch]);
 
-  // Handler for changing pages
+  // Page selection handler
   const handlePageChange = (page) => {
     setCurrPage(page);
   };
@@ -59,13 +61,13 @@ const Category = () => {
       <div className="max-w-full">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-title-lg font-semibold text-black dark:text-white">
-            Categories
+            Admins
           </h2>
           <button
             onClick={showAddForm}
             className="bg-primary py-2 px-6 text-white"
           >
-            Add Category
+            Add Admin
           </button>
         </div>
         <div className="overflow-x-auto">
@@ -76,7 +78,10 @@ const Category = () => {
                   Name
                 </th>
                 <th className="p-4 font-medium text-black dark:text-white">
-                  Description
+                  Username
+                </th>
+                <th className="p-4 font-medium text-black dark:text-white">
+                  Email
                 </th>
                 <th className="p-4 font-medium text-black dark:text-white">
                   Actions
@@ -84,20 +89,23 @@ const Category = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedCategories.map((category, key) => (
+              {paginatedAdmins.map((admin, key) => (
                 <tr key={key}>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {category.name}
+                    {admin.firstName} {admin.lastName}
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {category.description}
+                    {admin.username}
+                  </td>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    {admin.email}
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center text-lg gap-2.5">
-                      <button onClick={() => showEditForm(category)}>
+                      <button onClick={() => showEditForm(admin)}>
                         <i className="ri-edit-box-line hover:text-primary"></i>
                       </button>
-                      <button onClick={() => handleDelete(category._id)}>
+                      <button onClick={() => handleDelete(admin._id)}>
                         <i className="ri-delete-bin-6-line hover=text-primary"></i>
                       </button>
                     </div>
@@ -127,21 +135,17 @@ const Category = () => {
 
       {addForm && (
         <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-          <AddCategory onCancel={hideAddForm} />
+          <AddAdmin onCancel={hideAddForm} />
         </div>
       )}
 
       {editForm && (
         <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-          <EditCategory
-            category={editedCategory}
-            onEdit={handleEdit}
-            onCancel={hideEditForm}
-          />
+          <EditAdmin admin={editedAdmin} onCancel={hideEditForm} />
         </div>
       )}
     </div>
   );
 };
 
-export default Category;
+export default AdminPage;

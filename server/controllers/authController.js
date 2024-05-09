@@ -39,13 +39,12 @@ const registerHandler = async (req, res, next) => {
 
 const loginHandler = async (req, res, next) => {
     const { accountType, identifier, password } = req.body;
-
+            
     try {
         const Model = getModel(accountType);
         const user = await Model.findOne({
             $or: [{ username: identifier }, { email: identifier }]
         });
-
         if (user && await validatePassword(password, user.password)) {
             const token = jwt.sign({ userId: user._id, accountType: accountType }, process.env.JWT_SECRET, { expiresIn: '1d' });
             return res.status(200).json({

@@ -2,17 +2,57 @@ import { Link } from "react-router-dom"
 
 const Sidebar = () => {
     const navLinks = [
-        { name: "Dashboard", to: "/admin", icon: <i className="ri-dashboard-line"></i> },
-        { name: "Profile", to: "/admin/profile", icon: <i className="ri-profile-line"></i> },
-        { name: "Admins", to: "/admin/admins", icon: <i className="ri-shield-user-line"></i> },
-        { name: "Artists", to: "/admin/artists", icon: <i className="ri-user-line"></i> },
-        { name: "Customers", to: "/admin/customers", icon: <i className="ri-user-heart-line"></i> },
-        { name: "Artworks", to: "/admin/artworks", icon: <i className="ri-paint-brush-line"></i> },
-        { name: "Categories", to: "/admin/categories", icon: <i className="ri-layout-grid-line"></i> },
-        { name: "Exhibitions", to: "/admin/exhibitions", icon: <i className="ri-carousel-view"></i> },
-        { name: "Tickets", to: "/admin/tickets", icon: <i className="ri-ticket-2-line"></i> },
-        { name: "Orders", to: "/admin/orders", icon: <i className="ri-shopping-basket-2-line"></i> },
-    ]
+      {
+        name: "Dashboard",
+        to: "/admin",
+        icon: <i className="ri-dashboard-line"></i>,
+      },
+      {
+        name: "Profile",
+        to: "/admin/profile",
+        icon: <i className="ri-profile-line"></i>,
+      },
+      {
+        name: "Admins",
+        to: "/admin/admins",
+        icon: <i className="ri-shield-user-line"></i>,
+      },
+      {
+        name: "Artists",
+        to: "/admin/artists",
+        icon: <i className="ri-user-line"></i>,
+      },
+      {
+        name: "Customers",
+        to: "/admin/customers",
+        icon: <i className="ri-user-heart-line"></i>,
+      },
+      {
+        name: "Artworks",
+        to: "/admin/artworks",
+        icon: <i className="ri-paint-brush-line"></i>,
+      },
+      {
+        name: "Exhibitions",
+        to: "/admin/exhibitions",
+        icon: <i className="ri-carousel-view"></i>,
+      },
+      {
+        name: "Categories",
+        to: "/admin/categories",
+        icon: <i className="ri-list-settings-line"></i>,
+      },
+      {
+        name: "Orders",
+        to: "/admin/orders",
+        icon: <i className="ri-shopping-basket-2-line"></i>,
+      },
+      {
+        name: "tickets",
+        to: "/admin/tickets",
+        icon: <i className="ri-ticket-2-line"></i>,
+      },
+    ];
 
     return (
         <aside className="hidden absolute left-0 top-0 z-9999 lg:flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0">

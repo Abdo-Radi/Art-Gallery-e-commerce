@@ -1,8 +1,8 @@
-import AdminRoutes from "./routes/AdminRoutes"
+import ConfigRoutes from "./routes"
 
 const App = () => {
   return (
-    <AdminRoutes />
+    <ConfigRoutes />
   )
 }
 

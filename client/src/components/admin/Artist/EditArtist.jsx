@@ -1,18 +1,33 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { addArtist } from "../../../redux/features/artist";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { editArtist, getArtists } from "../../../redux/features/artist";
 
-const AddArtist = ({ onCancel }) => {
-  const errorMessage = "Field cannot be empty";
+const EditArtist = ({ artist, onCancel }) => {
+  const [formData, setFormData] = useState({
+    firstName: artist.firstName,
+    lastName: artist.lastName,
+    username: artist.username,
+    email: artist.email,
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const schema = z
     .object({
-      firstName: z.string().nonempty(errorMessage),
-      lastName: z.string().nonempty(errorMessage),
-      username: z.string().nonempty(errorMessage),
+      firstName: z.string(),
+      lastName: z.string(),
+      username: z.string(),
       email: z.string().email(),
       password: z
         .string()
@@ -23,7 +38,7 @@ const AddArtist = ({ onCancel }) => {
     })
     .refine((data) => data.password === data.confirmPassword, {
       path: ["confirmPassword"],
-      message: "Passwords does not match",
+      message: "Passwords do not match",
     });
 
   const {
@@ -37,14 +52,23 @@ const AddArtist = ({ onCancel }) => {
   const dispatch = useDispatch();
 
   const onSubmit = (data) => {
-    dispatch(addArtist(data));
+    // Only include password fields if they're not empty
+    const editedArtist = {
+      ...data,
+      password: data.password ? data.password : undefined,
+      confirmPassword: data.confirmPassword ? data.confirmPassword : undefined,
+    };
+    dispatch(editArtist({ id:artist._id,body:editedArtist}));
     onCancel();
   };
-
+ useEffect(() => {
+   dispatch(getArtists());
+ }, []);
+  
   return (
     <div className="overflow-y-auto h-5/6 no-scrollbar mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="sticky top-0 bg-white flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-        <h3 className="font-medium text-black dark:text-white">Add Artist</h3>
+        <h3 className="font-medium text-black dark:text-white">Edit Artist</h3>
         <button onClick={onCancel}>
           <i className="ri-close-circle-line text-lg"></i>
         </button>
@@ -57,8 +81,10 @@ const AddArtist = ({ onCancel }) => {
             </label>
             <input
               {...register("firstName")}
+              value={formData.firstName}
+              onChange={handleChange}
               type="text"
-              placeholder="Enter your first name"
+              placeholder="Enter artist's first name"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <p className="text-sm text-meta-1">
@@ -72,8 +98,10 @@ const AddArtist = ({ onCancel }) => {
             </label>
             <input
               {...register("lastName")}
+              value={formData.lastName}
+              onChange={handleChange}
               type="text"
-              placeholder="Enter your last name"
+              placeholder="Enter artist's last name"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <p className="text-sm text-meta-1">
@@ -87,8 +115,10 @@ const AddArtist = ({ onCancel }) => {
             </label>
             <input
               {...register("username")}
-              type="username"
-              placeholder="Enter your username"
+              value={formData.username}
+              onChange={handleChange}
+              type="text"
+              placeholder="Enter artist's username"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <p className="text-sm text-meta-1">
@@ -102,8 +132,10 @@ const AddArtist = ({ onCancel }) => {
             </label>
             <input
               {...register("email")}
+              value={formData.email}
+              onChange={handleChange}
               type="email"
-              placeholder="Enter your email address"
+              placeholder="Enter artist's email address"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <p className="text-sm text-meta-1">
@@ -117,8 +149,10 @@ const AddArtist = ({ onCancel }) => {
             </label>
             <input
               {...register("password")}
+              value={formData.password}
+              onChange={handleChange}
               type="password"
-              placeholder="Enter your password"
+              placeholder="Enter artist's password"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <p className="text-sm text-meta-1">
@@ -132,8 +166,10 @@ const AddArtist = ({ onCancel }) => {
             </label>
             <input
               {...register("confirmPassword")}
+              value={formData.confirmPassword}
+              onChange={handleChange}
               type="password"
-              placeholder="Confirm your password"
+              placeholder="Confirm artist's password"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <p className="text-sm text-meta-1">
@@ -142,17 +178,16 @@ const AddArtist = ({ onCancel }) => {
               )}
             </p>
           </div>
-
-          <button
-            type="submit"
-            className="flex w-full justify-center bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
-          >
-            Add Artist
-          </button>
         </div>
+        <button
+          type="submit"
+          className="flex w-full justify-center bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
+        >
+          Edit Artist
+        </button>
       </form>
     </div>
   );
 };
 
-export default AddArtist;
+export default EditArtist;

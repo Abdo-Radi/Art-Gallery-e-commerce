@@ -4,13 +4,12 @@ const mongoose = require('mongoose');
 const createExhibition = async (req, res, next) => {
   try {
     const { name, description, date } = req.body;
-
+    
     const newExhibition = new Exhibition({
       name,
       description,
       date
     });
-
     const savedExhibition = await newExhibition.save();
 
     res.status(201).json(savedExhibition);

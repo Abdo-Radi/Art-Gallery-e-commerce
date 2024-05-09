@@ -82,7 +82,7 @@ const searchArtists = async (req, res) => {
   }
 };
 
-const updateArtist = async (req, res) => {
+const updateArtist = async (req, res,next) => {
   const id = req.params.id;
   const { firstName, lastName, email, bio, active, password } = req.body;
 
