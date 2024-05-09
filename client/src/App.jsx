@@ -1,10 +1,8 @@
-import AdminRoutes from "./routes/AdminRoutes"
-import Admin from "./pages/admin/Admin"
-import CustomerPage from "./pages/admin/Customer"
+import ConfigRoutes from "./routes"
 
 const App = () => {
   return (
-    <AdminRoutes />
+    <ConfigRoutes />
   )
 }
 

@@ -32,6 +32,9 @@ const Artist = () => {
   const showAddForm = () => {
     setAddForm(true);
   };
+  const showAddForm = () => {
+    setAddForm(true);
+  };
 
   const hideAddForm = () => {
     setAddForm(false);
@@ -176,5 +179,7 @@ const Artist = () => {
     </div>
   );
 };
+
+export default Artist;
 
 export default Artist;
