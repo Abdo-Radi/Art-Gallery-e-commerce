@@ -11,6 +11,8 @@ export const getArtworks = createAsyncThunk("artwork/getArtworks", async (_, { r
 })
 
 export const addArtwork = createAsyncThunk("artwork/addArtwork", async (body, { rejectWithValue }) => {
+    console.log(body)
+    console.log(typeof body.price)
     return axiosInstance.post("/artworks", body)
         .then((res) => {
             return res.data

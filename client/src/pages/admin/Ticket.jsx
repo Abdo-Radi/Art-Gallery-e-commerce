@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import {
   fetchTickets,
   deleteTicket,
@@ -12,47 +13,58 @@ const TicketPage = () => {
   const dispatch = useDispatch();
   const { tickets, isLoading, error } = useSelector((state) => state.ticket);
 
-  const [limit, setLimit] = useState(5); // Items per page
-  const [currPage, setCurrPage] = useState(0); // Current page
-  const totalPages = Math.ceil(tickets.length / limit); // Total number of pages
+  const [limit, setLimit] = useState(5);
+  const [currPage, setCurrPage] = useState(0);
+  const totalPages = Math.ceil(tickets.length / limit);
   const paginatedTickets = tickets.slice(
     currPage * limit,
     (currPage + 1) * limit
-  ); // Tickets for the current page
+  );
 
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false); // State to show/hide the edit form
-  const [editedTicket, setEditedTicket] = useState(null); // State to hold the ticket being edited
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editedTicket, setEditedTicket] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchTickets()); // Fetch tickets on component mount
+    dispatch(fetchTickets());
   }, [dispatch]);
 
-  const handleDelete = (ticketId) => {
-    dispatch(deleteTicket(ticketId)); // Delete the ticket by ID
-    dispatch(fetchTickets()); // Refresh the tickets after deletion
+  const handleDelete = async (ticketId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone. Do you want to proceed?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
+    });
+
+    if (result.isConfirmed) {
+      dispatch(deleteTicket(ticketId)); // Delete the ticket by ID
+      Swal.fire("Deleted!", "The ticket has been deleted.", "success"); // Show success message
+      dispatch(fetchTickets()); // Refresh the tickets after deletion
+    }
   };
 
   const handleEdit = (ticket) => {
-    setEditedTicket(ticket); // Set the ticket to be edited
-    setShowEditForm(true); // Show the edit form
+    setEditedTicket(ticket);
+    setShowEditForm(true);
   };
 
   const cancelEdit = () => {
-    setShowEditForm(false); // Hide the edit form
-    setEditedTicket(null); // Clear the edited ticket
+    setShowEditForm(false);
+    setEditedTicket(null);
   };
 
   const updateTicket = (updatedTicketData) => {
     dispatch(
       editTicket({ ticketId: editedTicket._id, ticketData: updatedTicketData })
-    ); // Update the ticket
-    setShowEditForm(false); // Hide the edit form after update
-    setEditedTicket(null); // Clear the edited ticket
-    dispatch(fetchTickets()); // Refresh the tickets after update
+    );
+    setShowEditForm(false);
+    setEditedTicket(null);
+    dispatch(fetchTickets());
   };
 
-  // Change page when a pagination button is clicked
   const handlePageChange = (page) => {
     setCurrPage(page);
   };
@@ -61,7 +73,7 @@ const TicketPage = () => {
     <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-title-lg font-semibold text-black dark:text-white">
+          <h2 className="text-title-lg font-semibold text-black dark/text-white">
             Tickets
           </h2>
           <button
@@ -81,7 +93,7 @@ const TicketPage = () => {
             <div className="overflow-x-auto">
               <table className="w-full table-auto">
                 <thead>
-                  <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                  <tr className="bg-gray-2 text-left dark/bg-meta-4">
                     <th className="p-4 font-medium text-black dark/text-white">
                       Ticket ID
                     </th>
@@ -117,10 +129,10 @@ const TicketPage = () => {
                       <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
                         <div className="flex items-center text-lg gap-2.5">
                           <button onClick={() => handleEdit(ticket)}>
-                            <i className="ri-edit-box-line hover/text-primary"></i>
+                            <i className="ri-edit-box-line hover-text-primary"></i>
                           </button>
                           <button onClick={() => handleDelete(ticket._id)}>
-                            <i className="ri-delete-bin-6-line hover/text-primary"></i>
+                            <i className="ri-delete-bin-6-line hover-text-primary"></i>
                           </button>
                         </div>
                       </td>

@@ -21,7 +21,7 @@ const recordPayment = async (req, res, next) => {
 
 const getPayments = async (req, res, next) => {
   try {
-    const limit = 10;
+    const limit = 20;
     const page = parseInt(req.query.page) || 1;
     const skipCount = (page - 1) * limit;
 

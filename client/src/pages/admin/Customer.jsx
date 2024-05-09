@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import { deleteCustomer, getCustomers } from "../../redux/features/customer";
 import AddCustomer from "../../components/admin/Customer/AddCustomer";
 import EditCustomer from "../../components/admin/Customer/EditCustomer";
@@ -10,24 +11,22 @@ const CustomerPage = () => {
 
   const [limit, setLimit] = useState(5);
   const [currPage, setCurrPage] = useState(0);
-  const [search, setSearch] = useState(""); // New state for search
+  const [search, setSearch] = useState("");
 
   const totalPages = Math.ceil(customers.length / limit);
 
-  // Update the search field
+  // Function to handle search input
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
     setCurrPage(0); // Reset to the first page when searching
   };
 
-  // Filter customers based on the search keyword
+  // Filter customers based on search keyword
   const filteredCustomers = customers.filter((customer) =>
-    `${customer.firstName} ${customer.lastName}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
+    `${customer.firstName} ${customer.lastName}`.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Calculate paginated customers based on the filtered list
+  // Calculate paginated customers based on filtered results
   const paginatedCustomers = filteredCustomers.slice(
     currPage * limit,
     (currPage + 1) * limit
@@ -47,8 +46,20 @@ const CustomerPage = () => {
 
   const hideEditForm = () => setEditForm(false);
 
-  const handleDelete = (id) => {
-    dispatch(deleteCustomer(id));
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone. Do you want to proceed?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
+    });
+
+    if (result.isConfirmed) {
+      dispatch(deleteCustomer(id));
+      Swal.fire("Deleted!", "The customer has been deleted.", "success");
+    }
   };
 
   useEffect(() => {
@@ -66,20 +77,23 @@ const CustomerPage = () => {
           <h2 className="text-title-lg font-semibold text-black dark:text-white">
             Customers
           </h2>
-          <input
-            type="text"
-            placeholder="Search customers"
-            value={search}
-            onChange={handleSearchChange}
-            className="border py-2 px-4 text-black dark:text-white"
-          />
-          <button
-            onClick={showAddForm}
-            className="bg-primary py-2 px-6 text-white"
-          >
-            Add Customer
-          </button>
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="Search customers"
+              value={search}
+              onChange={handleSearchChange}
+              className="border py-2 px-4 text-black dark:text-white"
+            />
+            <button
+              onClick={showAddForm}
+              className="bg-primary py-2 px-6 text-white"
+            >
+              Add Customer
+            </button>
+          </div>
         </div>
+
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
@@ -87,13 +101,13 @@ const CustomerPage = () => {
                 <th className="p-4 font-medium text-black dark:text-white">
                   Name
                 </th>
-                <th class="p-4 font-medium text-black dark:text-white">
+                <th className="p-4 font-medium text-black dark:text-white">
                   Username
                 </th>
-                <th class="p-4 font-medium text-black dark:text-white">
+                <th className="p-4 font-medium text-black dark:text-white">
                   Email
                 </th>
-                <th class="p-4 font-medium text-black dark:text-white">
+                <th className="p-4 font-medium text-black dark:text-white">
                   Actions
                 </th>
               </tr>
@@ -113,10 +127,10 @@ const CustomerPage = () => {
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center text-lg gap-2.5">
                       <button onClick={() => showEditForm(customer)}>
-                        <i className="ri-edit-box-line hover:text-primary"></i>
+                        <i className="ri-edit-box-line hover-text-primary"></i>
                       </button>
                       <button onClick={() => handleDelete(customer._id)}>
-                        <i className="ri-delete-bin-6-line hover:text-primary"></i>
+                        <i className="ri-delete-bin-6-line hover-text-primary"></i>
                       </button>
                     </div>
                   </td>
@@ -125,6 +139,7 @@ const CustomerPage = () => {
             </tbody>
           </table>
         </div>
+
         {totalPages > 1 && (
           <div className="mt-4 flex justify-center space-x-4">
             {Array.from({ length: totalPages }, (_, i) => (
@@ -140,17 +155,19 @@ const CustomerPage = () => {
             ))}
           </div>
         )}
+
+        {addForm && (
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+            <AddCustomer onCancel={hideAddForm} />
+          </div>
+        )}
+
+        {editForm && (
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+            <EditCustomer customer={editedCustomer} onCancel={hideEditForm} />
+          </div>
+        )}
       </div>
-      {addForm && (
-        <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-          <AddCustomer onCancel={hideAddForm} />
-        </div>
-      )}
-      {editForm && (
-        <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-          <EditCustomer customer={editedCustomer} onCancel={hideEditForm} />
-        </div>
-      )}
     </div>
   );
 };

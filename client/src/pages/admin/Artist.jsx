@@ -3,17 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteArtist, getArtists } from "../../redux/features/artist";
 import AddArtist from "../../components/admin/Artist/AddArtist";
 import EditArtist from "../../components/admin/Artist/EditArtist";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 const Artist = () => {
   const { artists } = useSelector((state) => state.artist);
   const dispatch = useDispatch();
 
-  // Pagination and search state
-  const [limit, setLimit] = useState(5); // Limit of artists per page
-  const [currPage, setCurrPage] = useState(0); // Current page
-  const [search, setSearch] = useState(""); // Search input
+  const [limit, setLimit] = useState(5);
+  const [currPage, setCurrPage] = useState(0);
+  const [search, setSearch] = useState("");
 
-  // Derived data for pagination and search
   const filteredArtists = artists.filter((artist) =>
     `${artist.firstName} ${artist.lastName}`
       .toLowerCase()
@@ -47,8 +46,20 @@ const Artist = () => {
     setEditForm(false);
   };
 
-  const handleDelete = (id) => {
-    dispatch(deleteArtist(id));
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
+    });
+
+    if (result.isConfirmed) {
+      dispatch(deleteArtist(id));
+      Swal.fire("Deleted!", "The artist has been deleted.", "success");
+    }
   };
 
   useEffect(() => {
@@ -61,7 +72,7 @@ const Artist = () => {
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
-    setCurrPage(0); // Reset to the first page when searching
+    setCurrPage(0);
   };
 
   return (
@@ -71,19 +82,21 @@ const Artist = () => {
           <h2 className="text-title-lg font-semibold text-black dark:text-white">
             Artists
           </h2>
-          <input
-            type="text"
-            placeholder="Search artists"
-            value={search}
-            onChange={handleSearchChange}
-            className="border py-2 px-4 text-black dark:text-white"
-          />
-          <button
-            onClick={showAddForm}
-            className="bg-primary py-2 px-6 text-white"
-          >
-            Add Artist
-          </button>
+          <div className="flex items-center gap-4">
+            <input
+              type="text"
+              placeholder="Search artists"
+              value={search}
+              onChange={handleSearchChange}
+              className="border py-2 px-4 text-black dark:text-white"
+            />
+            <button
+              onClick={showAddForm}
+              className="bg-primary py-2 px-6 text-white"
+            >
+              Add Artist
+            </button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">

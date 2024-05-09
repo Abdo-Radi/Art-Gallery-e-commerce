@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2"; // Import SweetAlert2
 import {
   getExhibitions,
   deleteExhibition,
@@ -34,30 +35,29 @@ const Exhibition = () => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [editedExhibition, setEditedExhibition] = useState(null);
 
-  const handleDelete = (id) => {
-    dispatch(deleteExhibition(id)).then(() => {
-      dispatch(getExhibitions());
+  const handleDelete = async (id) => {
+    // SweetAlert2 confirmation dialog
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone. Do you want to proceed?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
     });
-  };
 
-  const handleExhibitionCreated = () => {
-    dispatch(getExhibitions());
-    setShowAddForm(false); // Close the form after creating
+    if (result.isConfirmed) {
+      dispatch(deleteExhibition(id)).then(() => {
+        dispatch(getExhibitions()); // Reload exhibitions after deletion
+      });
+      Swal.fire("Deleted!", "The exhibition has been deleted.", "success");
+    }
   };
 
   const handleEdit = (exhibition) => {
     setEditedExhibition(exhibition);
     setShowEditForm(true);
   };
-
-  const handleExhibitionEdited = () => {
-    dispatch(getExhibitions());
-    setShowEditForm(false); // Close the form after editing
-  };
-
-  useEffect(() => {
-    dispatch(getExhibitions());
-  }, [dispatch]);
 
   const handlePageChange = (page) => {
     setCurrPage(page);
@@ -68,6 +68,10 @@ const Exhibition = () => {
     setCurrPage(0); // Reset to the first page when searching
   };
 
+  useEffect(() => {
+    dispatch(getExhibitions());
+  }, [dispatch]);
+
   return (
     <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full">
@@ -76,14 +80,12 @@ const Exhibition = () => {
             Exhibitions
           </h2>
           <div className="flex items-center gap-3">
-            {" "}
-            {/* Align with consistent spacing */}
             <input
               type="text"
               placeholder="Search exhibitions..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="border py-2 px-4 text-black dark:text-white mr-80"
+              className="border py-2 px-4 text-black dark:text-white"
             />
             <button
               onClick={() => setShowAddForm(true)}
@@ -109,10 +111,10 @@ const Exhibition = () => {
                   <th className="p-4 font-medium text-black dark:text-white">
                     Description
                   </th>
-                  <th className="p-4 font-medium text-black dark:text-white">
+                  <th class="p-4 font-medium text-black dark:text-white">
                     Date
                   </th>
-                  <th className="p-4 font-medium text-black dark:text-white">
+                  <th class="p-4 font-medium text-black dark:text-white">
                     Actions
                   </th>
                 </tr>
@@ -130,7 +132,7 @@ const Exhibition = () => {
                       {new Date(exhibition.date).toDateString()}
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <div className="flex items-center gap-2.5 text-lg">
+                      <div className="flex items-center text-lg gap-2.5">
                         <button onClick={() => handleEdit(exhibition)}>
                           <i className="ri-edit-box-line hover-text-primary"></i>
                         </button>

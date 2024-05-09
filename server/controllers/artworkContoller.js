@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 
 const createArtwork = async (req, res, next) => {
   try {
-    const { artist, category, title, description, price } = req.body;
-    const image = req.file.filename;
+    const { artist, category, title, description, price ,image} = req.body;
 
     const newArtwork = new Artwork({
       artist,
@@ -14,7 +13,6 @@ const createArtwork = async (req, res, next) => {
       price,
       image
     });
-
     let savedArtwork = await newArtwork.save();
 
     const dataToSend = await Artwork.findById(savedArtwork._id)
@@ -29,7 +27,7 @@ const createArtwork = async (req, res, next) => {
 
 const getArtworks = async (req, res, next) => {
   try {
-    const limit = 10;
+    const limit = 20;
     const page = parseInt(req.query.page) || 1;
     const skipCount = (page - 1) * limit;
 
