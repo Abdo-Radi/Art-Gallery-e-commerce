@@ -7,7 +7,7 @@ const ArtworkViewPopup = ({ artwork, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black bg-opacity-70">
-      <div className="bg-white w-96 p-6 rounded-lg shadow-lg relative">
+      <div className="bg-white w-96 p-6 shadow-lg relative">
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"

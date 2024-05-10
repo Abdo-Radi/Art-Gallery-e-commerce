@@ -11,6 +11,7 @@ import Order from "../pages/admin/Order";
 import Ticket from "../pages/admin/Ticket";
 import Admin from "../pages/admin/Admin";
 import CustomerPage from "../pages/admin/Customer";
+import Profile from "../pages/admin/AdminProfile"
 const AdminRoutes = () => {
 
     return (
@@ -27,6 +28,7 @@ const AdminRoutes = () => {
             <Route path="tickets" element={<Ticket />} />
             <Route path="admins" element={<Admin />} />
             <Route path="customers" element={<CustomerPage />} />
+            <Route path="profile" element={<Profile />} />
           </Route>
         </Route>
       </Routes>

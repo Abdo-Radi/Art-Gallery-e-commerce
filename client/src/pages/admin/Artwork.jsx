@@ -9,7 +9,7 @@ import ArtworkViewPopup from "../../components/admin/Artwork/ArtworkView"; // Im
 const Artwork = () => {
   const { artworks } = useSelector((state) => state.artwork);
   const dispatch = useDispatch();
-
+  const [limit, setLimit] = useState(5);
   const [selectedArtwork, setSelectedArtwork] = useState(null); // For managing which artwork to view
   const [isViewPopupVisible, setIsViewPopupVisible] = useState(false); // Popup visibility state
   const [currPage, setCurrPage] = useState(0);
@@ -18,8 +18,11 @@ const Artwork = () => {
   const [editedArtwork, setEditedArtwork] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const totalPages = Math.ceil(artworks.length / 10);
-  const paginatedArtworks = artworks.slice(currPage * 10, (currPage + 1) * 10);
+  const totalPages = Math.ceil(artworks.length / limit);
+  const paginatedArtworks = artworks.slice(
+    currPage * limit,
+    (currPage + 1) * limit
+  );
 
   const showAddForm = () => setAddForm(true);
   const hideAddForm = () => setAddForm(false);
