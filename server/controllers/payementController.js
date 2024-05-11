@@ -1,31 +1,27 @@
-const Payment = require("../models/payment");
-const mongoose = require("mongoose");
+const Payment = require('../models/payment');
+const mongoose = require('mongoose');
 
-// Record a new payment for an order
-const recordPayment = async (req, res) => {
+const recordPayment = async (req, res, next) => {
   try {
     const { orderId, amount, date } = req.body;
 
-    // Create a new Payment instance
     const newPayment = new Payment({
       orderId,
       amount,
-      date,
+      date
     });
 
-    // Save the new Payment to the database
     const savedPayment = await newPayment.save();
 
     res.status(201).json(savedPayment);
   } catch (error) {
-    console.error("Error recording Payment:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
 
 const getPayments = async (req, res, next) => {
   try {
-    const limit = 10;
+    const limit = 20;
     const page = parseInt(req.query.page) || 1;
     const skipCount = (page - 1) * limit;
 
@@ -37,68 +33,50 @@ const getPayments = async (req, res, next) => {
     }
 
     res.status(200).json({
-      status: 200,
       data: payments,
       totalPages: Math.ceil(totalPaymentsCount / limit),
-      currentPage: page,
+      currentPage: page
     });
   } catch (error) {
     next(error);
   }
 };
 
-
-// Get a payment by ID
-const getPaymentById = async (req, res) => {
+const getPaymentById = async (req, res, next) => {
   try {
     const paymentId = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(paymentId)) {
-      return res.status(400).json({
-        status: 400,
-        message: "Invalid payment ID",
-      });
+      return res.status(400).json({ message: "Invalid payment ID" });
     }
 
     const payment = await Payment.findById(paymentId);
 
     if (!payment) {
-      return res.status(404).json({
-        status: 404,
-        message: "Payment not found",
-      });
+      return res.status(404).json({ message: "Payment not found" });
     }
 
     res.status(200).json(payment);
   } catch (error) {
-    console.error("Error getting Payment by ID:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
 
-// Update a payment's details
-const updatePayment = async (req, res) => {
+const updatePayment = async (req, res, next) => {
   try {
     const paymentId = req.params.id;
     const { orderId, amount, date } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(paymentId)) {
-      return res.status(400).json({
-        status: 400,
-        message: "Invalid payment ID",
-      });
+      return res.status(400).json({ message: "Invalid payment ID" });
     }
 
     const payment = await Payment.findById(paymentId);
 
     if (!payment) {
-      return res.status(404).json({
-        status: 404,
-        message: "Payment not found",
-      });
+      return res.status(404).json({ message: "Payment not found" });
     }
 
-    // Update the payment data
     if (orderId !== undefined) {
       payment.orderId = orderId;
     }
@@ -111,22 +89,18 @@ const updatePayment = async (req, res) => {
       payment.date = date;
     }
 
-    // Save the updated payment to the database
     const updatedPayment = await payment.save();
 
     res.status(200).json(updatedPayment);
   } catch (error) {
-    console.error("Error updating Payment:", error);
-    res.status(500).json({ status: 500, message: "Internal server Error" });
+    next(error);
   }
 };
 
-// Delete a payment by ID
-const deletePaymentById = async (req, res) => {
+const deletePaymentById = async (req, res, next) => {
   const paymentId = req.params.id;
 
   try {
-    // Delete the payment by ID
     const deletedPayment = await Payment.findByIdAndDelete(paymentId);
 
     if (!deletedPayment) {
@@ -135,9 +109,7 @@ const deletePaymentById = async (req, res) => {
 
     return res.status(200).json({ message: "Payment deleted successfully." });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error deleting payment", error: error.message });
+    next(error);
   }
 };
 
@@ -146,5 +118,5 @@ module.exports = {
   getPayments,
   getPaymentById,
   updatePayment,
-  deletePaymentById,
+  deletePaymentById
 };

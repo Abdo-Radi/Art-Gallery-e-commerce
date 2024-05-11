@@ -1,14 +1,8 @@
 const jwt = require('jsonwebtoken');
-
 const { hash, validatePassword } = require('../utils/passwordUtils');
 const Admin = require('../models/Admin');
 const Artist = require('../models/Artist');
 const Customer = require('../models/Customer');
-
-const cookieOptions = {
-    maxAge: 86400 * 1000,
-    httpOnly: true,
-};
 
 const getModel = (type) => {
     switch (type) {
@@ -23,6 +17,7 @@ const getModel = (type) => {
 
 const registerHandler = async (req, res, next) => {
     const { accountType, password } = req.body;
+
     try {
         const hashedPassword = await hash(password);
         const Model = getModel(accountType);
@@ -32,14 +27,10 @@ const registerHandler = async (req, res, next) => {
             password: hashedPassword
         });
 
-        return res.status(200).json({
-            message: "User created successfully"
-        });
+        return res.status(201).json({ message: "User created successfully" });
     } catch (error) {
         if (error.code === 11000) {
-            return res.status(409).json({
-                message: "User already exists"
-            });
+            return res.status(409).json({ message: "User already exists" });
         }
         next(error);
     }
@@ -48,27 +39,20 @@ const registerHandler = async (req, res, next) => {
 
 const loginHandler = async (req, res, next) => {
     const { accountType, identifier, password } = req.body;
-
+            
     try {
         const Model = getModel(accountType);
         const user = await Model.findOne({
             $or: [{ username: identifier }, { email: identifier }]
         });
-
         if (user && await validatePassword(password, user.password)) {
             const token = jwt.sign({ userId: user._id, accountType: accountType }, process.env.JWT_SECRET, { expiresIn: '1d' });
-            res.cookie('token', token, cookieOptions);
-            res.cookie('loggedIn', true, {
-                ...cookieOptions,
-                httpOnly: false,
-            });
             return res.status(200).json({
-                message: "Login successful"
+                message: "Login successful",
+                token: token
             });
         } else {
-            return res.status(401).json({
-                message: "Invalid username or email or password"
-            });
+            return res.status(401).json({ message: "Invalid identifier or password" });
         }
     } catch (error) {
         next(error);
@@ -80,9 +64,7 @@ const logoutHandler = (req, res, next) => {
         res.cookie('token', '', { maxAge: 1 });
         res.cookie('loggedIn', '', { maxAge: 1 });
 
-        return res.status(200).json({
-            message: "You logged out successfully"
-        })
+        return res.status(200).json({ message: "You logged out successfully" })
     } catch (error) {
         next(error);
     }

@@ -4,7 +4,7 @@ const ticketSchema = new mongoose.Schema({
     exhibitionId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: "Exhibition"
+        ref: 'Exhibition'
     },
     price: {
         type: Number,
@@ -16,4 +16,4 @@ const ticketSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("Ticket", ticketSchema);
+module.exports = mongoose.model('Ticket', ticketSchema);

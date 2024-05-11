@@ -4,7 +4,7 @@ const orderSchema = new mongoose.Schema({
     customerId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: "Customer"
+        ref: 'Customer'
     },
     items: {
         type: Array,
@@ -12,7 +12,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Open", "Paid", "Closed", "Canceled"],
+        enum: ['Open', 'Paid', 'Closed', 'Canceled'],
         required: true
     },
     totalAmount: {
@@ -26,4 +26,4 @@ const orderSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("Order", orderSchema);;
+module.exports = mongoose.model('Order', orderSchema);;

@@ -1,13 +1,30 @@
 const Customer = require('../models/Customer');
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const { hash } = require('../utils/passwordUtils');
 
-
+const addCustomer = async (req, res, next) => {
+    const { firstName, lastName, email, username, password } = req.body;
+  
+    try {
+      const hashedPassword = await hash(password);
+  
+      const newCustomer = await Customer.create({
+        firstName,
+        lastName,
+        email,
+        username,
+        password: hashedPassword
+      });
+  
+      res.status(201).json(newCustomer);
+    } catch (error) {
+      next(error);
+    }
+  };
 
 const getCustomers = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1; 
-        const limit = parseInt(req.query.limit) || 10; 
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
         const skip = (page - 1) * limit;
 
         const totalCustomers = await Customer.countDocuments();
@@ -18,12 +35,12 @@ const getCustomers = async (req, res) => {
             .limit(limit);
 
         res.status(200).json({
-            customers,
-            totalPages,
+            data: customers,
+            totalPages: totalPages,
             currentPage: page
         });
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error', error: error.message });
+        next(error);
     }
 };
 
@@ -72,4 +89,4 @@ const deleteCustomer = async (req, res) => {
     }
 };
 
-module.exports = {  getCustomers, getCustomerById, searchCustomer, updateCustomer, deleteCustomer };
+module.exports = { addCustomer, getCustomers, getCustomerById, searchCustomer, updateCustomer, deleteCustomer };

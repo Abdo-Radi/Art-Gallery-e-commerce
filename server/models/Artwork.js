@@ -1,15 +1,15 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const artworkSchema = new mongoose.Schema({
-  artistId: {
+  artist: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "Artist",
+    ref: 'Artist',
   },
-  categoryId: {
+  category: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "Category",
+    ref: 'Category',
   },
   title: {
     type: String,
@@ -23,10 +23,10 @@ const artworkSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  images: {
-    type: Array,
+  image: {
+    type: String,
     required: true,
   },
 });
 
-module.exports = mongoose.model("Artwork", artworkSchema);
+module.exports = mongoose.model('Artwork', artworkSchema);
