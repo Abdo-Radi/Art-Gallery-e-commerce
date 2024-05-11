@@ -1,7 +1,12 @@
-import Header from "../../components/customer/Header"
+import Header from "../../components/customer/Header";
+import Hero from "../../components/customer/Hero";
 
 const Home = () => {
-    return null
-}
+  return (
+    <main>
+      <Hero />
+    </main>
+  );
+};
 
-export default Home
+export default Home;
