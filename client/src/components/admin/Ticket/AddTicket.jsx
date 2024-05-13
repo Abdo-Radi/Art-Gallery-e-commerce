@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { createTicket } from "../../../redux/features/ticket";
+import { createTicket } from "../../../redux/slices/ticket";
 
 const AddTicket = ({ onCancel }) => {
   const [formData, setFormData] = useState({

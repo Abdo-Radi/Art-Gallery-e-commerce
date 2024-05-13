@@ -1,25 +1,17 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2";
 import {
   deleteCategory,
   getCategories,
   editCategory,
-} from "../../redux/features/category";
+} from "../../redux/slices/category";
 import AddCategory from "../../components/admin/Category/AddCategory";
 import EditCategory from "../../components/admin/Category/EditCategory";
 
 const Category = () => {
   const { categories } = useSelector((state) => state.category);
   const dispatch = useDispatch();
-
-  const [limit, setLimit] = useState(5);
-  const [currPage, setCurrPage] = useState(0);
-  const totalPages = Math.ceil(categories.length / limit);
-  const paginatedCategories = categories.slice(
-    currPage * limit,
-    (currPage + 1) * limit
-  );
 
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
@@ -75,7 +67,7 @@ const Category = () => {
           </h2>
           <button
             onClick={showAddForm}
-            className="bg-primary py-2 px-6 text-white"
+            className="w-40 bg-primary py-2 px-6 text-white"
           >
             Add Category
           </button>
@@ -97,7 +89,7 @@ const Category = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedCategories.map((category, key) => (
+              {categories.map((category, key) => (
                 <tr key={key}>
                   <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
                     {category.name}
@@ -121,30 +113,14 @@ const Category = () => {
           </table>
         </div>
 
-        {totalPages > 1 && (
-          <div className="mt-4 flex justify-center space-x-4">
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => handlePageChange(i)}
-                className={`px-3 py-1 ${
-                  currPage === i ? "bg-primary text-white" : "bg-gray-200"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-        )}
-
         {addForm && (
-          <div className="w-full h/full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
             <AddCategory onCancel={hideAddForm} />
           </div>
         )}
 
         {editForm && (
-          <div className="w-full h/full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
             <EditCategory category={editedCategory} onCancel={hideEditForm} />
           </div>
         )}

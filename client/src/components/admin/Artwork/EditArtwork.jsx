@@ -3,9 +3,9 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getArtists } from "../../../redux/features/artist"
-import { getCategories } from "../../../redux/features/category"
-import { editArtwork } from "../../../redux/features/artwork"
+import { getArtists } from "../../../redux/slices/artist"
+import { getCategories } from "../../../redux/slices/category"
+import { editArtwork } from "../../../redux/slices/artwork"
 
 const EditArtwork = ({ artwork, onCancel }) => {
     const { title, artist, category, price, description } = artwork

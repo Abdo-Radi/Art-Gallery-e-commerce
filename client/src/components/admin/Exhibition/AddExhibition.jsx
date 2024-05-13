@@ -2,7 +2,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { addExhibition } from "../../../redux/features/exhibition"; // Import the addExhibition action
+import { addExhibition } from "../../../redux/slices/exhibition"; // Import the addExhibition action
 import { useDispatch } from "react-redux";
 
 const AddExhibition = ({ onCancel }) => {

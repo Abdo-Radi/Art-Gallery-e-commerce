@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2"; // Import SweetAlert2
-import { deleteAdmin, getAdmins } from "../../redux/features/admin"; // Ensure these actions are correct
+import { deleteAdmin, getAdmins } from "../../redux/slices/admin"; // Ensure these actions are correct
 import AddAdmin from "../../components/admin/Admin/AddAdmin";
 import EditAdmin from "../../components/admin/Admin/EditAdmin";
 
@@ -20,7 +20,10 @@ const AdminPage = () => {
 
   // Derived data for pagination
   const totalPages = Math.ceil(admins?.length / limit); // Total number of pages
-  const paginatedAdmins = admins?.slice(currPage * limit, (currPage + 1) * limit); // Data for the current page
+  const paginatedAdmins = admins?.slice(
+    currPage * limit,
+    (currPage + 1) * limit
+  ); // Data for the current page
 
   // State for managing forms
   const [addForm, setAddForm] = useState(false);
@@ -70,7 +73,7 @@ const AdminPage = () => {
           </h2>
           <button
             onClick={showAddForm}
-            className="bg-primary py-2 px-6 text-white"
+            className="w-40 bg-primary py-2 px-6 text-white"
           >
             Add Admin
           </button>
@@ -80,10 +83,18 @@ const AdminPage = () => {
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-gray-2 text-left dark/bg-meta-4">
-                <th className="p-4 font-medium text-black dark/text-white">Name</th>
-                <th className="p-4 font-medium text-black dark/text-white">Username</th>
-                <th className="p-4 font-medium text-black dark/text-white">Email</th>
-                <th className="p-4 font-medium text-black dark/text-white">Actions</th>
+                <th className="p-4 font-medium text-black dark/text-white">
+                  Name
+                </th>
+                <th className="p-4 font-medium text-black dark/text-white">
+                  Username
+                </th>
+                <th className="p-4 font-medium text-black dark/text-white">
+                  Email
+                </th>
+                <th className="p-4 font-medium text-black dark/text-white">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -118,11 +129,11 @@ const AdminPage = () => {
           <div className="mt-4 flex justify-center space-x-4">
             {Array.from({ length: totalPages }, (_, i) => (
               <button
-                    key={i}
-                    onClick={() => handlePageChange(i)}
-                    className={`px-3 py-1 ${
-                      currPage === i ? "bg-primary text-white" : "bg-gray-200"
-                    }`}
+                key={i}
+                onClick={() => handlePageChange(i)}
+                className={`px-3 py-1 ${
+                  currPage === i ? "bg-primary text-white" : "bg-gray-200"
+                }`}
               >
                 {i + 1}
               </button>

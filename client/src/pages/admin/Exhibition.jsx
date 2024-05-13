@@ -4,7 +4,7 @@ import Swal from "sweetalert2"; // Import SweetAlert2
 import {
   getExhibitions,
   deleteExhibition,
-} from "../../redux/features/exhibition";
+} from "../../redux/slices/exhibition";
 import AddExhibition from "../../components/admin/Exhibition/AddExhibition";
 import EditExhibition from "../../components/admin/Exhibition/EditExhibition";
 

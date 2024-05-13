@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { editCategory, getCategories } from "../../../redux/features/category";
+import { editCategory, getCategories } from "../../../redux/slices/category";
 
 const EditCategory = ({ category, onCancel }) => {
   const { name, description } = category;

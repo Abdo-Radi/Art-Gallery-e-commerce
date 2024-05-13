@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import axiosInstance from "../api/axiosInstance"
 import { useEffect } from "react"
 import { Navigate, Outlet } from "react-router-dom"
-import { getUser } from "../redux/features/user"
+import { getUser } from "../redux/slices/user"
 
 const ProtectedA = () => {
     const { isLoading, loggedIn } = useSelector(state => state.user)

@@ -1,9 +1,10 @@
-const Artwork = require('../models/Artwork');
-const mongoose = require('mongoose');
+const { populate } = require("../models/Artist");
+const Artwork = require("../models/Artwork");
+const mongoose = require("mongoose");
 
 const createArtwork = async (req, res, next) => {
   try {
-    const { artist, category, title, description, price ,image} = req.body;
+    const { artist, category, title, description, price, image } = req.body;
 
     const newArtwork = new Artwork({
       artist,
@@ -11,13 +12,13 @@ const createArtwork = async (req, res, next) => {
       title,
       description,
       price,
-      image
+      image,
     });
     let savedArtwork = await newArtwork.save();
 
     const dataToSend = await Artwork.findById(savedArtwork._id)
-      .populate({ path: 'category', select: 'name' })
-      .populate({ path: 'artist', select: ['firstName', 'lastName'] });
+      .populate({ path: "category", select: "name" })
+      .populate({ path: "artist", select: ["firstName", "lastName"] });
 
     res.status(201).json(dataToSend);
   } catch (error) {
@@ -27,26 +28,28 @@ const createArtwork = async (req, res, next) => {
 
 const getArtworks = async (req, res, next) => {
   try {
-    const limit = 20;
-    const page = parseInt(req.query.page) || 1;
-    const skipCount = (page - 1) * limit;
+    const { search, page } = req.query;
+    const options = {
+      lean: true,
+      populate: ["artist", "category"],
+      page,
+    };
 
-    const totalArtworksCount = await Artwork.countDocuments();
+    const searchQuery = {
+      title: { $regex: new RegExp(search, "i") },
+    };
 
-    const artworks = await Artwork.find()
-      .populate({ path: 'category', select: 'name' })
-      .populate({ path: 'artist', select: ['firstName', 'lastName'] })
-      .skip(skipCount)
-      .limit(limit);
+    const artworks = await Artwork.paginate(searchQuery, options);
 
     if (artworks.length === 0) {
       return res.status(204).json({ message: "No artworks found" });
     }
 
+    const totalDocs = await Artwork.countDocuments();
+
     res.status(200).json({
-      data: artworks,
-      totalPages: Math.ceil(totalArtworksCount / limit),
-      currentPage: page
+      ...artworks,
+      totalDocs,
     });
   } catch (error) {
     next(error);
@@ -70,7 +73,6 @@ const getArtworkById = async (req, res) => {
     res.status(200).json(artwork);
   } catch (error) {
     next(error);
-
   }
 };
 
@@ -106,14 +108,13 @@ const updateArtwork = async (req, res, next) => {
       artwork[field] = updateFields[field];
     });
 
-    if (req.file)
-      artwork["image"] = req.file.filename
+    if (req.file) artwork["image"] = req.file.filename;
 
     let updateArtwork = await artwork.save();
 
     const dataToSend = await Artwork.findById(updateArtwork._id)
-      .populate({ path: 'category', select: 'name' })
-      .populate({ path: 'artist', select: ['firstName', 'lastName'] });
+      .populate({ path: "category", select: "name" })
+      .populate({ path: "artist", select: ["firstName", "lastName"] });
 
     res.status(200).json(dataToSend);
   } catch (error) {
@@ -143,5 +144,5 @@ module.exports = {
   getArtworkById,
   searchArtworks,
   updateArtwork,
-  deleteArtworkById
+  deleteArtworkById,
 };

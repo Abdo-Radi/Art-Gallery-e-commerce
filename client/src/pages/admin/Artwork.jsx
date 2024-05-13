@@ -1,40 +1,37 @@
 import { useDispatch, useSelector } from "react-redux";
-import { deleteArtwork, getArtworks } from "../../redux/features/artwork";
+import { deleteArtwork, getArtworks } from "../../redux/slices/artwork";
 import { useState, useEffect } from "react";
-import Swal from "sweetalert2"; // For confirmation dialog
+import Swal from "sweetalert2";
 import AddArtwork from "../../components/admin/Artwork/AddArtwork";
 import EditArtwork from "../../components/admin/Artwork/EditArtwork";
-import ArtworkViewPopup from "../../components/admin/Artwork/ArtworkView"; // Import the view popup
+import ArtworkViewPopup from "../../components/admin/Artwork/ArtworkView";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Artwork = () => {
-  const { artworks } = useSelector((state) => state.artwork);
   const dispatch = useDispatch();
-  const [limit, setLimit] = useState(5);
-  const [selectedArtwork, setSelectedArtwork] = useState(null); // For managing which artwork to view
-  const [isViewPopupVisible, setIsViewPopupVisible] = useState(false); // Popup visibility state
-  const [currPage, setCurrPage] = useState(0);
+  const navigate = useNavigate();
+
+  const { list, pages, reset } = useSelector((state) => state.artworks);
+
+  const [selectedArtwork, setSelectedArtwork] = useState(null);
+  const [isViewPopupVisible, setIsViewPopupVisible] = useState(false);
+
+  const [searchParams] = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
   const [editedArtwork, setEditedArtwork] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const totalPages = Math.ceil(artworks.length / limit);
-  const paginatedArtworks = artworks.slice(
-    currPage * limit,
-    (currPage + 1) * limit
-  );
 
   const showAddForm = () => setAddForm(true);
   const hideAddForm = () => setAddForm(false);
 
-  const showEditForm = (artwork) => {
-    setEditedArtwork(artwork);
+  const showEditForm = (artist) => {
+    setEditedArtist(artist);
     setEditForm(true);
   };
 
-  const hideEditForm = () => setEditForm(false);
-
-  // Function to show the view popup
   const showViewPopup = (artwork) => {
     setSelectedArtwork(artwork);
     setIsViewPopupVisible(true);
@@ -61,13 +58,28 @@ const Artwork = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(getArtworks());
-  }, [dispatch]);
-
   const handlePageChange = (page) => {
-    setCurrPage(page);
+    setCurrentPage(page);
   };
+
+  const handleSearchChange = async (e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
+  useEffect(() => {
+    dispatch(getArtworks({ page: currentPage, search }));
+
+    const queryParams = new URLSearchParams();
+    if (search !== "") {
+      queryParams.set("search", search);
+    }
+
+    queryParams.set("page", currentPage);
+
+    const newUrl = `/admin/artworks?${queryParams.toString()}`;
+    navigate(newUrl);
+  }, [dispatch, currentPage, search, reset]);
 
   return (
     <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default">
@@ -76,20 +88,21 @@ const Artwork = () => {
           <h2 className="text-title-lg font-semibold text-black dark/text-white">
             Artworks
           </h2>
-
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border py-2 px-4 text-black dark:text-white"
-          />
-          <button
-            onClick={showAddForm}
-            className="bg-primary py-2 px-6 text-white"
-          >
-            Add Artwork
-          </button>
+          <div className="flex items-center gap-4">
+            <input
+              type="text"
+              placeholder="Search artists"
+              value={search}
+              onChange={handleSearchChange}
+              className="border border-stroke bg-transparent py-2 px-4 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter"
+            />
+            <button
+              onClick={showAddForm}
+              className="w-40 bg-primary py-2 text-white"
+            >
+              Add Artist
+            </button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -114,7 +127,7 @@ const Artwork = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedArtworks.map((artwork, key) => (
+              {list.map((artwork, key) => (
                 <tr key={key}>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {artwork.title}
@@ -139,7 +152,7 @@ const Artwork = () => {
                         <i className="ri-edit-box-line hover:text-primary"></i>
                       </button>
                       <button onClick={() => handleDelete(artwork._id)}>
-                        <i class="ri-delete-bin-6-line hover:text-primary"></i>
+                        <i className="ri-delete-bin-6-line hover:text-primary"></i>
                       </button>
                     </div>
                   </td>
@@ -149,41 +162,64 @@ const Artwork = () => {
           </table>
         </div>
 
-        {totalPages > 1 && (
-          <div className="mt-4 flex justify-center space-x-4">
-            {Array.from({ length: totalPages }, (_, i) => (
+        {pages > 1 && (
+          <div className="my-4 flex justify-center space-x-2">
+            <button
+              disabled={currentPage == 1}
+              onClick={() => {
+                setCurrentPage((prev) => prev - 1);
+              }}
+              className={`w-8 h-8 border border-stroke ${
+                currentPage == 1 && "text-stroke"
+              }`}
+            >
+              <i className="ri-arrow-left-double-line"></i>
+            </button>
+            {Array.from({ length: pages }, (_, i) => (
               <button
-                key={i}
-                onClick={() => handlePageChange(i)}
-                className={`px-3 py-1 ${
-                  currPage === i ? "bg-primary text-white" : "bg-gray-200"
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={`w-8 h-8 border border-stroke ${
+                  currentPage == i + 1
+                    ? "bg-primary text-white border-primary"
+                    : "bg-gray-200"
                 }`}
               >
                 {i + 1}
               </button>
             ))}
+            <button
+              disabled={currentPage == pages}
+              onClick={() => {
+                setCurrentPage((prev) => prev + 1);
+              }}
+              className={`w-8 h-8 border border-stroke ${
+                currentPage == pages && "text-stroke"
+              }`}
+            >
+              <i className="ri-arrow-right-double-line"></i>
+            </button>
           </div>
         )}
+
+        {addForm && (
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+            <AddArtwork onCancel={hideAddForm} />
+          </div>
+        )}
+
+        {editForm && (
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+            <EditArtwork artwork={editedArtwork} onCancel={hideEditForm} />
+          </div>
+        )}
+
+        {isViewPopupVisible && (
+          <ArtworkViewPopup artwork={selectedArtwork} onClose={hideViewPopup} />
+        )}
       </div>
-
-      {addForm && (
-        <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-          <AddArtwork onCancel={hideAddForm} />
-        </div>
-      )}
-
-      {editForm && (
-        <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-          <EditArtwork artwork={editedArtwork} onCancel={hideEditForm} />
-        </div>
-      )}
-
-      {isViewPopupVisible && (
-        <ArtworkViewPopup artwork={selectedArtwork} onClose={hideViewPopup} />
-      )}
     </div>
   );
 };
 
 export default Artwork;
-

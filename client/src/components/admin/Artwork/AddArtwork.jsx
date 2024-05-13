@@ -1,31 +1,29 @@
+import * as z from "zod";
+import axios from "axios";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { getArtists } from "../../../redux/features/artist";
-import { getCategories } from "../../../redux/features/category";
-import { addArtwork } from "../../../redux/features/artwork";
+import { getArtists } from "../../../redux/slices/artist";
+import { getCategories } from "../../../redux/slices/category";
+import { addArtwork } from "../../../redux/slices/artwork";
 
 const AddArtwork = ({ onCancel }) => {
-  const [imageUrl, setImageUrl] = useState(""); // Store the uploaded image URL
-  const { categories } = useSelector((state) => state.category);
-  const { artists } = useSelector((state) => state.artist);
   const dispatch = useDispatch();
 
-  // Fetch initial data
-  useEffect(() => {
-    dispatch(getArtists());
-    dispatch(getCategories());
-  }, [dispatch]);
+  const { categories } = useSelector((state) => state.category);
+  const { list: artists } = useSelector((state) => state.artists);
+
+  const [imageUrl, setImageUrl] = useState("");
+
+  const errorMessage = "Field cannot be empty";
 
   const schema = z.object({
-    title: z.string().nonempty("Title is required"),
-    artist: z.string().nonempty("Select an artist"),
-    category: z.string().nonempty("Select a category"),
-    price: z.string().nonempty("Price must be non-negative"),
-    description: z.string().nonempty("Description is required"),
+    title: z.string().nonempty(errorMessage),
+    artist: z.string().nonempty(errorMessage),
+    category: z.string().nonempty(errorMessage),
+    price: z.string().nonempty(errorMessage),
+    description: z.string().nonempty(errorMessage),
   });
 
   const {
@@ -36,14 +34,13 @@ const AddArtwork = ({ onCancel }) => {
     resolver: zodResolver(schema),
   });
 
-  // Image upload handler
   const uploadImage = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "bg6v1o5p"); // Adjust the preset if needed
+    formData.append("upload_preset", "bg6v1o5p");
 
     try {
       const response = await axios.post(
@@ -60,21 +57,23 @@ const AddArtwork = ({ onCancel }) => {
   };
 
   const onSubmit = (data) => {
-    // Add image to data
     const artworkData = {
       ...data,
       price: parseFloat(data.price),
-      image: imageUrl, // 
-  
+      image: imageUrl, //
     };
 
-
-    dispatch(addArtwork(artworkData)); // Dispatch the action to add artwork
-    onCancel(); // Close the form after submission
+    dispatch(addArtwork(artworkData));
+    onCancel();
   };
 
+  useEffect(() => {
+    dispatch(getArtists());
+    dispatch(getCategories());
+  }, [dispatch]);
+
   return (
-    <div className="overflow-y-auto h-5/6 mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="overflow-y-auto h-5/6 no-scrollbar mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="sticky top-0 bg-white flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark z-9999">
         <h3 className="font-medium text-black dark:text-white">Add Artwork</h3>
         <button onClick={onCancel}>

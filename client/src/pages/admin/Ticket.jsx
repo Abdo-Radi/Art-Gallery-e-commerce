@@ -5,7 +5,7 @@ import {
   fetchTickets,
   deleteTicket,
   editTicket,
-} from "../../redux/features/ticket";
+} from "../../redux/slices/ticket";
 import AddTicket from "../../components/admin/Ticket/AddTicket";
 import EditTicket from "../../components/admin/Ticket/EditTicket";
 
