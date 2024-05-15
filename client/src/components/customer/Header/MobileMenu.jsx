@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const MobileMenu = ({ menu, onClose }) => {
   return (
-    <div className="lg:hidden">
+    <div className="lg:hidden z-9999">
       <nav className="w-full h-screen fixed top-0 left-0 bg-white flex items-center justify-center">
         <ul className="flex font-medium flex-col space-y-4">
           {menu.map((navLink, key) => (
