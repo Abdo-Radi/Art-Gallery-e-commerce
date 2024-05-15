@@ -1,114 +1,98 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
-export const fetchTickets = createAsyncThunk(
+export const getTickets = createAsyncThunk(
   "tickets/getTickets",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.get("/tickets");
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || "Error fetching tickets");
-    }
+  async (page = 1, { rejectWithValue }) => {
+    return axiosInstance
+      .get(`/tickets?page=${page}`)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => rejectWithValue(err.response.data.message));
   }
 );
 
-export const createTicket = createAsyncThunk(
+export const addTicket = createAsyncThunk(
   "tickets/addTicket",
-  async (ticketData, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.post("/tickets", ticketData);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || "Error creating ticket");
-    }
+  async (body, { rejectWithValue }) => {
+    return axiosInstance
+      .post("/tickets", body)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => rejectWithValue(err.response.data.message));
   }
 );
 
 export const deleteTicket = createAsyncThunk(
   "tickets/deleteTicket",
-  async (ticketId, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.delete(`/tickets/${ticketId}`);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || "Error deleting ticket");
-    }
+  async (id, { rejectWithValue }) => {
+    return axiosInstance
+      .delete(`/tickets/${id}`)
+      .then((res) => {
+        return id;
+      })
+      .catch((err) => rejectWithValue(err.response.data.message));
   }
 );
 
 export const editTicket = createAsyncThunk(
   "tickets/editTicket",
   async ({ id, body }, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.put(`/tickets/${id}`, body);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || "Error editing ticket");
-    }
+    return axiosInstance
+      .put(`/tickets/${id}`, body)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => rejectWithValue(err.response.data.message));
   }
 );
 
 const initialState = {
-  tickets: [],
-  isLoading: false,
+  list: [],
+  total: 0,
+  pages: 0,
+  reset: false,
   error: null,
 };
 
 const ticketSlice = createSlice({
-  name: "ticket",
+  name: "tickets",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTickets.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+      .addCase(getTickets.fulfilled, (state, action) => {
+        state.list = action.payload.docs;
+        state.total = action.payload.totalDocs;
+        state.pages = action.payload.totalPages;
       })
-      .addCase(fetchTickets.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.tickets = action.payload.data;
+      .addCase(getTickets.rejected, (state, action) => {
+        state.error = action.payload;
       })
-      .addCase(fetchTickets.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload.message;
+
+      .addCase(addTicket.fulfilled, (state) => {
+        state.reset = !state.reset;
       })
-      .addCase(createTicket.pending, (state) => {
-        state.isLoading = true;
+      .addCase(addTicket.rejected, (state, action) => {
+        state.error = action.payload;
       })
-      .addCase(createTicket.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.tickets.push(action.payload);
-      })
-      .addCase(createTicket.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload.message;
-      })
-      .addCase(deleteTicket.pending, (state) => {
-        state.isLoading = true;
-      })
+
       .addCase(deleteTicket.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.tickets = state.tickets.filter(
-          (ticket) => ticket._id !== action.payload._id
-        );
+        state.reset = !state.reset;
       })
       .addCase(deleteTicket.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload.message;
+        state.error = action.payload;
       })
-      .addCase(editTicket.pending, (state) => {
-        state.isLoading = true;
-      })
+
       .addCase(editTicket.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.tickets = state.tickets.map((ticket) =>
+        state.list = state.list.map((ticket) =>
           ticket._id === action.payload._id ? action.payload : ticket
         );
       })
       .addCase(editTicket.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload.message;
+        state.error = action.payload;
       });
   },
 });

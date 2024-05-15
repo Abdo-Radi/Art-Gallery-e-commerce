@@ -1,4 +1,3 @@
-const { populate } = require("../models/Artist");
 const Artwork = require("../models/Artwork");
 const mongoose = require("mongoose");
 
@@ -100,6 +99,8 @@ const updateArtwork = async (req, res, next) => {
 
     const artwork = await Artwork.findById(artworkId);
 
+    const oldImage = artwork.image;
+
     if (!artwork) {
       return res.status(404).json({ message: "Artwork not found" });
     }
@@ -108,7 +109,7 @@ const updateArtwork = async (req, res, next) => {
       artwork[field] = updateFields[field];
     });
 
-    if (req.file) artwork["image"] = req.file.filename;
+    if (updateFields["image"] == "") artwork["image"] = oldImage;
 
     let updateArtwork = await artwork.save();
 

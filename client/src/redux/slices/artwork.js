@@ -94,7 +94,7 @@ const artworkSlice = createSlice({
 
       // Update
       .addCase(editArtwork.fulfilled, (state, action) => {
-        state.artworks = state.artworks.map((artwork) =>
+        state.list = state.list.map((artwork) =>
           artwork._id === action.payload._id ? action.payload : artwork
         );
       })

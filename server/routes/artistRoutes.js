@@ -3,7 +3,7 @@ const router = express.Router();
 const artistController = require('../controllers/artistController');
 const { isAuthorized } = require('../middleware/authorization');
 
-// router.use(isAuthorized('admin'));
+router.use(isAuthorized('admin'));
 
 router.get('/', artistController.getArtists);
 router.post('/', artistController.addArtist);

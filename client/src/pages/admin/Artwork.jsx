@@ -27,10 +27,12 @@ const Artwork = () => {
   const showAddForm = () => setAddForm(true);
   const hideAddForm = () => setAddForm(false);
 
-  const showEditForm = (artist) => {
-    setEditedArtist(artist);
+  const showEditForm = (artwork) => {
+    setEditedArtwork(artwork);
     setEditForm(true);
   };
+
+  const hideEditForm = () => setEditForm(false);
 
   const showViewPopup = (artwork) => {
     setSelectedArtwork(artwork);
@@ -82,7 +84,7 @@ const Artwork = () => {
   }, [dispatch, currentPage, search, reset]);
 
   return (
-    <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default">
+    <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-title-lg font-semibold text-black dark/text-white">
@@ -91,7 +93,7 @@ const Artwork = () => {
           <div className="flex items-center gap-4">
             <input
               type="text"
-              placeholder="Search artists"
+              placeholder="Search artworks"
               value={search}
               onChange={handleSearchChange}
               className="border border-stroke bg-transparent py-2 px-4 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter"
@@ -100,7 +102,7 @@ const Artwork = () => {
               onClick={showAddForm}
               className="w-40 bg-primary py-2 text-white"
             >
-              Add Artist
+              Add Artwork
             </button>
           </div>
         </div>
@@ -129,24 +131,29 @@ const Artwork = () => {
             <tbody>
               {list.map((artwork, key) => (
                 <tr key={key}>
-                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {artwork.title}
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark flex items-center gap-4">
+                    <div className="h-12.5 w-15">
+                      <img
+                        className="w-full h-full"
+                        src={artwork.image}
+                        alt="Artwork"
+                      />
+                    </div>
+                    <p>{artwork.title}</p>
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {artwork.artist?.firstName ?? "Unknown"}{" "}
-                    {artwork.artist?.lastName ?? "Unknown"}
+                    {artwork.artist.firstName} {artwork.artist.lastName}
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {artwork.category?.name ?? "Unknown"}
+                    {artwork.category.name}
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    ${artwork.price}
+                    {artwork.price} DH
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center text-lg gap-2.5">
                       <button onClick={() => showViewPopup(artwork)}>
                         <i className="ri-eye-line hover:text-primary"></i>{" "}
-                        {/* View button */}
                       </button>
                       <button onClick={() => showEditForm(artwork)}>
                         <i className="ri-edit-box-line hover:text-primary"></i>
@@ -215,7 +222,12 @@ const Artwork = () => {
         )}
 
         {isViewPopupVisible && (
-          <ArtworkViewPopup artwork={selectedArtwork} onClose={hideViewPopup} />
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+            <ArtworkViewPopup
+              artwork={selectedArtwork}
+              onClose={hideViewPopup}
+            />
+          </div>
         )}
       </div>
     </div>

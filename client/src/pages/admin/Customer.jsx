@@ -86,7 +86,7 @@ const CustomerPage = () => {
             />
             <button
               onClick={showAddForm}
-              className="w-36 bg-primary py-2 text-white"
+              className="w-40 bg-primary py-2 text-white"
             >
               Add Customer
             </button>

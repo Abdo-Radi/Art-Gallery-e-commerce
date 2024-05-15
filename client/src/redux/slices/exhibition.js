@@ -2,120 +2,103 @@ import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
-// Async action to fetch exhibitions
 export const getExhibitions = createAsyncThunk(
-  "exhibition/getExhibitions",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.get("/exhibitions");
-      return response.data.data;
-    } catch (error) {
-      rejectWithValue(error);
-    }
+  "exhibitions/getExhibitions",
+  async ({ search = "", page = 1 } = {}, { rejectWithValue }) => {
+    return axiosInstance
+      .get(`/exhibitions?page=${page}&search=${search}`)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => rejectWithValue(err.response.data.message));
   }
 );
 
-// Async action to add an exhibition
 export const addExhibition = createAsyncThunk(
-  "exhibition/addExhibition",
+  "exhibitions/addExhibition",
   async (body, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.post("/exhibitions", body);
-      return response.data;
-    } catch (error) {
-      rejectWithValue(error);
-    }
+    return axiosInstance
+      .post("/exhibitions", body)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => rejectWithValue(err.response.data.message));
   }
 );
 
-// Async action to delete an exhibition by ID
 export const deleteExhibition = createAsyncThunk(
-  "exhibition/deleteExhibition",
+  "exhibitions/deleteExhibition",
   async (id, { rejectWithValue }) => {
-    try {
-      await axiosInstance.delete(`/exhibitions/${id}`);
-      return id;
-    } catch (error) {
-      rejectWithValue(error);
-    }
+    return axiosInstance
+      .delete(`/exhibitions/${id}`)
+      .then((res) => {
+        return id;
+      })
+      .catch((err) => rejectWithValue(err.response.data.message));
   }
 );
 
-// Async action to edit an exhibition
 export const editExhibition = createAsyncThunk(
   "exhibition/editExhibition",
   async ({ id, body }, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.put(`/exhibitions/${id}`, body);
-      return response.data;
-    } catch (error) {
-      rejectWithValue(error);
-    }
+    return axiosInstance
+      .put(`/exhibitions/${id}`, body)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => rejectWithValue(err.response.data.message));
   }
 );
 
 const initialState = {
-  exhibitions: [],
-  isLoading: false,
+  list: [],
+  total: 0,
+  pages: 0,
+  reset: false,
   error: null,
 };
 
 const exhibitionSlice = createSlice({
-  name: "exhibition",
+  name: "exhibitions",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       // Read
-      .addCase(getExhibitions.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(getExhibitions.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.exhibitions = action.payload;
+        state.list = action.payload.docs;
+        state.total = action.payload.totalDocs;
+        state.pages = action.payload.totalPages;
       })
       .addCase(getExhibitions.rejected, (state, action) => {
-        state.isLoading = false;
         state.error = action.payload;
       })
+
       // Create
-      .addCase(addExhibition.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(addExhibition.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.exhibitions.push(action.payload);
+
+      .addCase(addExhibition.fulfilled, (state) => {
+        state.reset = !state.reset;
       })
       .addCase(addExhibition.rejected, (state, action) => {
-        state.isLoading = false;
         state.error = action.payload;
       })
+
       // Delete
-      .addCase(deleteExhibition.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(deleteExhibition.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.exhibitions = state.exhibitions.filter(
-          (exhibition) => exhibition._id !== action.payload
-        );
+      .addCase(deleteExhibition.fulfilled, (state) => {
+        state.reset = !state.reset;
       })
       .addCase(deleteExhibition.rejected, (state, action) => {
-        state.isLoading = false;
         state.error = action.payload;
       })
+
       // Update
-      .addCase(editExhibition.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(editExhibition.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.exhibitions = state.exhibitions.map((exhibition) =>
+        state.list = state.list.map((exhibition) =>
           exhibition._id === action.payload._id ? action.payload : exhibition
         );
       })
       .addCase(editExhibition.rejected, (state, action) => {
-        state.isLoading = false;
         state.error = action.payload;
       });
   },

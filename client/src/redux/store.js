@@ -17,9 +17,9 @@ export const store = configureStore({
         artists: artistReducer,
         category: categoryReducer,
         artworks: artworkReducer,
-        exhibition: exhibitionReducer,
+        exhibitions: exhibitionReducer,
         order: orderReducer,
-        ticket: ticketReducer,
+        tickets: ticketReducer,
     },
 })
 

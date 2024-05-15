@@ -28,24 +28,24 @@ const Sidebar = () => {
       icon: <i className="ri-paint-brush-line"></i>,
     },
     {
-      name: "Exhibitions",
-      to: "/admin/exhibitions",
-      icon: <i className="ri-carousel-view"></i>,
-    },
-    {
       name: "Categories",
       to: "/admin/categories",
       icon: <i className="ri-list-settings-line"></i>,
     },
     {
-      name: "Orders",
-      to: "/admin/orders",
-      icon: <i className="ri-shopping-basket-2-line"></i>,
+      name: "Exhibitions",
+      to: "/admin/exhibitions",
+      icon: <i className="ri-carousel-view"></i>,
     },
     {
       name: "Tickets",
       to: "/admin/tickets",
       icon: <i className="ri-ticket-2-line"></i>,
+    },
+    {
+      name: "Orders",
+      to: "/admin/orders",
+      icon: <i className="ri-shopping-basket-2-line"></i>,
     },
   ];
 
