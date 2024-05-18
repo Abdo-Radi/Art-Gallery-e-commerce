@@ -16,14 +16,15 @@ const { verifyToken } = require("../middleware/jwt");
 
 router.use(authRoutes);
 
+router.use("/artworks", artworkRoutes);
+router.use("/exhibitions", exihibitionRoutes);
+
 router.use(verifyToken);
 
 router.use("/admins", adminRoutes);
 router.use("/artists", artistRoutes);
 router.use("/customers", customerRoutes);
-router.use("/artworks", artworkRoutes);
 router.use("/categories", categoryRoutes);
-router.use("/exhibitions", exihibitionRoutes);
 router.use("/tickets", ticketRoutes);
 router.use("/orders", orderRoutes);
 router.use("/payments", payementRoutes);
