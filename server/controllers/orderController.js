@@ -1,16 +1,15 @@
-const Order = require('../models/Order');
-const mongoose = require('mongoose');
+const Order = require("../models/Order");
+const mongoose = require("mongoose");
 
-const createOrder = async (req, res,next) => {
+const createOrder = async (req, res, next) => {
   try {
-    const { customerId, items, totalAmount, status, date } = req.body;
+    const { customer, items, totalAmount, status } = req.body;
 
     const newOrder = new Order({
-      customerId,
+      customer,
       items,
       totalAmount,
       status,
-      date
     });
 
     const savedOrder = await newOrder.save();
@@ -37,7 +36,7 @@ const getOrders = async (req, res, next) => {
     res.status(200).json({
       data: orders,
       totalPages: Math.ceil(totalOrdersCount / limit),
-      currentPage: page
+      currentPage: page,
     });
   } catch (error) {
     next(error);
@@ -128,5 +127,5 @@ module.exports = {
   getOrders,
   getOrderById,
   updateOrder,
-  deleteOrderById
+  deleteOrderById,
 };

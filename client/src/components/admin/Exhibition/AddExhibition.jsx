@@ -2,24 +2,10 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { addExhibition } from "../../../redux/features/exhibition"; // Import the addExhibition action
+import { addExhibition } from "../../../redux/slices/exhibition"; // Import the addExhibition action
 import { useDispatch } from "react-redux";
 
 const AddExhibition = ({ onCancel }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    date: "",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const schema = z.object({
     name: z.string(),
     description: z.string(),
@@ -42,7 +28,7 @@ const AddExhibition = ({ onCancel }) => {
   };
 
   return (
-    <div className="overflow-y-auto h-5/6 no-scrollbar mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="sticky top-0 bg-white flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark">
         <h3 className="font-medium text-black dark:text-white">
           Add Exhibition
@@ -59,8 +45,6 @@ const AddExhibition = ({ onCancel }) => {
             </label>
             <input
               {...register("name")}
-              value={formData.name}
-              onChange={handleChange}
               type="text"
               placeholder="Enter exhibition name"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -72,28 +56,10 @@ const AddExhibition = ({ onCancel }) => {
 
           <div className="mb-4.5">
             <label className="mb-2.5 block text-black dark:text-white">
-              Description <span className="text-meta-1">*</span>
-            </label>
-            <textarea
-              {...register("description")}
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Enter exhibition description"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            ></textarea>
-            <p className="text-sm text-meta-1">
-              {errors.description && <span>{errors.description.message}</span>}
-            </p>
-          </div>
-
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
               Date <span className="text-meta-1">*</span>
             </label>
             <input
               {...register("date")}
-              value={formData.date}
-              onChange={handleChange}
               type="date"
               placeholder="Enter exhibition date"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -101,6 +67,23 @@ const AddExhibition = ({ onCancel }) => {
             <p className="text-sm text-meta-1">
               {errors.date && <span>{errors.date.message}</span>}
             </p>
+          </div>
+
+          <div className="mb-3">
+            <label className="mb-2.5 block text-black dark:text-white">
+              Description <span className="text-meta-1">*</span>
+            </label>
+            <textarea
+              {...register("description")}
+              placeholder="Enter description"
+              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
+              rows="4"
+            />
+            {errors.description && (
+              <p className="text-sm text-meta-1">
+                {errors.description.message}
+              </p>
+            )}
           </div>
 
           <button

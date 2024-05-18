@@ -1,49 +1,34 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteArtist, getArtists } from "../../redux/features/artist";
+import { deleteArtist, getArtists } from "../../redux/slices/artist";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import AddArtist from "../../components/admin/Artist/AddArtist";
 import EditArtist from "../../components/admin/Artist/EditArtist";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2";
 
 const Artist = () => {
-  const { artists } = useSelector((state) => state.artist);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [limit, setLimit] = useState(5);
-  const [currPage, setCurrPage] = useState(0);
-  const [search, setSearch] = useState("");
+  const { list, pages, reset } = useSelector((state) => state.artists);
 
-  const filteredArtists = artists.filter((artist) =>
-    `${artist.firstName} ${artist.lastName}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredArtists.length / limit);
-  const paginatedArtists = filteredArtists.slice(
-    currPage * limit,
-    (currPage + 1) * limit
-  );
+  const [searchParams] = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
+  const [search, setSearch] = useState(searchParams.get("search") || "");
 
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
   const [editedArtist, setEditedArtist] = useState(null);
 
-  const showAddForm = () => {
-    setAddForm(true);
-  };
-  const hideAddForm = () => {
-    setAddForm(false);
-  };
+  const showAddForm = () => setAddForm(true);
+  const hideAddForm = () => setAddForm(false);
 
   const showEditForm = (artist) => {
     setEditedArtist(artist);
     setEditForm(true);
   };
 
-  const hideEditForm = () => {
-    setEditForm(false);
-  };
+  const hideEditForm = () => setEditForm(false);
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
@@ -61,18 +46,28 @@ const Artist = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(getArtists());
-  }, [dispatch]);
-
   const handlePageChange = (page) => {
-    setCurrPage(page);
+    setCurrentPage(page);
   };
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = async (e) => {
     setSearch(e.target.value);
-    setCurrPage(0);
+    setCurrentPage(1);
   };
+
+  useEffect(() => {
+    dispatch(getArtists({ page: currentPage, search }));
+
+    const queryParams = new URLSearchParams();
+    if (search !== "") {
+      queryParams.set("search", search);
+    }
+
+    queryParams.set("page", currentPage);
+
+    const newUrl = `/admin/artists?${queryParams.toString()}`;
+    navigate(newUrl);
+  }, [dispatch, currentPage, search, reset]);
 
   return (
     <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -87,11 +82,11 @@ const Artist = () => {
               placeholder="Search artists"
               value={search}
               onChange={handleSearchChange}
-              className="border py-2 px-4 text-black dark:text-white"
+              className="border border-stroke bg-transparent py-2 px-4 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter"
             />
             <button
               onClick={showAddForm}
-              className="bg-primary py-2 px-6 text-white"
+              className="w-40 bg-primary py-2 text-white"
             >
               Add Artist
             </button>
@@ -117,7 +112,7 @@ const Artist = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedArtists.map((artist, key) => (
+              {list.map((artist, key) => (
                 <tr key={key}>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {artist.firstName} {artist.lastName}
@@ -144,31 +139,62 @@ const Artist = () => {
           </table>
         </div>
 
-        {totalPages > 1 && (
-          <div className="mt-4 flex justify-center space-x-4">
-            {Array.from({ length: totalPages }, (_, i) => (
+        {pages > 1 && (
+          <div className="my-4 flex justify-center space-x-2">
+            <button
+              disabled={currentPage == 1}
+              onClick={() => {
+                setCurrentPage((prev) => prev - 1);
+              }}
+              className={`w-8 h-8 border border-stroke ${
+                currentPage == 1 && "text-stroke"
+              }`}
+            >
+              <i className="ri-arrow-left-double-line"></i>
+            </button>
+            {Array.from({ length: pages }, (_, i) => (
               <button
-                key={i}
-                onClick={() => handlePageChange(i)}
-                className={`px-3 py-1 ${
-                  currPage === i ? "bg-primary text-white" : "bg-gray-200"
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={`w-8 h-8 border border-stroke ${
+                  currentPage == i + 1
+                    ? "bg-primary text-white border-primary"
+                    : "bg-gray-200"
                 }`}
               >
                 {i + 1}
               </button>
             ))}
+            <button
+              disabled={currentPage == pages}
+              onClick={() => {
+                setCurrentPage((prev) => prev + 1);
+              }}
+              className={`w-8 h-8 border border-stroke ${
+                currentPage == pages && "text-stroke"
+              }`}
+            >
+              <i className="ri-arrow-right-double-line"></i>
+            </button>
           </div>
         )}
 
         {addForm && (
           <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-            <AddArtist onCancel={hideAddForm} />
+            <AddArtist
+              onCancel={hideAddForm}
+              resetPage={() => setCurrentPage(1)}
+            />
           </div>
         )}
 
         {editForm && (
           <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-            <EditArtist artist={editedArtist} onCancel={hideEditForm} />
+            <EditArtist
+              artist={editedArtist}
+              onCancel={hideEditForm}
+              currentPage={currentPage}
+            />
           </div>
         )}
       </div>

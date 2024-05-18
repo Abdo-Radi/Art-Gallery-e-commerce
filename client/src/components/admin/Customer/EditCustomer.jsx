@@ -1,28 +1,10 @@
-import { useState } from "react";
+import * as z from "zod";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { editCustomer } from "../../../redux/features/customer";
+import { editCustomer } from "../../../redux/slices/customer";
 
 const EditCustomer = ({ customer, onCancel }) => {
-  const [formData, setFormData] = useState({
-    firstName: customer.firstName,
-    lastName: customer.lastName,
-    email: customer.email,
-    username: customer.username,
-    password: "",
-    confirmPassword: "",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const schema = z
     .object({
       firstName: z.string(),
@@ -59,7 +41,7 @@ const EditCustomer = ({ customer, onCancel }) => {
       confirmPassword: data.confirmPassword ? data.confirmPassword : undefined,
     };
 
-    dispatch(editCustomer({id:customer._id,body:editedCustomer}));
+    dispatch(editCustomer({ id: customer._id, body: editedCustomer }));
     onCancel();
   };
 
@@ -81,8 +63,7 @@ const EditCustomer = ({ customer, onCancel }) => {
             </label>
             <input
               {...register("firstName")}
-              value={formData.firstName}
-              onChange={handleChange}
+              defaultValue={customer.firstName}
               type="text"
               placeholder="Enter the first name"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -98,8 +79,7 @@ const EditCustomer = ({ customer, onCancel }) => {
             </label>
             <input
               {...register("lastName")}
-              value={formData.lastName}
-              onChange={handleChange}
+              defaultValue={customer.lastName}
               type="text"
               placeholder="Enter the last name"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -111,29 +91,11 @@ const EditCustomer = ({ customer, onCancel }) => {
 
           <div className="mb-4.5">
             <label className="mb-2.5 block text-black dark:text-white">
-              Email <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("email")}
-              value={formData.email}
-              onChange={handleChange}
-              type="email"
-              placeholder="Enter the email address"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.email && <span>{errors.email.message}</span>}
-            </p>
-          </div>
-
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
               Username <span className="text-meta-1">*</span>
             </label>
             <input
               {...register("username")}
-              value={formData.username}
-              onChange={handleChange}
+              defaultValue={customer.username}
               type="text"
               placeholder="Enter the username"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -145,37 +107,17 @@ const EditCustomer = ({ customer, onCancel }) => {
 
           <div className="mb-4.5">
             <label className="mb-2.5 block text-black dark:text-white">
-              Password <span className="text-meta-1">*</span>
+              Email <span className="text-meta-1">*</span>
             </label>
             <input
-              {...register("password")}
-              value={formData.password}
-              onChange={handleChange}
-              type="password"
-              placeholder="Enter the password"
+              {...register("email")}
+              defaultValue={customer.email}
+              type="email"
+              placeholder="Enter the email address"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <p className="text-sm text-meta-1">
-              {errors.password && <span>{errors.password.message}</span>}
-            </p>
-          </div>
-
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Confirm password <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("confirmPassword")}
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              type="password"
-              placeholder="Confirm the password"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.confirmPassword && (
-                <p>{errors.confirmPassword.message}</p>
-              )}
+              {errors.email && <span>{errors.email.message}</span>}
             </p>
           </div>
 

@@ -1,8 +1,7 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { addArtist } from "../../../redux/features/artist";
+import { addArtist } from "../../../redux/slices/artist";
 import { useDispatch } from "react-redux";
 
 const AddArtist = ({ onCancel }) => {

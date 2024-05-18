@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const mongoosePagination = require("mongoose-paginate-v2");
 
 const artistSchema = new mongoose.Schema({
   firstName: {
@@ -38,4 +39,6 @@ const artistSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Artist', artistSchema);
+artistSchema.plugin(mongoosePagination);
+
+module.exports = mongoose.model("Artist", artistSchema);

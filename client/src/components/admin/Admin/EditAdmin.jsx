@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { editAdmin } from "../../../redux/features/admin";
+import { editAdmin } from "../../../redux/slices/admin";
 
 const EditAdmin = ({ admin, onCancel }) => {
   const [formData, setFormData] = useState({

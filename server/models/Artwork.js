@@ -1,15 +1,16 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const mongoosePagination = require("mongoose-paginate-v2");
 
 const artworkSchema = new mongoose.Schema({
   artist: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'Artist',
+    ref: "Artist",
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'Category',
+    ref: "Category",
   },
   title: {
     type: String,
@@ -29,4 +30,6 @@ const artworkSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Artwork', artworkSchema);
+artworkSchema.plugin(mongoosePagination);
+
+module.exports = mongoose.model("Artwork", artworkSchema);

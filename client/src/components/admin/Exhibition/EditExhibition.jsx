@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { editExhibition } from "../../../redux/features/exhibition"; // Import the editExhibition action
+import { editExhibition } from "../../../redux/slices/exhibition"; // Import the editExhibition action
 
 const EditExhibition = ({ exhibition, onCancel }) => {
   const [formData, setFormData] = useState({
