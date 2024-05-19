@@ -1,14 +1,14 @@
-const Exhibition = require('../models/Exhibition');
-const mongoose = require('mongoose');
+const Exhibition = require("../models/Exhibition");
+const mongoose = require("mongoose");
 
 const createExhibition = async (req, res, next) => {
   try {
     const { name, description, date } = req.body;
-    
+
     const newExhibition = new Exhibition({
       name,
       description,
-      date
+      date,
     });
     const savedExhibition = await newExhibition.save();
 
@@ -20,21 +20,24 @@ const createExhibition = async (req, res, next) => {
 
 const getExhibitions = async (req, res, next) => {
   try {
-    const limit = 20;
-    const page = parseInt(req.query.page) || 1;
-    const skipCount = (page - 1) * limit;
+    const { search, page } = req.query;
+    const options = { lean: true, page };
 
-    const totalExhibitionsCount = await Exhibition.countDocuments();
-    const exhibitions = await Exhibition.find().skip(skipCount).limit(limit);
+    const searchQuery = {
+      name: { $regex: new RegExp(search, "i") },
+    };
+
+    const exhibitions = await Exhibition.paginate(searchQuery, options);
 
     if (exhibitions.length === 0) {
-      return res.status(404).json({ message: "No exhibitions found" });
+      return res.status(204).json({ message: "No exhibitions found" });
     }
 
+    const totalDocs = await Exhibition.countDocuments();
+
     res.status(200).json({
-      data: exhibitions,
-      totalPages: Math.ceil(totalExhibitionsCount / limit),
-      currentPage: page
+      ...exhibitions,
+      totalDocs,
     });
   } catch (error) {
     next(error);
@@ -106,7 +109,9 @@ const deleteExhibitionById = async (req, res) => {
       return res.status(404).json({ message: "Exhibition not found." });
     }
 
-    return res.status(200).json({ message: "Exhibition deleted successfully." });
+    return res
+      .status(200)
+      .json({ message: "Exhibition deleted successfully." });
   } catch (error) {
     next(error);
   }
@@ -117,5 +122,5 @@ module.exports = {
   getExhibitions,
   getExhibitionById,
   updateExhibition,
-  deleteExhibitionById
+  deleteExhibitionById,
 };

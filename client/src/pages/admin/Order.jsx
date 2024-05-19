@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2"; // Import SweetAlert2
-import { fetchOrders, deleteOrder } from "../../redux/features/order";
+import { fetchOrders, deleteOrder } from "../../redux/slices/order";
 
 const OrderPage = () => {
   const { orders, isLoading, error } = useSelector((state) => state.order);

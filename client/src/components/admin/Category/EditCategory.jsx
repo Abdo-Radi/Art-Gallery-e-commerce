@@ -3,21 +3,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { editCategory, getCategories } from "../../../redux/features/category";
+import { editCategory, getCategories } from "../../../redux/slices/category";
 
 const EditCategory = ({ category, onCancel }) => {
   const { name, description } = category;
-  const [formData, setFormData] = useState({ name, description });
-
-  const { categories } = useSelector((state) => state.category);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   const errorMessage = "Field cannot be empty";
 
@@ -63,8 +52,7 @@ const EditCategory = ({ category, onCancel }) => {
             </label>
             <input
               {...register("name")}
-              value={formData.name}
-              onChange={handleChange}
+              defaultValue={name}
               type="text"
               placeholder="Name"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -78,17 +66,18 @@ const EditCategory = ({ category, onCancel }) => {
             <label className="mb-2.5 block text-black dark:text-white">
               Description <span className="text-meta-1">*</span>
             </label>
-            <input
+            <textarea
               {...register("description")}
-              value={formData.description}
-              onChange={handleChange}
-              type="text"
-              placeholder="Description"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              defaultValue={description}
+              placeholder="Enter description"
+              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
+              rows="4"
             />
-            <p className="text-sm text-meta-1">
-              {errors.description && <span>{errors.description.message}</span>}
-            </p>
+            {errors.description && (
+              <p className="text-sm text-meta-1">
+                {errors.description.message}
+              </p>
+            )}
           </div>
 
           <button

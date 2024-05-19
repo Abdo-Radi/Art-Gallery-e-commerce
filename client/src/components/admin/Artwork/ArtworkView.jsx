@@ -1,45 +1,37 @@
 import React from "react";
 
 const ArtworkViewPopup = ({ artwork, onClose }) => {
-  if (!artwork) {
-    return null; // Don't render if no artwork is selected
-  }
-
   return (
-    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black bg-opacity-70">
-      <div className="bg-white w-96 p-6 shadow-lg relative">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
-        >
-          <i className="ri-close-circle-line"></i> {/* Close Button */}
+    <div className="overflow-y-auto h-5/6 no-scrollbar mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="sticky top-0 bg-white flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark z-9999">
+        <h3 className="font-medium text-black dark:text-white">
+          {artwork.title}
+        </h3>
+        <button onClick={onClose}>
+          <i className="ri-close-circle-line text-lg"></i>
         </button>
-
-        <h3 className="font-medium text-black">{artwork.title}</h3>
-
-        <div className="mt-4">
-          <img
-            src={artwork.image}
-            alt={artwork.title}
-            style={{ width: "100%", height: "auto" }}
-          />
-        </div>
-
+      </div>
+      <div className="p-6.5">
+        <img
+          className="border border-stroke mb-3"
+          src={artwork.image}
+          alt="Artwork"
+        />
         <p>
-          <strong>Artist:</strong> {artwork.artist?.firstName}{" "}
-          {artwork.artist?.lastName}
+          <span className="font-bold">Title:</span> {artwork.title}
         </p>
-
         <p>
-          <strong>Category:</strong> {artwork.category?.name}
+          <span className="font-bold">Price:</span> {artwork.price} DH
         </p>
-
         <p>
-          <strong>Price:</strong> ${artwork.price}
+          <span className="font-bold">Category:</span> {artwork.category.name}
         </p>
-
         <p>
-          <strong>Description:</strong> {artwork.description}
+          <span className="font-bold">Artist:</span> {artwork.artist.firstName}{" "}
+          {artwork.artist.lastName}
+        </p>
+        <p>
+          <span className="font-bold">Description:</span> {artwork.description}{" "}
         </p>
       </div>
     </div>

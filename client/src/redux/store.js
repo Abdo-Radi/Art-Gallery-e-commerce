@@ -1,25 +1,25 @@
 import { configureStore } from "@reduxjs/toolkit"
-import userReducer from "./features/user"
-import artistReducer from "./features/artist"
-import categoryReducer from "./features/category"
-import artworkReducer from "./features/artwork"
-import exhibitionReducer from "./features/exhibition"
-import orderReducer from "./features/order"
-import ticketReducer from "./features/ticket"
-import admin from "./features/admin"
-import customer from './features/customer'
+import userReducer from "./slices/user"
+import artistReducer from "./slices/artist"
+import categoryReducer from "./slices/category"
+import artworkReducer from "./slices/artwork"
+import exhibitionReducer from "./slices/exhibition"
+import orderReducer from "./slices/order"
+import ticketReducer from "./slices/ticket"
+import admin from "./slices/admin"
+import customer from './slices/customer'
 
 export const store = configureStore({
     reducer: {
         user: userReducer,
-        customer: customer,
+        customers: customer,
         admin: admin,
-        artist: artistReducer,
+        artists: artistReducer,
         category: categoryReducer,
-        artwork: artworkReducer,
-        exhibition: exhibitionReducer,
+        artworks: artworkReducer,
+        exhibitions: exhibitionReducer,
         order: orderReducer,
-        ticket: ticketReducer,
+        tickets: ticketReducer,
     },
 })
 

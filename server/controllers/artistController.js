@@ -1,24 +1,29 @@
-const Artist = require('../models/Artist');
-const { hash } = require('../utils/passwordUtils');
+const Artist = require("../models/Artist");
+const { hash } = require("../utils/passwordUtils");
 
 const getArtists = async (req, res, next) => {
   try {
-    const limit = 20;
-    const page = parseInt(req.query.page) || 1;
-    const skipCount = (page - 1) * limit;
+    const { search, page } = req.query;
+    const options = { lean: true, page };
 
-    const totalArtistsCount = await Artist.countDocuments();
+    const searchQuery = {
+      $or: [
+        { firstName: { $regex: new RegExp(search, "i") } },
+        { lastName: { $regex: new RegExp(search, "i") } },
+      ],
+    };
 
-    const artists = await Artist.find().skip(skipCount).limit(limit);
+    const artists = await Artist.paginate(searchQuery, options);
 
     if (artists.length === 0) {
       return res.status(204).json({ message: "No artists found" });
     }
 
+    const totalDocs = await Artist.countDocuments();
+
     res.status(200).json({
-      data: artists,
-      totalPages: Math.ceil(totalArtistsCount / limit),
-      currentPage: page,
+      ...artists,
+      totalDocs,
     });
   } catch (error) {
     next(error);
@@ -33,7 +38,7 @@ const addArtist = async (req, res, next) => {
 
     const newArtist = new Artist({
       ...req.body,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
     const savedArtist = await newArtist.save();
@@ -82,28 +87,26 @@ const searchArtists = async (req, res) => {
   }
 };
 
-const updateArtist = async (req, res,next) => {
+const updateArtist = async (req, res, next) => {
   const id = req.params.id;
-  const { firstName, lastName, email, bio, active, password } = req.body;
+  const updateFields = req.body;
 
   try {
-    const hashedPassword = await hash(password);
+    const artist = await Artist.findById(id);
 
-    const update = await Artist.findByIdAndUpdate(id, {
-      firstName,
-      lastName,
-      email,
-      bio,
-      active,
-      password: hashedPassword,
-      lastUpdate: new Date(),
-    });
-
-    if (!update) {
+    if (!artist) {
       return res.status(404).json({ message: "Invalid artist id" });
     }
 
-    res.status(200).json({ message: "Artist updated successfully" });
+    Object.keys(updateFields).forEach((field) => {
+      artist[field] = updateFields[field];
+    });
+
+    artist["lastUpdate"] = new Date();
+
+    const updatedArtist = await artist.save();
+
+    res.status(200).json(updatedArtist);
   } catch (error) {
     next(error);
   }
@@ -131,5 +134,5 @@ module.exports = {
   getArtistById,
   searchArtists,
   updateArtist,
-  deleteArtist
+  deleteArtist,
 };

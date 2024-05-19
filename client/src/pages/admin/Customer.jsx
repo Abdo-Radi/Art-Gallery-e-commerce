@@ -1,38 +1,20 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2"; // Import SweetAlert2
-import { deleteCustomer, getCustomers } from "../../redux/features/customer";
+import { deleteCustomer, getCustomers } from "../../redux/slices/customer";
 import AddCustomer from "../../components/admin/Customer/AddCustomer";
 import EditCustomer from "../../components/admin/Customer/EditCustomer";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const CustomerPage = () => {
-  const { customers } = useSelector((state) => state.customer);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [limit, setLimit] = useState(5);
-  const [currPage, setCurrPage] = useState(0);
-  const [search, setSearch] = useState("");
+  const { list, pages, reset } = useSelector((state) => state.customers);
 
-  const totalPages = Math.ceil(customers.length / limit);
-
-  // Function to handle search input
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    setCurrPage(0); // Reset to the first page when searching
-  };
-
-  // Filter customers based on search keyword
-  const filteredCustomers = customers.filter((customer) =>
-    `${customer.firstName} ${customer.lastName}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
-
-  // Calculate paginated customers based on filtered results
-  const paginatedCustomers = filteredCustomers.slice(
-    currPage * limit,
-    (currPage + 1) * limit
-  );
+  const [searchParams] = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
+  const [search, setSearch] = useState(searchParams.get("search") || "");
 
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
@@ -64,13 +46,28 @@ const CustomerPage = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(getCustomers());
-  }, [dispatch]);
-
   const handlePageChange = (page) => {
-    setCurrPage(page);
+    setCurrentPage(page);
   };
+
+  const handleSearchChange = async (e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
+  useEffect(() => {
+    dispatch(getCustomers({ page: currentPage, search }));
+
+    const queryParams = new URLSearchParams();
+    if (search !== "") {
+      queryParams.set("search", search);
+    }
+
+    queryParams.set("page", currentPage);
+
+    const newUrl = `/admin/customers?${queryParams.toString()}`;
+    navigate(newUrl);
+  }, [dispatch, currentPage, search, reset]);
 
   return (
     <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -79,17 +76,17 @@ const CustomerPage = () => {
           <h2 className="text-title-lg font-semibold text-black dark:text-white">
             Customers
           </h2>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <input
               type="text"
               placeholder="Search customers"
               value={search}
               onChange={handleSearchChange}
-              className="border py-2 px-4 text-black dark:text-white"
+              className="border border-stroke bg-transparent py-2 px-4 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter"
             />
             <button
               onClick={showAddForm}
-              className="bg-primary py-2 px-6 text-white"
+              className="w-40 bg-primary py-2 text-white"
             >
               Add Customer
             </button>
@@ -115,7 +112,7 @@ const CustomerPage = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedCustomers.map((customer, key) => (
+              {list.map((customer, key) => (
                 <tr key={key}>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {customer.firstName} {customer.lastName}
@@ -142,19 +139,43 @@ const CustomerPage = () => {
           </table>
         </div>
 
-        {totalPages > 1 && (
-          <div className="mt-4 flex justify-center space-x-4">
-            {Array.from({ length: totalPages }, (_, i) => (
+        {pages > 1 && (
+          <div className="my-4 flex justify-center space-x-2">
+            <button
+              disabled={currentPage == 1}
+              onClick={() => {
+                setCurrentPage((prev) => prev - 1);
+              }}
+              className={`w-8 h-8 border border-stroke ${
+                currentPage == 1 && "text-stroke"
+              }`}
+            >
+              <i className="ri-arrow-left-double-line"></i>
+            </button>
+            {Array.from({ length: pages }, (_, i) => (
               <button
-                key={i}
-                onClick={() => handlePageChange(i)}
-                className={`px-3 py-1 ${
-                  currPage === i ? "bg-primary text-white" : "bg-gray-200"
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={`w-8 h-8 border border-stroke ${
+                  currentPage == i + 1
+                    ? "bg-primary text-white border-primary"
+                    : "bg-gray-200"
                 }`}
               >
                 {i + 1}
               </button>
             ))}
+            <button
+              disabled={currentPage == pages}
+              onClick={() => {
+                setCurrentPage((prev) => prev + 1);
+              }}
+              className={`w-8 h-8 border border-stroke ${
+                currentPage == pages && "text-stroke"
+              }`}
+            >
+              <i className="ri-arrow-right-double-line"></i>
+            </button>
           </div>
         )}
 

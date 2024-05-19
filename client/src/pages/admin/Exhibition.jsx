@@ -1,42 +1,39 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import { useNavigate, useSearchParams } from "react-router-dom";
+import AddExhibition from "../../components/admin/Exhibition/AddExhibition";
+import EditExhibition from "../../components/admin/Exhibition/EditExhibition";
+import Swal from "sweetalert2";
 import {
   getExhibitions,
   deleteExhibition,
-} from "../../redux/features/exhibition";
-import AddExhibition from "../../components/admin/Exhibition/AddExhibition";
-import EditExhibition from "../../components/admin/Exhibition/EditExhibition";
+} from "../../redux/slices/exhibition";
 
 const Exhibition = () => {
   const dispatch = useDispatch();
-  const { exhibitions, isLoading, error } = useSelector(
-    (state) => state.exhibition
-  );
+  const navigate = useNavigate();
 
-  // Pagination and search state
-  const [limit, setLimit] = useState(5); // Items per page
-  const [currPage, setCurrPage] = useState(0); // Current page
-  const [searchQuery, setSearchQuery] = useState(""); // Search input state
+  const { list, pages, reset } = useSelector((state) => state.exhibitions);
 
-  // Filter exhibitions based on the search query
-  const filteredExhibitions = exhibitions.filter((exhibition) =>
-    exhibition.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const [searchParams] = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
+  const [search, setSearch] = useState(searchParams.get("search") || "");
 
-  // Pagination based on filtered results
-  const totalPages = Math.ceil(filteredExhibitions.length / limit);
-  const paginatedExhibitions = filteredExhibitions.slice(
-    currPage * limit,
-    (currPage + 1) * limit
-  );
-
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false);
+  const [addForm, setAddForm] = useState(false);
+  const [editForm, setEditForm] = useState(false);
   const [editedExhibition, setEditedExhibition] = useState(null);
 
+  const showAddForm = () => setAddForm(true);
+  const hideAddForm = () => setAddForm(false);
+
+  const showEditForm = (exhibition) => {
+    setEditedExhibition(exhibition);
+    setEditForm(true);
+  };
+
+  const hideEditForm = () => setEditForm(false);
+
   const handleDelete = async (id) => {
-    // SweetAlert2 confirmation dialog
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "This action cannot be undone. Do you want to proceed?",
@@ -47,30 +44,33 @@ const Exhibition = () => {
     });
 
     if (result.isConfirmed) {
-      dispatch(deleteExhibition(id)).then(() => {
-        dispatch(getExhibitions()); // Reload exhibitions after deletion
-      });
+      dispatch(deleteExhibition(id));
       Swal.fire("Deleted!", "The exhibition has been deleted.", "success");
     }
   };
 
-  const handleEdit = (exhibition) => {
-    setEditedExhibition(exhibition);
-    setShowEditForm(true);
-  };
-
   const handlePageChange = (page) => {
-    setCurrPage(page);
+    setCurrentPage(page);
   };
 
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setCurrPage(0); // Reset to the first page when searching
+  const handleSearchChange = async (e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
   };
 
   useEffect(() => {
-    dispatch(getExhibitions());
-  }, [dispatch]);
+    dispatch(getExhibitions({ page: currentPage, search }));
+
+    const queryParams = new URLSearchParams();
+    if (search !== "") {
+      queryParams.set("search", search);
+    }
+
+    queryParams.set("page", currentPage);
+
+    const newUrl = `/admin/exhibitions?${queryParams.toString()}`;
+    navigate(newUrl);
+  }, [dispatch, currentPage, search, reset]);
 
   return (
     <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -79,102 +79,120 @@ const Exhibition = () => {
           <h2 className="text-title-lg font-semibold text-black dark:text-white">
             Exhibitions
           </h2>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <input
               type="text"
-              placeholder="Search exhibitions..."
-              value={searchQuery}
+              placeholder="Search exhibitions"
+              value={search}
               onChange={handleSearchChange}
-              className="border py-2 px-4 text-black dark:text-white"
+              className="border border-stroke bg-transparent py-2 px-4 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter"
             />
             <button
-              onClick={() => setShowAddForm(true)}
-              className="bg-primary py-2 px-6 text-white"
+              onClick={showAddForm}
+              className="w-40 bg-primary py-2 text-white"
             >
               Add Exhibition
             </button>
           </div>
         </div>
 
-        {isLoading ? (
-          <p>Loading exhibitions...</p>
-        ) : error ? (
-          <p className="text-red-500">{error}</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full table-auto">
-              <thead>
-                <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                  <th className="p-4 font-medium text-black dark:text-white">
-                    Name
-                  </th>
-                  <th className="p-4 font-medium text-black dark:text-white">
-                    Description
-                  </th>
-                  <th class="p-4 font-medium text-black dark:text-white">
-                    Date
-                  </th>
-                  <th class="p-4 font-medium text-black dark:text-white">
-                    Actions
-                  </th>
+        <div className="overflow-x-auto">
+          <table className="w-full table-auto">
+            <thead>
+              <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                <th className="p-4 font-medium text-black dark:text-white">
+                  Name
+                </th>
+                <th className="p-4 font-medium text-black dark:text-white">
+                  Description
+                </th>
+                <th className="p-4 font-medium text-black dark:text-white">
+                  Date
+                </th>
+                <th className="p-4 font-medium text-black dark:text-white">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((exhibition) => (
+                <tr key={exhibition._id}>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    {exhibition.name}
+                  </td>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    {exhibition.description}
+                  </td>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    {new Date(exhibition.date).toDateString()}
+                  </td>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    <div className="flex items-center text-lg gap-2.5">
+                      <button onClick={() => handleEdit(exhibition)}>
+                        <i className="ri-edit-box-line hover-text-primary"></i>
+                      </button>
+                      <button onClick={() => handleDelete(exhibition._id)}>
+                        <i className="ri-delete-bin-6-line hover-text-primary"></i>
+                      </button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {paginatedExhibitions.map((exhibition) => (
-                  <tr key={exhibition._id}>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      {exhibition.name}
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      {exhibition.description}
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      {new Date(exhibition.date).toDateString()}
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <div className="flex items-center text-lg gap-2.5">
-                        <button onClick={() => handleEdit(exhibition)}>
-                          <i className="ri-edit-box-line hover-text-primary"></i>
-                        </button>
-                        <button onClick={() => handleDelete(exhibition._id)}>
-                          <i className="ri-delete-bin-6-line hover-text-primary"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-        {totalPages > 1 && (
-          <div className="mt-4 flex justify-center space-x-4">
-            {Array.from({ length: totalPages }, (_, i) => (
+        {pages > 1 && (
+          <div className="my-4 flex justify-center space-x-2">
+            <button
+              disabled={currentPage == 1}
+              onClick={() => {
+                setCurrentPage((prev) => prev - 1);
+              }}
+              className={`w-8 h-8 border border-stroke ${
+                currentPage == 1 && "text-stroke"
+              }`}
+            >
+              <i className="ri-arrow-left-double-line"></i>
+            </button>
+            {Array.from({ length: pages }, (_, i) => (
               <button
-                key={i}
-                onClick={() => handlePageChange(i)}
-                className={`px-3 py-1 ${
-                  currPage === i ? "bg-primary text-white" : "bg-gray-200"
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={`w-8 h-8 border border-stroke ${
+                  currentPage == i + 1
+                    ? "bg-primary text-white border-primary"
+                    : "bg-gray-200"
                 }`}
               >
                 {i + 1}
               </button>
             ))}
+            <button
+              disabled={currentPage == pages}
+              onClick={() => {
+                setCurrentPage((prev) => prev + 1);
+              }}
+              className={`w-8 h-8 border border-stroke ${
+                currentPage == pages && "text-stroke"
+              }`}
+            >
+              <i className="ri-arrow-right-double-line"></i>
+            </button>
           </div>
         )}
 
-        {showAddForm && (
+        {addForm && (
           <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-            <AddExhibition onCancel={() => setShowAddForm(false)} />
+            <AddExhibition onCancel={hideAddForm} />
           </div>
         )}
 
-        {showEditForm && (
+        {editForm && (
           <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
             <EditExhibition
               exhibition={editedExhibition}
-              onCancel={() => setShowEditForm(false)}
+              onCancel={hideEditForm}
             />
           </div>
         )}

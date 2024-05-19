@@ -1,29 +1,22 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { createTicket } from "../../../redux/features/ticket";
+import { useDispatch, useSelector } from "react-redux";
+import { addTicket } from "../../../redux/slices/ticket";
+import { useEffect } from "react";
+import { getExhibitions } from "../../../redux/slices/exhibition";
 
 const AddTicket = ({ onCancel }) => {
-  const [formData, setFormData] = useState({
-    exhibitionId: "",
-    price: "",
-    quantity: "",
-  });
+  const dispatch = useDispatch();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const { list: exhibitions } = useSelector((state) => state.exhibitions);
+
+  const errorMessage = "Field cannot be empty";
 
   const schema = z.object({
-    exhibitionId: z.string().min(1, "Exhibition ID is required"),
-    price: z.string().min(1, "Price ID is required"),
-    quantity: z.string().min(1, "Quantity ID is required"),
+    exhibition: z.string().nonempty(errorMessage),
+    price: z.number(),
+    quantity: z.number(),
   });
 
   const {
@@ -34,15 +27,17 @@ const AddTicket = ({ onCancel }) => {
     resolver: zodResolver(schema),
   });
 
-  const dispatch = useDispatch();
-
   const onSubmit = (data) => {
-    dispatch(createTicket(data));
-    onCancel(); // Close the form after submission
+    dispatch(addTicket(data));
+    onCancel();
   };
 
+  useEffect(() => {
+    dispatch(getExhibitions());
+  }, [dispatch]);
+
   return (
-    <div className="overflow-y-auto h-5/6 no-scrollbar mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="sticky top-0 bg-white flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark">
         <h3 className="font-medium text-black dark:text-white">Add Ticket</h3>
         <button onClick={onCancel}>
@@ -51,22 +46,35 @@ const AddTicket = ({ onCancel }) => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="p-6.5">
-          <div className="mb-4.5">
+          <div className="mb-4.5 relative z-20 bg-transparent dark:bg-form-input">
             <label className="mb-2.5 block text-black dark:text-white">
-              Exhibition ID <span className="text-meta-1">*</span>
+              Exhibition <span className="text-meta-1">*</span>
             </label>
-            <input
-              {...register("exhibitionId")}
-              value={formData.exhibitionId}
-              onChange={handleChange}
-              type="text"
-              placeholder="Enter exhibition ID"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
+            <select
+              {...register("exhibition")}
+              defaultValue=""
+              className="relative z-20 w-full appearance-none border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white"
+            >
+              <option
+                value=""
+                disabled
+                className="text-body dark:text-bodydark"
+              >
+                Select an exhibition
+              </option>
+              {exhibitions &&
+                exhibitions.map((exhibition, key) => (
+                  <option
+                    key={key}
+                    value={exhibition._id}
+                    className="text-body dark:text-bodydark"
+                  >
+                    {exhibition.name}
+                  </option>
+                ))}
+            </select>
             <p className="text-sm text-meta-1">
-              {errors.exhibitionId && (
-                <span>{errors.exhibitionId.message}</span>
-              )}
+              {errors.exhibition && <span>{errors.exhibition.message}</span>}
             </p>
           </div>
 
@@ -75,9 +83,7 @@ const AddTicket = ({ onCancel }) => {
               Price <span className="text-meta-1">*</span>
             </label>
             <input
-              {...register("price")}
-              value={formData.price}
-              onChange={handleChange}
+              {...register("price", { valueAsNumber: true })}
               type="number"
               placeholder="Enter price"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -92,9 +98,7 @@ const AddTicket = ({ onCancel }) => {
               Quantity <span className="text-meta-1">*</span>
             </label>
             <input
-              {...register("quantity")}
-              value={formData.quantity}
-              onChange={handleChange}
+              {...register("quantity", { valueAsNumber: true })}
               type="number"
               placeholder="Enter quantity"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"

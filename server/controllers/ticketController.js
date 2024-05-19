@@ -1,15 +1,9 @@
-const Ticket = require('../models/Ticket');
-const mongoose = require('mongoose');
+const Ticket = require("../models/Ticket");
+const mongoose = require("mongoose");
 
 const createTicket = async (req, res, next) => {
-  const { exhibitionId, price, quantity } = req.body;
-
   try {
-    const newTicket = new Ticket({
-      exhibitionId,
-      price,
-      quantity
-    });
+    const newTicket = new Ticket({ ...req.body });
 
     const savedTicket = await newTicket.save();
 
@@ -21,21 +15,24 @@ const createTicket = async (req, res, next) => {
 
 const getTickets = async (req, res, next) => {
   try {
-    const limit = 20;
-    const page = parseInt(req.query.page) || 1;
-    const skipCount = (page - 1) * limit;
+    const { page } = req.query;
+    const options = {
+      lean: true,
+      populate: "exhibition",
+      page,
+    };
 
-    const totalTicketsCount = await Ticket.countDocuments();
-    const tickets = await Ticket.find().skip(skipCount).limit(limit);
+    const tickets = await Ticket.paginate({}, options);
 
     if (tickets.length === 0) {
-      return res.status(404).json({ message: "No tickets found" });
+      return res.status(204).json({ message: "No tickets found" });
     }
 
+    const totalDocs = await Ticket.countDocuments();
+
     res.status(200).json({
-      data: tickets,
-      totalPages: Math.ceil(totalTicketsCount / limit),
-      currentPage: page
+      ...tickets,
+      totalDocs,
     });
   } catch (error) {
     next(error);
@@ -117,5 +114,5 @@ module.exports = {
   getTickets,
   getTicketById,
   updateTicket,
-  deleteTicketById
+  deleteTicketById,
 };
