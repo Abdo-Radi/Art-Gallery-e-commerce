@@ -39,7 +39,6 @@ const registerHandler = async (req, res, next) => {
 
 const loginHandler = async (req, res, next) => {
     const { accountType, identifier, password } = req.body;
-            
     try {
         const Model = getModel(accountType);
         const user = await Model.findOne({

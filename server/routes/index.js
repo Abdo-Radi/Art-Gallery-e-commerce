@@ -13,9 +13,9 @@ const payementRoutes = require('./paymentRoutes');
 
 const { verifyToken } = require('../middleware/jwt');
 
-router.use(authRoutes);
+// router.use(authRoutes);
 
-router.use(verifyToken);
+// router.use(verifyToken);
 
 router.use('/admins', adminRoutes);
 router.use('/artists', artistRoutes);

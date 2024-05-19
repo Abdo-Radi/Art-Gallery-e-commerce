@@ -38,7 +38,6 @@ const getArtworks = async (req, res, next) => {
       .populate({ path: 'artist', select: ['firstName', 'lastName'] })
       .skip(skipCount)
       .limit(limit);
-
     if (artworks.length === 0) {
       return res.status(204).json({ message: "No artworks found" });
     }

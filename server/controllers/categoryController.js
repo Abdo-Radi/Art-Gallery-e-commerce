@@ -33,7 +33,7 @@ const getCategories = async (req, res, next) => {
     const totalCategoriesCount = await Category.countDocuments();
 
     const categories = await Category.find().skip(skipCount).limit(limit);
-
+    console.log(categories)
     if (categories.length === 0) {
       return res.status(404).json({ message: "No categories found" });
     }

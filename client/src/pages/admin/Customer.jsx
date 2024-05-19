@@ -23,7 +23,9 @@ const CustomerPage = () => {
 
   // Filter customers based on search keyword
   const filteredCustomers = customers.filter((customer) =>
-    `${customer.firstName} ${customer.lastName}`.toLowerCase().includes(search.toLowerCase())
+    `${customer.firstName} ${customer.lastName}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
   );
 
   // Calculate paginated customers based on filtered results
