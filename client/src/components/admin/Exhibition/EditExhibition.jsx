@@ -6,20 +6,6 @@ import * as z from "zod";
 import { editExhibition } from "../../../redux/slices/exhibition"; // Import the editExhibition action
 
 const EditExhibition = ({ exhibition, onCancel }) => {
-  const [formData, setFormData] = useState({
-    name: exhibition.name,
-    description: exhibition.description,
-    date: exhibition.date,
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const schema = z.object({
     name: z.string(),
     description: z.string(),
@@ -37,7 +23,7 @@ const EditExhibition = ({ exhibition, onCancel }) => {
   const dispatch = useDispatch();
 
   const onSubmit = (data) => {
-    dispatch(editExhibition({ body:data, id: exhibition._id })); // Dispatch the editExhibition action with form data and exhibition id
+    dispatch(editExhibition({ body: data, id: exhibition._id })); // Dispatch the editExhibition action with form data and exhibition id
     onCancel();
   };
 
@@ -59,8 +45,7 @@ const EditExhibition = ({ exhibition, onCancel }) => {
             </label>
             <input
               {...register("name")}
-              value={formData.name}
-              onChange={handleChange}
+              defaultValue={exhibition.name}
               type="text"
               placeholder="Enter exhibition name"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -72,28 +57,11 @@ const EditExhibition = ({ exhibition, onCancel }) => {
 
           <div className="mb-4.5">
             <label className="mb-2.5 block text-black dark:text-white">
-              Description <span className="text-meta-1">*</span>
-            </label>
-            <textarea
-              {...register("description")}
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Enter exhibition description"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            ></textarea>
-            <p className="text-sm text-meta-1">
-              {errors.description && <span>{errors.description.message}</span>}
-            </p>
-          </div>
-
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
               Date <span className="text-meta-1">*</span>
             </label>
             <input
               {...register("date")}
-              value={formData.date}
-              onChange={handleChange}
+              defaultValue={new Date(exhibition.date).toDateString()}
               type="date"
               placeholder="Enter exhibition date"
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -101,6 +69,24 @@ const EditExhibition = ({ exhibition, onCancel }) => {
             <p className="text-sm text-meta-1">
               {errors.date && <span>{errors.date.message}</span>}
             </p>
+          </div>
+
+          <div className="mb-3">
+            <label className="mb-2.5 block text-black dark:text-white">
+              Description <span className="text-meta-1">*</span>
+            </label>
+            <textarea
+              {...register("description")}
+              defaultValue={exhibition.description}
+              placeholder="Enter description"
+              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
+              rows="4"
+            />
+            {errors.description && (
+              <p className="text-sm text-meta-1">
+                {errors.description.message}
+              </p>
+            )}
           </div>
 
           <button

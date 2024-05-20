@@ -4,14 +4,13 @@ import MobileMenu from "./MobileMenu";
 
 const Header = () => {
   const menu = [
+    { name: "Home", to: "/" },
     { name: "About", to: "/about" },
     { name: "Artworks", to: "/artworks" },
     { name: "Exhibitions", to: "/exhibitions" },
-    { name: "Tickets", to: "/tickets" },
   ];
 
   const [open, setOpen] = useState(false);
-
   const close = () => {
     setOpen(false);
   };
@@ -34,7 +33,7 @@ const Header = () => {
         <button className="mr-4">
           <i className="ri-shopping-cart-line text-title-lg"></i>
         </button>
-        <button className="bg-primary text-sm p-2 text-white">Login / Sign up</button>
+        <button className="bg-primary text-sm p-2 text-white">Login</button>
         <button
           onClick={() => {
             setOpen(true);

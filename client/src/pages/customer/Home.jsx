@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { getArtworks } from "../../redux/slices/artwork";
 import { getExhibitions } from "../../redux/slices/exhibition";
+import Contact from "../../components/customer/Contact";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -46,12 +47,15 @@ const Home = () => {
               <p className="text-body">
                 {new Date(exhibition.date).toDateString()}
               </p>
-              <button className="w-36 bg-primary text-white py-2 px-4">Buy Tickets</button>
+              <button className="w-36 bg-primary text-white py-2 px-4">
+                Buy Tickets
+              </button>
             </div>
           ))}
         </div>
       </section>
       <hr className="my-12 h-0.5 border-t-0 bg-stroke" />
+      <Contact />
     </main>
   );
 };

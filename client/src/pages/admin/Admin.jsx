@@ -14,17 +14,6 @@ const AdminPage = () => {
     dispatch(getAdmins()); // Check if this dispatch is correctly fetching data
   }, [dispatch]);
 
-  // State for pagination
-  const [limit, setLimit] = useState(5); // Limit of items per page
-  const [currPage, setCurrPage] = useState(0); // Current page
-
-  // Derived data for pagination
-  const totalPages = Math.ceil(admins?.length / limit); // Total number of pages
-  const paginatedAdmins = admins?.slice(
-    currPage * limit,
-    (currPage + 1) * limit
-  ); // Data for the current page
-
   // State for managing forms
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
@@ -55,13 +44,7 @@ const AdminPage = () => {
     if (result.isConfirmed) {
       dispatch(deleteAdmin(id)); // Check if this action is correct
       Swal.fire("Deleted!", "The admin has been deleted.", "success");
-      dispatch(getAdmins()); // Ensure this refetches data after deletion
     }
-  };
-
-  // Page selection handler
-  const handlePageChange = (page) => {
-    setCurrPage(page); // Update current page when changing
   };
 
   return (
@@ -98,7 +81,7 @@ const AdminPage = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedAdmins?.map((admin, key) => (
+              {admins.map((admin, key) => (
                 <tr key={key}>
                   <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
                     {admin.firstName} {admin.lastName}
@@ -125,30 +108,14 @@ const AdminPage = () => {
           </table>
         </div>
 
-        {totalPages > 1 && (
-          <div className="mt-4 flex justify-center space-x-4">
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => handlePageChange(i)}
-                className={`px-3 py-1 ${
-                  currPage === i ? "bg-primary text-white" : "bg-gray-200"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-        )}
-
         {addForm && (
-          <div className="w/full h/full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
             <AddAdmin onCancel={hideAddForm} />
           </div>
         )}
 
         {editForm && (
-          <div className="w/full h/full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
+          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
             <EditAdmin admin={editedAdmin} onCancel={hideEditForm} />
           </div>
         )}

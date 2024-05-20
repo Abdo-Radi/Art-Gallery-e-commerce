@@ -128,7 +128,7 @@ const Exhibition = () => {
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center text-lg gap-2.5">
-                      <button onClick={() => handleEdit(exhibition)}>
+                      <button onClick={() => showEditForm(exhibition)}>
                         <i className="ri-edit-box-line hover-text-primary"></i>
                       </button>
                       <button onClick={() => handleDelete(exhibition._id)}>

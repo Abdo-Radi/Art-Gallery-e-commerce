@@ -1,17 +1,8 @@
 const Order = require("../models/Order");
-const mongoose = require("mongoose");
 
 const createOrder = async (req, res, next) => {
   try {
-    const { customer, items, totalAmount, status } = req.body;
-
-    const newOrder = new Order({
-      customer,
-      items,
-      totalAmount,
-      status,
-    });
-
+    const newOrder = new Order(req.body);
     const savedOrder = await newOrder.save();
 
     res.status(201).json(savedOrder);
@@ -22,35 +13,24 @@ const createOrder = async (req, res, next) => {
 
 const getOrders = async (req, res, next) => {
   try {
-    const limit = 20;
-    const page = parseInt(req.query.page) || 1;
-    const skipCount = (page - 1) * limit;
+    const { page } = req.query;
+    const options = { lean: true, page };
 
-    const totalOrdersCount = await Order.countDocuments();
-    const orders = await Order.find().skip(skipCount).limit(limit);
+    const artists = await Order.paginate({}, options);
 
-    if (orders.length === 0) {
-      return res.status(404).json({ message: "No orders found" });
+    if (artists.length === 0) {
+      return res.status(204).json({ message: "No orders found" });
     }
 
-    res.status(200).json({
-      data: orders,
-      totalPages: Math.ceil(totalOrdersCount / limit),
-      currentPage: page,
-    });
+    res.status(200).json({ artists });
   } catch (error) {
     next(error);
   }
 };
 
-const getOrderById = async (req, res) => {
+const getOrderById = async (req, res, next) => {
   try {
     const orderId = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.status(400).json({ message: "Invalid order ID" });
-    }
-
     const order = await Order.findById(orderId);
 
     if (!order) {
@@ -66,39 +46,13 @@ const getOrderById = async (req, res) => {
 const updateOrder = async (req, res) => {
   try {
     const orderId = req.params.id;
-    const { customerId, items, totalAmount, status, date } = req.body;
+    const updatedOrder = await Order.findByIdAndUpdate(orderId, req.body, {
+      new: true,
+    });
 
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.status(400).json({ message: "Invalid order ID" });
-    }
-
-    const order = await Order.findById(orderId);
-
-    if (!order) {
+    if (!updateOrder) {
       return res.status(404).json({ message: "Order not found" });
     }
-
-    if (customerId !== undefined) {
-      order.customerId = customerId;
-    }
-
-    if (items !== undefined) {
-      order.items = items;
-    }
-
-    if (totalAmount !== undefined) {
-      order.totalAmount = totalAmount;
-    }
-
-    if (status !== undefined) {
-      order.status = status;
-    }
-
-    if (date !== undefined) {
-      order.date = date;
-    }
-
-    const updatedOrder = await order.save();
 
     res.status(200).json(updatedOrder);
   } catch (error) {
@@ -107,9 +61,8 @@ const updateOrder = async (req, res) => {
 };
 
 const deleteOrderById = async (req, res) => {
-  const orderId = req.params.id;
-
   try {
+    const orderId = req.params.id;
     const deletedOrder = await Order.findByIdAndDelete(orderId);
 
     if (!deletedOrder) {

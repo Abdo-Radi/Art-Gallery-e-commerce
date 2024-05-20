@@ -139,13 +139,13 @@ const AddAdmin = ({ onCancel }) => {
               )}
             </p>
           </div>
+          <button
+            type="submit"
+            className="flex w-full justify-center bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
+          >
+            Add Admin
+          </button>
         </div>
-        <button
-          type="submit"
-          className="flex w-full justify-center bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
-        >
-          Add Admin
-        </button>
       </form>
     </div>
   );

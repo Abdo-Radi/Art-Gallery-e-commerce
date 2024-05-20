@@ -79,7 +79,7 @@ const ticketSlice = createSlice({
         state.error = action.payload;
       })
 
-      .addCase(deleteTicket.fulfilled, (state, action) => {
+      .addCase(deleteTicket.fulfilled, (state) => {
         state.reset = !state.reset;
       })
       .addCase(deleteTicket.rejected, (state, action) => {

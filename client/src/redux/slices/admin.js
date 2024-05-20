@@ -8,7 +8,6 @@ export const getAdmins = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/admins");
-      console.log(response.data);
       return response.data;
     } catch (error) {
       rejectWithValue(error);

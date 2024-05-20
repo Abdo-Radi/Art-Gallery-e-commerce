@@ -108,7 +108,7 @@ const Ticket = () => {
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
                     <div className="flex items-center text-lg gap-2.5">
-                      <button onClick={() => handleEdit(ticket)}>
+                      <button onClick={() => showEditForm(ticket)}>
                         <i className="ri-edit-box-line hover-text-primary"></i>
                       </button>
                       <button onClick={() => handleDelete(ticket._id)}>
@@ -170,7 +170,7 @@ const Ticket = () => {
 
         {editForm && (
           <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-            <EditTicket ticket={editedTicket} onCancel={cancelEdit} />
+            <EditTicket ticket={editedTicket} onCancel={hideEditForm} />
           </div>
         )}
       </div>

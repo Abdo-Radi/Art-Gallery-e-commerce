@@ -57,6 +57,7 @@ const EditArtwork = ({ artwork, onCancel }) => {
   };
 
   const onSubmit = (data) => {
+    console.log(data);
     console.log(imageUrl);
     const artworkData = {
       ...data,
