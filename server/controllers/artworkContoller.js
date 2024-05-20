@@ -29,7 +29,6 @@ const getArtworks = async (req, res, next) => {
     };
 
     const artworks = await Artwork.paginate(searchQuery, options);
-
     if (artworks.length === 0) {
       return res.status(204).json({ message: "No artworks found" });
     }
@@ -99,6 +98,7 @@ const deleteArtworkById = async (req, res) => {
 };
 
 module.exports = {
+  addToCart,
   createArtwork,
   getArtworks,
   getArtworkById,

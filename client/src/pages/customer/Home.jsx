@@ -7,8 +7,8 @@ import Contact from "../../components/customer/Contact";
 
 const Home = () => {
   const dispatch = useDispatch();
-
   const { list: artworks } = useSelector((state) => state.artworks);
+
   const { list: exhibitions } = useSelector((state) => state.exhibitions);
 
   useEffect(() => {

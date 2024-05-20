@@ -28,7 +28,6 @@ const SignIn = () => {
 
   const login = async (data) => {
     try {
-      console.log(data);
       const response = await axiosInstance.post(
         "/login",
         { ...data, accountType: "admin" },

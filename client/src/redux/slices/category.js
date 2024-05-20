@@ -9,7 +9,8 @@ export const getCategories = createAsyncThunk(
       .then((res) => {
         return res.data.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) =>
+        rejectWithValue(err.response.data.message));
   }
 );
 
