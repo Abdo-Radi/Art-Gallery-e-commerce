@@ -8,6 +8,7 @@ import orderReducer from "./slices/order"
 import ticketReducer from "./slices/ticket"
 import admin from "./slices/admin"
 import customer from './slices/customer'
+import cartReducer from "./slices/cartSlice"
 
 export const store = configureStore({
     reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
         exhibitions: exhibitionReducer,
         order: orderReducer,
         tickets: ticketReducer,
+        cart:cartReducer
     },
 })
 

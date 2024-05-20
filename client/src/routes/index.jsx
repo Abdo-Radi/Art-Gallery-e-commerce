@@ -14,6 +14,10 @@ import Order from "../pages/admin/Order";
 import Ticket from "../pages/admin/Ticket";
 import Admin from "../pages/admin/Admin";
 import CustomerPage from "../pages/admin/Customer";
+import SingleProduct from "../components/customer/Artwork/SingleArtwork";
+import Cart from "../pages/customer/Cart"
+
+
 
 const ConfigRoutes = () => {
     return (
@@ -21,6 +25,8 @@ const ConfigRoutes = () => {
         <Route path="/" element={<CustomerLayout />}>
           <Route index element={<Home />} />
           <Route path="artworks" element={<CustomerArtwork />} />
+          <Route path="/artworks/:id" element={<SingleProduct />} />
+          <Route path="/cart" element={<Cart />} />
         </Route>
 
         <Route path="/admin/login" element={<SignIn />} />

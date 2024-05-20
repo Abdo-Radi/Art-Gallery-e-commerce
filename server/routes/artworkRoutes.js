@@ -9,5 +9,6 @@ router.get('/:id', artworkController.getArtworkById);
 router.get('/search', artworkController.searchArtworks);
 router.put('/:id', upload.single('image'), artworkController.updateArtwork);
 router.delete('/:id', isAuthorized('artist', 'admin'), artworkController.deleteArtworkById);
+router.post("/add/to/cart/:id", artworkController.addToCart);
 
 module.exports = router;

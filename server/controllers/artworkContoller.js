@@ -1,6 +1,6 @@
 const Artwork = require("../models/Artwork");
 const mongoose = require("mongoose");
-
+const Cart = require("../models/cartModel");
 const createArtwork = async (req, res, next) => {
   try {
     const { artist, category, title, description, price, image } = req.body;
@@ -39,7 +39,6 @@ const getArtworks = async (req, res, next) => {
     };
 
     const artworks = await Artwork.paginate(searchQuery, options);
-
     if (artworks.length === 0) {
       return res.status(204).json({ message: "No artworks found" });
     }
@@ -139,7 +138,40 @@ const deleteArtworkById = async (req, res) => {
   }
 };
 
+const addToCart = async (req, res, next) => {
+  const { id } = req.params;
+  // const customer = req.customer; 
+
+  try {
+    const artwork = await Artwork.findById(id);
+    if (!artwork) {
+      return res.status(404).send("Artwork not found");
+    }
+
+    const existingCartItem = await Cart.findOne({
+      // customer_id: customer._id,
+      artwork: artwork._id,
+    });
+
+    if (existingCartItem) {
+      return res.status(400).send("Artwork is already in the cart");
+    }
+
+    const newCartItem = new Cart({
+      // customer_id: customer._id,
+      artwork: artwork,
+    });
+
+    await newCartItem.save();
+
+    res.status(200).send("Artwork added to cart successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
+  addToCart,
   createArtwork,
   getArtworks,
   getArtworkById,

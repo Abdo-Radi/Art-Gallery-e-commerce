@@ -6,8 +6,8 @@ import { getExhibitions } from "../../redux/slices/exhibition";
 
 const Home = () => {
   const dispatch = useDispatch();
-
   const { list: artworks } = useSelector((state) => state.artworks);
+
   const { list: exhibitions } = useSelector((state) => state.exhibitions);
 
   useEffect(() => {
