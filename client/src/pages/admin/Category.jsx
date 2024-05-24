@@ -10,16 +10,12 @@ import AddCategory from "../../components/admin/Category/AddCategory";
 import EditCategory from "../../components/admin/Category/EditCategory";
 
 const Category = () => {
-  const { categories } = useSelector((state) => state.category);
+  const { list, reset } = useSelector((state) => state.categories);
   const dispatch = useDispatch();
 
   const [addForm, setAddForm] = useState(false);
   const [editForm, setEditForm] = useState(false);
   const [editedCategory, setEditedCategory] = useState(null);
-
-  useEffect(() => {
-    dispatch(getCategories());
-  }, [dispatch]);
 
   const showAddForm = () => setAddForm(true);
   const hideAddForm = () => setAddForm(false);
@@ -44,19 +40,12 @@ const Category = () => {
     if (result.isConfirmed) {
       dispatch(deleteCategory(id)); // Delete the category
       Swal.fire("Deleted!", "The category has been deleted.", "success"); // Show success message
-      dispatch(getCategories()); // Re-fetch categories
     }
   };
 
-  const handleEdit = async (category) => {
-    const { _id, ...rest } = category;
-    dispatch(editCategory({ id: _id, body: rest }));
-    setEditForm(false); // Close edit form after submitting
-  };
-
-  const handlePageChange = (page) => {
-    setCurrPage(page); // Update current page when changing
-  };
+  useEffect(() => {
+    dispatch(getCategories());
+  }, [dispatch, reset]);
 
   return (
     <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark/border-strokedark dark/bg-boxdark sm:px-7.5 xl/pb-1">
@@ -89,7 +78,7 @@ const Category = () => {
               </tr>
             </thead>
             <tbody>
-              {categories.map((category, key) => (
+              {list.map((category, key) => (
                 <tr key={key}>
                   <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
                     {category.name}

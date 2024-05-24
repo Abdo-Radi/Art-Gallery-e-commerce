@@ -1,12 +1,16 @@
 const Artwork = require("../models/Artwork");
+const Artist = require("../models/Artist");
 const Order = require("../models/Order");
 
 const getStats = async (req, res, next) => {
   try {
-    const ordersStats = await Order.aggregate([
+    const totalArtists = await Artist.countDocuments();
+    const totalArtworks = await Artwork.countDocuments();
+
+    const orderStats = await Order.aggregate([
       {
         $match: {
-          status: { $ne: "Canceled" },
+          status: "Paid",
         },
       },
       {
@@ -42,15 +46,15 @@ const getStats = async (req, res, next) => {
       },
     ]);
 
-    const result = {
-      orders:
-        ordersStats.length > 0
-          ? ordersStats[0]
+    res.json({
+      totalArtists,
+      totalArtworks,
+      artworkStats,
+      orderStats:
+        orderStats.length > 0
+          ? orderStats[0]
           : { totalOrders: 0, totalSales: 0 },
-      artworks: artworkStats,
-    };
-
-    res.json(result);
+    });
   } catch (error) {
     next(error);
   }

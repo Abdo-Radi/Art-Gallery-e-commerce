@@ -37,7 +37,7 @@ const getArtists = async (req, res, next) => {
       return res.status(204).json({ message: "No artists found" });
     }
 
-    res.status(200).json({ artists });
+    res.status(200).json(artists);
   } catch (error) {
     next(error);
   }

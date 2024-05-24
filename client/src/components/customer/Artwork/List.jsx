@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 const List = () => {
   const dispatch = useDispatch();
   const { list: artworks } = useSelector((state) => state.artworks);
-  const categories = useSelector((state) => state.category.categories); // Fix the selector for categories
+  const {list: categories} = useSelector((state) => state.categories); // Fix the selector for categories
 
   useEffect(() => {
     dispatch(getArtworks());

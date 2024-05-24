@@ -1,34 +1,18 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { getArtists } from "../../redux/slices/artist";
-import { getArtworks } from "../../redux/slices/artwork";
+import { useEffect } from "react";
 import CardDataStats from "../../components/admin/CardDataStats";
-import axiosInstance from "../../api/axiosInstance";
 import Chart from "../../components/admin/Chart";
+import { getStats } from "../../redux/slices/stats";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
 
-  const [orders, setOrders] = useState({});
-  const [artworks, setArtworks] = useState([]);
-
-  const getStats = async () => {
-    try {
-      const { data } = await axiosInstance.get("/stats");
-      setOrders(data.orders);
-      setArtworks(data.artworks);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  const { total: totalArtists } = useSelector((state) => state.artists);
-  const { total: totalArtworks } = useSelector((state) => state.artworks);
+  const { totalArtists, totalArtworks, artworkStats, orderStats } = useSelector(
+    (state) => state.stats
+  );
 
   useEffect(() => {
-    getStats();
-    dispatch(getArtists());
-    dispatch(getArtworks());
+    dispatch(getStats());
   }, []);
 
   return (
@@ -40,15 +24,15 @@ const Dashboard = () => {
         <CardDataStats title="Total artworks" total={totalArtworks}>
           <i className="ri-paint-brush-line text-primary text-xl"></i>
         </CardDataStats>
-        <CardDataStats title="Total orders" total={orders.totalOrders}>
+        <CardDataStats title="Total orders" total={orderStats.totalOrders}>
           <i className="ri-shopping-basket-2-line text-primary text-xl"></i>
         </CardDataStats>
-        <CardDataStats title="Total sales" total={orders.totalSales}>
+        <CardDataStats title="Total sales" total={orderStats.totalSales}>
           <i className="ri-shopping-cart-line text-primary text-xl"></i>
         </CardDataStats>
       </div>
       <div>
-        <Chart artworks={artworks} />
+        <Chart artworks={artworkStats} />
       </div>
     </div>
   );

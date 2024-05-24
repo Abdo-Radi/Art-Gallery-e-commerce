@@ -17,23 +17,27 @@ const createArtwork = async (req, res, next) => {
 
 const getArtworks = async (req, res, next) => {
   try {
-    const { search, page } = req.query;
+    const { search, page, category, priceSort, maxPrice } = req.query;
     const options = {
       lean: true,
       populate: ["artist", "category"],
-      page,
+      page: page || 1,
+      limit: 9,
     };
 
     const searchQuery = {
-      title: { $regex: new RegExp(search, "i") },
+      ...(search && { title: { $regex: new RegExp(search, "i") } }),
+      ...(category && { category }),
+      ...(maxPrice && { price: { $lte: Number(maxPrice) } }),
     };
 
-    const artworks = await Artwork.paginate(searchQuery, options);
-    if (artworks.length === 0) {
-      return res.status(204).json({ message: "No artworks found" });
+    if (priceSort) {
+      options.sort = { price: priceSort === "lowToHigh" ? 1 : -1 };
     }
 
-    res.status(200).json({ artworks });
+    const artworks = await Artwork.paginate(searchQuery, options);
+    
+    res.status(200).json(artworks);
   } catch (error) {
     next(error);
   }
@@ -82,7 +86,7 @@ const updateArtwork = async (req, res, next) => {
   }
 };
 
-const deleteArtworkById = async (req, res) => {
+const deleteArtwork = async (req, res) => {
   try {
     const artworkId = req.params.id;
     const deletedArtwork = await Artwork.findByIdAndDelete(artworkId);
@@ -97,11 +101,43 @@ const deleteArtworkById = async (req, res) => {
   }
 };
 
+const addToCart = async (req, res, next) => {
+  const { id } = req.params;
+  // const customer = req.customer;
+
+  try {
+    const artwork = await Artwork.findById(id);
+    if (!artwork) {
+      return res.status(404).send("Artwork not found");
+    }
+
+    const existingCartItem = await Cart.findOne({
+      // customer_id: customer._id,
+      artwork: artwork._id,
+    });
+
+    if (existingCartItem) {
+      return res.status(400).send("Artwork is already in the cart");
+    }
+
+    const newCartItem = new Cart({
+      // customer_id: customer._id,
+      artwork: artwork,
+    });
+
+    await newCartItem.save();
+
+    res.status(200).send("Artwork added to cart successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addToCart,
   createArtwork,
   getArtworks,
   getArtworkById,
   updateArtwork,
-  deleteArtworkById,
+  deleteArtwork,
 };

@@ -52,7 +52,6 @@ export const editCustomer = createAsyncThunk(
 
 const initialState = {
   list: [],
-  total: 0,
   pages: 0,
   reset: false,
   error: null,
@@ -67,7 +66,6 @@ const customerSlice = createSlice({
       // Read
       .addCase(getCustomers.fulfilled, (state, action) => {
         state.list = action.payload.docs;
-        state.total = action.payload.totalDocs;
         state.pages = action.payload.totalPages;
       })
       .addCase(getCustomers.rejected, (state, action) => {

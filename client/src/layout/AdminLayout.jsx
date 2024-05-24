@@ -10,7 +10,7 @@ const AdminLayout = () => {
             {/* <!-- ===== Sidebar End ===== --> */}
 
             {/* <!-- ===== Content Area Start ===== --> */}
-            <div className="relative flex w-full flex-col overflow-y-auto overflow-x-hidden">
+            <div className=" flex w-full flex-col overflow-y-auto overflow-x-hidden">
                 {/* <!-- ===== Header Start ===== --> */}
                 <Header />
                 {/* <!-- ===== Header End ===== --> */}

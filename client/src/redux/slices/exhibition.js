@@ -52,7 +52,6 @@ export const editExhibition = createAsyncThunk(
 
 const initialState = {
   list: [],
-  total: 0,
   pages: 0,
   reset: false,
   error: null,
@@ -66,9 +65,7 @@ const exhibitionSlice = createSlice({
     builder
       // Read
       .addCase(getExhibitions.fulfilled, (state, action) => {
-        state.exhibitions = action.payload;
         state.list = action.payload.docs;
-        state.total = action.payload.totalDocs;
         state.pages = action.payload.totalPages;
       })
       .addCase(getExhibitions.rejected, (state, action) => {

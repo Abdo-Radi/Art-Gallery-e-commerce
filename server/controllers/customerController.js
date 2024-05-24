@@ -35,7 +35,7 @@ const getCustomers = async (req, res, next) => {
       return res.status(204).json({ message: "No customers found" });
     }
 
-    res.status(200).json({ customers });
+    res.status(200).json(customers);
   } catch (error) {
     next(error);
   }

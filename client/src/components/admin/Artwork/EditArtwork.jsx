@@ -13,7 +13,7 @@ const EditArtwork = ({ artwork, onCancel }) => {
 
   const [imageUrl, setImageUrl] = useState("");
 
-  const { categories } = useSelector((state) => state.category);
+  const { list: categories } = useSelector((state) => state.categories);
   const { list: artists } = useSelector((state) => state.artists);
 
   const errorMessage = "Field cannot be empty";
@@ -57,12 +57,10 @@ const EditArtwork = ({ artwork, onCancel }) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data);
-    console.log(imageUrl);
     const artworkData = {
       ...data,
       price: parseFloat(data.price),
-      image: imageUrl ,
+      image: imageUrl,
     };
 
     dispatch(editArtwork({ id: artwork._id, body: artworkData }));

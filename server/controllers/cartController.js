@@ -1,9 +1,9 @@
-const cartModel = require("../models/cartModel");
+const cartModel = require("../models/ShoppingCart");
 
 const cartController = {
   //! Show cart
   showCart: async (req, res) => {
-        // Removed customer ID checking for now
+    // Removed customer ID checking for now
     const cart = await cartModel.find(); // Retrieve all items in the cart
     if (cart) {
       res.status(200).send(cart);
@@ -68,12 +68,10 @@ const cartController = {
         );
         res.status(200).send(updateQuantity);
       } else {
-        res
-          .status(400)
-          .send({
-            message:
-              "Quantity cannot be decreased further or product not found in cart",
-          });
+        res.status(400).send({
+          message:
+            "Quantity cannot be decreased further or product not found in cart",
+        });
       }
     } catch (error) {
       console.log(error);

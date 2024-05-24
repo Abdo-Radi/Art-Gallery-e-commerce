@@ -26,7 +26,7 @@ const getTickets = async (req, res, next) => {
       return res.status(204).json({ message: "No tickets found" });
     }
 
-    res.status(200).json({ tickets });
+    res.status(200).json(tickets);
   } catch (error) {
     next(error);
   }

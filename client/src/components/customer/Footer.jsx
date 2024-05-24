@@ -87,7 +87,9 @@ const Footer = () => {
 
       <div className="bg-white border-t border-stroke py-4">
         <div className="px-8 lg:px-24 flex justify-between items-center">
-          <span className="text-gray-800">Created by Imane's students</span>
+          <span className="text-gray-800">
+            Created with 💙 by Imane's students
+          </span>
           <span className="text-gray-800">
             &copy; {new Date().getFullYear()} - Horizons
           </span>

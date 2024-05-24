@@ -75,8 +75,8 @@ const Chart = ({ artworks }) => {
 
       <div className="-mx-8 flex flex-wrap items-center justify-center gap-y-3">
         <div className="sm:w-1/2 w-full px-8">
-          {artworks.map((el) => (
-            <div className="flex w-full items-center">
+          {artworks.map((el, i) => (
+            <div key={i} className="flex w-full items-center">
               <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
                 <span> {el.category.name} </span>
                 <span> {el.count} </span>

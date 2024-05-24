@@ -26,7 +26,7 @@ const getExhibitions = async (req, res, next) => {
       return res.status(204).json({ message: "No exhibitions found" });
     }
 
-    res.status(200).json({ exhibitions });
+    res.status(200).json(exhibitions);
   } catch (error) {
     next(error);
   }

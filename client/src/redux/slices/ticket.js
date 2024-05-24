@@ -51,7 +51,6 @@ export const editTicket = createAsyncThunk(
 
 const initialState = {
   list: [],
-  total: 0,
   pages: 0,
   reset: false,
   error: null,
@@ -65,7 +64,6 @@ const ticketSlice = createSlice({
     builder
       .addCase(getTickets.fulfilled, (state, action) => {
         state.list = action.payload.docs;
-        state.total = action.payload.totalDocs;
         state.pages = action.payload.totalPages;
       })
       .addCase(getTickets.rejected, (state, action) => {

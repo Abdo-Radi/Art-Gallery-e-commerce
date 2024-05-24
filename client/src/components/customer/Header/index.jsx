@@ -17,7 +17,7 @@ const Header = () => {
 
   return (
     <>
-      <Head />
+      {/* <Head /> */}
       <header className="px-8 lg:px-24 py-4 text-black flex justify-between items-center">
         <h1 className="text-title-lg font-bold">
           <span className="text-primary">H</span>orizons
