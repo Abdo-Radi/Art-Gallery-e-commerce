@@ -1,13 +1,16 @@
-const router = require('express').Router();
-const artworkController = require('../controllers/artworkContoller');
-const { isAuthorized } = require('../middleware/authorization');
-const upload = require('../utils/multerUtils');
+const router = require("express").Router();
+const artworkController = require("../controllers/artworkContoller");
+const { isAuthorized } = require("../middleware/authorization");
+const { verifyToken } = require("../middleware/jwt");
 
-router.post('/', isAuthorized('admin'), upload.single('image'), artworkController.createArtwork);
-router.get('/', artworkController.getArtworks);
-router.get('/:id', artworkController.getArtworkById);
-router.get('/search', artworkController.searchArtworks);
-router.put('/:id', upload.single('image'), artworkController.updateArtwork);
-router.delete('/:id', isAuthorized('artist', 'admin'), artworkController.deleteArtworkById);
+router.get("/", artworkController.getArtworks);
+router.get("/:id", artworkController.getArtworkById);
+
+router.use(verifyToken);
+router.use(isAuthorized("artist", "admin"));
+
+router.post("/", artworkController.createArtwork);
+router.put("/:id", artworkController.updateArtwork);
+router.delete("/:id", artworkController.deleteArtwork);
 
 module.exports = router;

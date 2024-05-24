@@ -1,15 +1,8 @@
 const Exhibition = require("../models/Exhibition");
-const mongoose = require("mongoose");
 
 const createExhibition = async (req, res, next) => {
   try {
-    const { name, description, date } = req.body;
-
-    const newExhibition = new Exhibition({
-      name,
-      description,
-      date,
-    });
+    const newExhibition = new Exhibition(req.body);
     const savedExhibition = await newExhibition.save();
 
     res.status(201).json(savedExhibition);
@@ -33,12 +26,7 @@ const getExhibitions = async (req, res, next) => {
       return res.status(204).json({ message: "No exhibitions found" });
     }
 
-    const totalDocs = await Exhibition.countDocuments();
-
-    res.status(200).json({
-      ...exhibitions,
-      totalDocs,
-    });
+    res.status(200).json(exhibitions);
   } catch (error) {
     next(error);
   }
@@ -47,11 +35,6 @@ const getExhibitions = async (req, res, next) => {
 const getExhibitionById = async (req, res, next) => {
   try {
     const exhibitionId = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(exhibitionId)) {
-      return res.status(400).json({ message: "Invalid exhibition ID" });
-    }
-
     const exhibition = await Exhibition.findById(exhibitionId);
 
     if (!exhibition) {
@@ -64,34 +47,18 @@ const getExhibitionById = async (req, res, next) => {
   }
 };
 
-const updateExhibition = async (req, res) => {
+const updateExhibition = async (req, res, next) => {
   try {
     const exhibitionId = req.params.id;
-    const { name, description, date } = req.body;
+    const updatedExhibition = await Exhibition.findByIdAndUpdate(
+      exhibitionId,
+      req.body,
+      { new: true }
+    );
 
-    if (!mongoose.Types.ObjectId.isValid(exhibitionId)) {
-      return res.status(400).json({ message: "Invalid exhibition ID" });
-    }
-
-    const exhibition = await Exhibition.findById(exhibitionId);
-
-    if (!exhibition) {
+    if (!updateExhibition) {
       return res.status(404).json({ message: "Exhibition not found" });
     }
-
-    if (name) {
-      exhibition.name = name;
-    }
-
-    if (description) {
-      exhibition.description = description;
-    }
-
-    if (date) {
-      exhibition.date = date;
-    }
-
-    const updatedExhibition = await exhibition.save();
 
     res.status(200).json(updatedExhibition);
   } catch (error) {
@@ -99,19 +66,16 @@ const updateExhibition = async (req, res) => {
   }
 };
 
-const deleteExhibitionById = async (req, res) => {
-  const exhibitionId = req.params.id;
-
+const deleteExhibition = async (req, res, next) => {
   try {
+    const exhibitionId = req.params.id;
     const deletedExhibition = await Exhibition.findByIdAndDelete(exhibitionId);
 
     if (!deletedExhibition) {
-      return res.status(404).json({ message: "Exhibition not found." });
+      return res.status(404).json({ message: "Exhibition not found" });
     }
 
-    return res
-      .status(200)
-      .json({ message: "Exhibition deleted successfully." });
+    return res.status(200).json({ message: "Exhibition deleted successfully" });
   } catch (error) {
     next(error);
   }
@@ -122,5 +86,5 @@ module.exports = {
   getExhibitions,
   getExhibitionById,
   updateExhibition,
-  deleteExhibitionById,
+  deleteExhibition,
 };

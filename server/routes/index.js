@@ -11,23 +11,19 @@ const orderRoutes = require("./orderRoutes");
 const ticketRoutes = require("./ticketRoutes");
 const payementRoutes = require("./paymentRoutes");
 const statsRoutes = require("./statsRoutes");
-
-const { verifyToken } = require("../middleware/jwt");
+const shoppingCartRoutes = require("./shoppingCartRoutes");
 
 router.use(authRoutes);
-
-router.use("/artworks", artworkRoutes);
-router.use("/exhibitions", exihibitionRoutes);
-
-router.use(verifyToken);
 
 router.use("/admins", adminRoutes);
 router.use("/artists", artistRoutes);
 router.use("/customers", customerRoutes);
+router.use("/artworks", artworkRoutes);
+router.use("/exhibitions", exihibitionRoutes);
 router.use("/categories", categoryRoutes);
 router.use("/tickets", ticketRoutes);
 router.use("/orders", orderRoutes);
 router.use("/payments", payementRoutes);
 router.use("/stats", statsRoutes);
-
+router.use("/cart", shoppingCartRoutes);
 module.exports = router;

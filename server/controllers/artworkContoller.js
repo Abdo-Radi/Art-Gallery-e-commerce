@@ -1,19 +1,9 @@
 const Artwork = require("../models/Artwork");
-const mongoose = require("mongoose");
 
 const createArtwork = async (req, res, next) => {
   try {
-    const { artist, category, title, description, price, image } = req.body;
-
-    const newArtwork = new Artwork({
-      artist,
-      category,
-      title,
-      description,
-      price,
-      image,
-    });
-    let savedArtwork = await newArtwork.save();
+    const newArtwork = new Artwork(req.body);
+    const savedArtwork = await newArtwork.save();
 
     const dataToSend = await Artwork.findById(savedArtwork._id)
       .populate({ path: "category", select: "name" })
@@ -27,29 +17,27 @@ const createArtwork = async (req, res, next) => {
 
 const getArtworks = async (req, res, next) => {
   try {
-    const { search, page } = req.query;
+    const { search, page, category, priceSort, maxPrice } = req.query;
     const options = {
       lean: true,
       populate: ["artist", "category"],
-      page,
+      page: page || 1,
+      limit: 9,
     };
 
     const searchQuery = {
-      title: { $regex: new RegExp(search, "i") },
+      ...(search && { title: { $regex: new RegExp(search, "i") } }),
+      ...(category && { category }),
+      ...(maxPrice && { price: { $lte: Number(maxPrice) } }),
     };
 
-    const artworks = await Artwork.paginate(searchQuery, options);
-
-    if (artworks.length === 0) {
-      return res.status(204).json({ message: "No artworks found" });
+    if (priceSort) {
+      options.sort = { price: priceSort === "lowToHigh" ? 1 : -1 };
     }
 
-    const totalDocs = await Artwork.countDocuments();
-
-    res.status(200).json({
-      ...artworks,
-      totalDocs,
-    });
+    const artworks = await Artwork.paginate(searchQuery, options);
+    
+    res.status(200).json(artworks);
   } catch (error) {
     next(error);
   }
@@ -58,11 +46,6 @@ const getArtworks = async (req, res, next) => {
 const getArtworkById = async (req, res) => {
   try {
     const artworkId = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(artworkId)) {
-      return res.status(400).json({ message: "Invalid artwork ID" });
-    }
-
     const artwork = await Artwork.findById(artworkId);
 
     if (!artwork) {
@@ -75,43 +58,23 @@ const getArtworkById = async (req, res) => {
   }
 };
 
-const searchArtworks = async (req, res) => {
-  try {
-    const query = req.query.query;
-
-    const artworks = await Artwork.find({
-      $or: [
-        { title: { $regex: query, $options: "i" } },
-        { description: { $regex: query, $options: "i" } },
-      ],
-    });
-
-    res.status(200).json(artworks);
-  } catch (error) {
-    next(error);
-  }
-};
-
 const updateArtwork = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
     const updateFields = req.body;
 
     const artwork = await Artwork.findById(artworkId);
-
-    const oldImage = artwork.image;
-
     if (!artwork) {
       return res.status(404).json({ message: "Artwork not found" });
     }
 
-    Object.keys(updateFields).forEach((field) => {
-      artwork[field] = updateFields[field];
-    });
+    if (updateFields.image === "") {
+      updateFields.image = artwork.image;
+    }
 
-    if (updateFields["image"] == "") artwork["image"] = oldImage;
+    Object.assign(artwork, updateFields);
 
-    let updateArtwork = await artwork.save();
+    const updateArtwork = await artwork.save();
 
     const dataToSend = await Artwork.findById(updateArtwork._id)
       .populate({ path: "category", select: "name" })
@@ -123,27 +86,58 @@ const updateArtwork = async (req, res, next) => {
   }
 };
 
-const deleteArtworkById = async (req, res) => {
-  const artworkId = req.params.id;
-
+const deleteArtwork = async (req, res) => {
   try {
+    const artworkId = req.params.id;
     const deletedArtwork = await Artwork.findByIdAndDelete(artworkId);
 
     if (!deletedArtwork) {
-      return res.status(404).json({ message: "Artwork not found." });
+      return res.status(404).json({ message: "Artwork not found" });
     }
 
-    return res.status(200).json({ message: "Artwork deleted successfully." });
+    return res.status(200).json({ message: "Artwork deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const addToCart = async (req, res, next) => {
+  const { id } = req.params;
+  // const customer = req.customer;
+
+  try {
+    const artwork = await Artwork.findById(id);
+    if (!artwork) {
+      return res.status(404).send("Artwork not found");
+    }
+
+    const existingCartItem = await Cart.findOne({
+      // customer_id: customer._id,
+      artwork: artwork._id,
+    });
+
+    if (existingCartItem) {
+      return res.status(400).send("Artwork is already in the cart");
+    }
+
+    const newCartItem = new Cart({
+      // customer_id: customer._id,
+      artwork: artwork,
+    });
+
+    await newCartItem.save();
+
+    res.status(200).send("Artwork added to cart successfully");
   } catch (error) {
     next(error);
   }
 };
 
 module.exports = {
+  addToCart,
   createArtwork,
   getArtworks,
   getArtworkById,
-  searchArtworks,
   updateArtwork,
-  deleteArtworkById,
+  deleteArtwork,
 };

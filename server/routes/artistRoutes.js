@@ -1,15 +1,18 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const artistController = require('../controllers/artistController');
-const { isAuthorized } = require('../middleware/authorization');
+const artistController = require("../controllers/artistController");
+const { isAuthorized } = require("../middleware/authorization");
+const { verifyToken } = require("../middleware/jwt");
 
-router.use(isAuthorized('admin'));
+router.use(verifyToken);
+router.get("/", artistController.getArtists);
+router.get("/:id", artistController.getArtistById);
 
-router.get('/', artistController.getArtists);
-router.post('/', artistController.addArtist);
-router.get('/search', artistController.searchArtists);
-router.get('/:id', artistController.getArtistById);
-router.put('/:id', artistController.updateArtist);
-router.delete('/:id', artistController.deleteArtist);
+router.use(verifyToken);
+router.use(isAuthorized("admin"));
+
+router.post("/", artistController.addArtist);
+router.put("/:id", artistController.updateArtist);
+router.delete("/:id", artistController.deleteArtist);
 
 module.exports = router;

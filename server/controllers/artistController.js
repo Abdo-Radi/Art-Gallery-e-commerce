@@ -1,34 +1,4 @@
 const Artist = require("../models/Artist");
-const { hash } = require("../utils/passwordUtils");
-
-const getArtists = async (req, res, next) => {
-  try {
-    const { search, page } = req.query;
-    const options = { lean: true, page };
-
-    const searchQuery = {
-      $or: [
-        { firstName: { $regex: new RegExp(search, "i") } },
-        { lastName: { $regex: new RegExp(search, "i") } },
-      ],
-    };
-
-    const artists = await Artist.paginate(searchQuery, options);
-
-    if (artists.length === 0) {
-      return res.status(204).json({ message: "No artists found" });
-    }
-
-    const totalDocs = await Artist.countDocuments();
-
-    res.status(200).json({
-      ...artists,
-      totalDocs,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 const addArtist = async (req, res, next) => {
   try {
@@ -49,11 +19,34 @@ const addArtist = async (req, res, next) => {
   }
 };
 
+const getArtists = async (req, res, next) => {
+  try {
+    const { search, page } = req.query;
+    const options = { lean: true, page };
+
+    const searchQuery = {
+      $or: [
+        { firstName: { $regex: new RegExp(search, "i") } },
+        { lastName: { $regex: new RegExp(search, "i") } },
+      ],
+    };
+
+    const artists = await Artist.paginate(searchQuery, options);
+
+    if (artists.length === 0) {
+      return res.status(204).json({ message: "No artists found" });
+    }
+
+    res.status(200).json(artists);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getArtistById = async (req, res, next) => {
   try {
-    const id = req.params.id;
-
-    const artist = await Artist.findById(id);
+    const artistId = req.params.id;
+    const artist = await Artist.findById(artistId);
 
     if (!artist) {
       return res.status(404).json({ message: "Artist not found" });
@@ -65,44 +58,17 @@ const getArtistById = async (req, res, next) => {
   }
 };
 
-const searchArtists = async (req, res) => {
-  const { query } = req.query;
-
-  try {
-    const regexQuery = new RegExp(query, "i");
-
-    const filteredArtists = await Artist.find({
-      $or: [
-        { firstName: { $regex: regexQuery } },
-        { lastName: { $regex: regexQuery } },
-        { email: { $regex: regexQuery } },
-        { username: { $regex: regexQuery } },
-        { bio: { $regex: regexQuery } },
-      ],
-    });
-
-    res.status(200).json({ data: filteredArtists });
-  } catch (error) {
-    next(error);
-  }
-};
-
 const updateArtist = async (req, res, next) => {
-  const id = req.params.id;
-  const updateFields = req.body;
-
   try {
-    const artist = await Artist.findById(id);
+    const artistId = req.params.id;
+    const updateFields = req.body;
 
+    const artist = await Artist.findById(artistId);
     if (!artist) {
-      return res.status(404).json({ message: "Invalid artist id" });
+      return res.status(404).json({ message: "Artist not found" });
     }
 
-    Object.keys(updateFields).forEach((field) => {
-      artist[field] = updateFields[field];
-    });
-
-    artist["lastUpdate"] = new Date();
+    Object.assign(artist, { ...updateFields, lastUpdate: new Date() });
 
     const updatedArtist = await artist.save();
 
@@ -113,10 +79,9 @@ const updateArtist = async (req, res, next) => {
 };
 
 const deleteArtist = async (req, res, next) => {
-  const id = req.params.id;
-
   try {
-    const deleteArtist = await Artist.findByIdAndDelete(id);
+    const artistId = req.params.id;
+    const deleteArtist = await Artist.findByIdAndDelete(artistId);
 
     if (!deleteArtist) {
       return res.status(404).json({ message: "Artist not found" });
@@ -132,7 +97,6 @@ module.exports = {
   getArtists,
   addArtist,
   getArtistById,
-  searchArtists,
   updateArtist,
   deleteArtist,
 };

@@ -1,18 +1,14 @@
-const Admin = require('../models/Admin');
-const { hash } = require('../utils/passwordUtils');
+const Admin = require("../models/Admin");
+const { hash } = require("../utils/passwordUtils");
 
 const addAdmin = async (req, res, next) => {
-  const { firstName, lastName, email, username, password } = req.body;
-
   try {
+    const { password } = req.body;
     const hashedPassword = await hash(password);
 
     const newAdmin = await Admin.create({
-      firstName,
-      lastName,
-      email,
-      username,
-      password: hashedPassword
+      ...req.body,
+      password: hashedPassword,
     });
 
     res.status(201).json(newAdmin);
@@ -39,9 +35,11 @@ const getAdminById = async (req, res, next) => {
   try {
     const adminId = req.params.id;
     const admin = await Admin.findById(adminId);
+
     if (!admin) {
-      return res.status(404).json({ message: 'Admin not found' });
+      return res.status(404).json({ message: "Admin not found" });
     }
+
     res.status(200).json(admin);
   } catch (error) {
     next(error);
@@ -49,22 +47,11 @@ const getAdminById = async (req, res, next) => {
 };
 
 const updateAdmin = async (req, res, next) => {
-  const id = req.params.id;
-  const { firstName, lastName, email, password } = req.body;
-
   try {
-    const hashedPassword = await hash(password);
-    const updatedAdmin = await Admin.findByIdAndUpdate(
-      id,
-      {
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword,
-        lastUpdate: new Date(),
-      },
-      { new: true }
-    );
+    const adminId = req.params.id;
+    const updatedAdmin = await Admin.findByIdAndUpdate(adminId, req.body, {
+      new: true,
+    });
 
     if (!updatedAdmin) {
       return res.status(404).json({ message: "Admin not found" });
@@ -77,10 +64,9 @@ const updateAdmin = async (req, res, next) => {
 };
 
 const deleteAdmin = async (req, res, next) => {
-  const id = req.params.id;
-
   try {
-    const deletedAdmin = await Admin.findByIdAndDelete(id);
+    const adminId = req.params.id;
+    const deletedAdmin = await Admin.findByIdAndDelete(adminId);
 
     if (!deletedAdmin) {
       return res.status(404).json({ message: "Admin not found" });
@@ -97,5 +83,5 @@ module.exports = {
   getAdmins,
   getAdminById,
   updateAdmin,
-  deleteAdmin
+  deleteAdmin,
 };

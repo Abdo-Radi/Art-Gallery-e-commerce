@@ -2,16 +2,12 @@ const Customer = require("../models/Customer");
 const { hash } = require("../utils/passwordUtils");
 
 const addCustomer = async (req, res, next) => {
-  const { firstName, lastName, email, username, password } = req.body;
-
   try {
+    const { password } = req.body;
     const hashedPassword = await hash(password);
 
     const newCustomer = await Customer.create({
-      firstName,
-      lastName,
-      email,
-      username,
+      ...req.body,
       password: hashedPassword,
     });
 
@@ -21,7 +17,7 @@ const addCustomer = async (req, res, next) => {
   }
 };
 
-const getCustomers = async (req, res) => {
+const getCustomers = async (req, res, next) => {
   try {
     const { search, page } = req.query;
     const options = { lean: true, page };
@@ -39,12 +35,7 @@ const getCustomers = async (req, res) => {
       return res.status(204).json({ message: "No customers found" });
     }
 
-    const totalDocs = await Customer.countDocuments();
-
-    res.status(200).json({
-      ...customers,
-      totalDocs,
-    });
+    res.status(200).json(customers);
   } catch (error) {
     next(error);
   }
@@ -59,48 +50,40 @@ const getCustomerById = async (req, res) => {
     }
     res.status(200).json(customer);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    next(error);
   }
 };
 
-const searchCustomer = async (req, res) => {
-  res.status(501).json({ message: "Search functionality not implemented yet" });
-};
-
-const updateCustomer = async (req, res) => {
+const updateCustomer = async (req, res, next) => {
   try {
     const customerId = req.params.id;
-    const newData = req.body;
     const updatedCustomer = await Customer.findByIdAndUpdate(
       customerId,
-      newData,
+      req.body,
       { new: true }
     );
+
     if (!updatedCustomer) {
       return res.status(404).json({ message: "Customer not found" });
     }
+
     res.status(200).json(updatedCustomer);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    next(error);
   }
 };
 
-const deleteCustomer = async (req, res) => {
+const deleteCustomer = async (req, res, next) => {
   try {
     const customerId = req.params.id;
     const deletedCustomer = await Customer.findByIdAndDelete(customerId);
+
     if (!deletedCustomer) {
       return res.status(404).json({ message: "Customer not found" });
     }
     res.status(200).json({ message: "Customer deleted successfully" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    next(error);
   }
 };
 
@@ -108,7 +91,6 @@ module.exports = {
   addCustomer,
   getCustomers,
   getCustomerById,
-  searchCustomer,
   updateCustomer,
   deleteCustomer,
 };
