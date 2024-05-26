@@ -101,6 +101,9 @@ const Exhibition = () => {
             <thead>
               <tr className="bg-gray-2 text-left dark:bg-meta-4">
                 <th className="p-4 font-medium text-black dark:text-white">
+                  Image
+                </th>
+                <th className="p-4 font-medium text-black dark:text-white">
                   Name
                 </th>
                 <th className="p-4 font-medium text-black dark:text-white">
@@ -117,6 +120,15 @@ const Exhibition = () => {
             <tbody>
               {list.map((exhibition) => (
                 <tr key={exhibition._id}>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    <img
+                      src={
+                        exhibition.image || "https://via.placeholder.com/150"
+                      }
+                      alt={exhibition.name}
+                      className="max-w-[100px] h-auto"
+                    />
+                  </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {exhibition.name}
                   </td>
