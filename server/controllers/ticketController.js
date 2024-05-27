@@ -5,7 +5,12 @@ const createTicket = async (req, res, next) => {
     const newTicket = new Ticket(req.body);
     const savedTicket = await newTicket.save();
 
-    res.status(201).json(savedTicket);
+    const dataToSend = await Ticket.findById(savedTicket._id).populate({
+      path: "exhibition",
+      select: "name",
+    });
+
+    res.status(201).json(dataToSend);
   } catch (error) {
     next(error);
   }
@@ -13,18 +18,25 @@ const createTicket = async (req, res, next) => {
 
 const getTickets = async (req, res, next) => {
   try {
-    const { page } = req.query;
+    const { search, page, exhibition, priceSort, maxPrice } = req.query;
     const options = {
       lean: true,
       populate: "exhibition",
-      page,
+      page: page || 1,
+      limit: 9,
     };
-
-    const tickets = await Ticket.paginate({}, options);
-
-    if (tickets.length === 0) {
-      return res.status(204).json({ message: "No tickets found" });
+    console.log(search,exhibition,priceSort,maxPrice)
+    const searchQuery = {
+      ...(search && { "exhibition.name": { $regex: new RegExp(search, "i") } }),
+      ...(exhibition && { exhibition }),
+      ...(maxPrice && { price: { $lte: Number(maxPrice) } }),
+    };
+    console.log(searchQuery)
+    if (priceSort) {
+      options.sort = { price: priceSort === "lowToHigh" ? 1 : -1 };
     }
+
+    const tickets = await Ticket.paginate(searchQuery, options);
 
     res.status(200).json(tickets);
   } catch (error) {
@@ -35,7 +47,10 @@ const getTickets = async (req, res, next) => {
 const getTicketById = async (req, res, next) => {
   try {
     const ticketId = req.params.id;
-    const ticket = await Ticket.findById(ticketId);
+    const ticket = await Ticket.findById(ticketId).populate({
+      path: "exhibition",
+      select: "name",
+    });
 
     if (!ticket) {
       return res.status(404).json({ message: "Ticket not found" });

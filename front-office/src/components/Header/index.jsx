@@ -26,7 +26,7 @@ const Header = () => {
     { name: "Home", to: "/" },
     { name: "About", to: "/about" },
     { name: "Artworks", to: "/artworks" },
-    { name: "Exhibitions", to: "/exhibitions" },
+    { name: "Tickets", to: "/tickets" },
   ];
 
   const dispatch = useDispatch();
