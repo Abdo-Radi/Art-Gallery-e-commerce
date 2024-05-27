@@ -17,6 +17,7 @@ import axiosInstance from "@/api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/user";
+import { fetchCart } from "@/redux/slices/cart";
 
 const formSchema = z.object({
   identifier: z.string().nonempty("Required Field"),
@@ -46,10 +47,10 @@ const Login = ({ onClose }) => {
       const { user, token } = response.data;
 
       dispatch(setUser(user));
+      dispatch(fetchCart(user._id));
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      navigate("/");
       onClose();
     } catch (error) {
       console.log(error);

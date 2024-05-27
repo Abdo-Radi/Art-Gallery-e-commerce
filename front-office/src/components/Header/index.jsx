@@ -19,6 +19,7 @@ import {
 import { LuUser, LuLogOut } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "@/redux/slices/user";
+import { clearCart } from "@/redux/slices/cart";
 
 const Header = () => {
   const menu = [
@@ -31,6 +32,7 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const { data } = useSelector((state) => state.currentUser);
+  const { items } = useSelector((state) => state.cart);
 
   const [open, setOpen] = useState(false);
   const [loginForm, setLoginForm] = useState(false);
@@ -39,6 +41,7 @@ const Header = () => {
     dispatch(clearUser());
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    dispatch(clearCart());
   };
 
   const close = () => {
@@ -61,10 +64,15 @@ const Header = () => {
           </ul>
         </nav>
         <div className="flex items-center">
-          <button className="mr-4">
+          <button className="mr-4 relative">
             <Link to="/cart">
-              <RiShoppingCartLine size={24} />
+              <RiShoppingCartLine size={28} />
             </Link>
+            {items.length > 0 && (
+              <p className="flex justify-center items-center absolute top-0 right-0 bg-destructive rounded-full text-[60%] w-[14px] h-[14px] text-white">
+                {items.length}
+              </p>
+            )}
           </button>
           {data ? (
             <DropdownMenu>
@@ -112,7 +120,7 @@ const Header = () => {
             }}
             className="ml-4 lg:hidden"
           >
-            <RiMenuLine size={24} />
+            <RiMenuLine size={28} />
           </button>
         </div>
         {open && <MobileMenu menu={menu} onClose={close} />}

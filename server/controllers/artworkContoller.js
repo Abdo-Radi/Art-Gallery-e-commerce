@@ -36,7 +36,7 @@ const getArtworks = async (req, res, next) => {
     }
 
     const artworks = await Artwork.paginate(searchQuery, options);
-    
+
     res.status(200).json(artworks);
   } catch (error) {
     next(error);
@@ -46,7 +46,9 @@ const getArtworks = async (req, res, next) => {
 const getArtworkById = async (req, res) => {
   try {
     const artworkId = req.params.id;
-    const artwork = await Artwork.findById(artworkId);
+    const artwork = await Artwork.findById(artworkId)
+      .populate({ path: "category", select: "name" })
+      .populate({ path: "artist", select: ["firstName", "lastName"] });
 
     if (!artwork) {
       return res.status(404).json({ message: "Artwork not found" });

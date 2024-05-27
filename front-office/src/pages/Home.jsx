@@ -22,8 +22,8 @@ const Home = () => {
     dispatch(getExhibitions());
   }, []);
   return (
-    <>
-      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+    <main>
+      <section className="w-full py-12 md:py-24">
         <div className="container px-4 md:px-6 lg:px-20">
           <div className="grid gap-6 lg:grid-cols-[1fr_450px] lg:gap-12 xl:grid-cols-[1fr_550px]">
             <div className="flex flex-col justify-center space-y-4">
@@ -55,7 +55,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
+      <section className="w-full py-12 md:py-24 bg-gray-100 dark:bg-gray-800">
         <div className="container px-4 md:px-6 lg:px-20">
           <div className="space-y-4 text-center">
             <div className="space-y-2">
@@ -89,7 +89,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <section className="w-full py-12 md:py-24 lg:py-32">
+      <section className="w-full py-12 md:py-24">
         <div className="container px-4 md:px-6 lg:px-20">
           <div className="grid items-center gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_550px]">
             <div className="flex flex-col justify-center space-y-4">
@@ -124,7 +124,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
+      <section className="w-full py-12 md:py-24 bg-gray-100 dark:bg-gray-800">
         <div className="container px-4 md:px-6 lg:px-20">
           <div className="space-y-4 text-center">
             <div className="space-y-2">
@@ -150,7 +150,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <section className="w-full py-12 md:py-24 lg:py-32 border-t">
+      <section className="w-full py-12 md:py-24">
         <div className="container px-4 md:px-6 lg:px-20">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
@@ -171,7 +171,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
+      <section className="w-full py-12 md:py-24 bg-gray-100">
         <div className="container px-4 md:px-6 lg:px-20">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
@@ -209,7 +209,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 };
 

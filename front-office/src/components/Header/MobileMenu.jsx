@@ -14,7 +14,7 @@ const MobileMenu = ({ menu, onClose }) => {
         </ul>
       </nav>
       <button onClick={onClose} className="absolute top-6 right-4 md:right-6">
-        <RiCloseFill size={24} />
+        <RiCloseFill size={28} />
       </button>
     </div>
   );

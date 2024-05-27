@@ -24,12 +24,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { addItemToCart } from "@/redux/slices/cart";
 
 const Artworks = () => {
   const dispatch = useDispatch();
 
   const { list: artworks, pages } = useSelector((state) => state.artworks);
   const { list: categories } = useSelector((state) => state.categories);
+  const { data: userData } = useSelector((state) => state.currentUser);
 
   const [price, setPrice] = useState(2500);
   const [currentPage, setCurrentPage] = useState(1);
@@ -136,20 +138,19 @@ const Artworks = () => {
               key={i}
               className="group relative overflow-hidden rounded-lg shadow-lg"
             >
-              <Link className="absolute inset-0 z-10" href="#">
-                <span className="sr-only">View artwork</span>
+              <Link to={artwork._id}>
+                <img
+                  alt="Artwork"
+                  className="h-64 w-full object-cover transition-all duration-300 group-hover:scale-105"
+                  height={400}
+                  src={artwork.image}
+                  style={{
+                    aspectRatio: "400/400",
+                    objectFit: "cover",
+                  }}
+                  width={400}
+                />
               </Link>
-              <img
-                alt="Artwork 5"
-                className="h-64 w-full object-cover transition-all duration-300 group-hover:scale-105"
-                height={400}
-                src={artwork.image}
-                style={{
-                  aspectRatio: "400/400",
-                  objectFit: "cover",
-                }}
-                width={400}
-              />
               <div className="bg-white p-4 dark:bg-gray-900">
                 <h3 className="text-lg font-semibold">{artwork.title}</h3>
                 <p className="text-gray-500 dark:text-gray-400">
@@ -159,7 +160,21 @@ const Artworks = () => {
                   <span className="text-lg font-semibold">
                     {artwork.price} DH
                   </span>
-                  <Button size="sm">Add to Cart</Button>
+                  <Button
+                    onClick={() => {
+                      dispatch(
+                        addItemToCart({
+                          customer: userData._id,
+                          product: artwork._id,
+                          productType: "Artwork",
+                          quantity: 1,
+                        })
+                      );
+                    }}
+                    size="sm"
+                  >
+                    Add to Cart
+                  </Button>
                 </div>
               </div>
             </div>
