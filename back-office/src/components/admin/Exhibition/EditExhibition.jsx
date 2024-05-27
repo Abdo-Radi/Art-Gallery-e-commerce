@@ -8,7 +8,7 @@ import axios from "axios";
 
 const EditExhibition = ({ exhibition, onCancel }) => {
   const dispatch = useDispatch();
-  const [imageUrl, setImageUrl] = useState(exhibition.image || ""); // Initialize with existing image URL if available
+  const [imageUrl, setImageUrl] = useState(""); // Initialize with existing image URL if available
 
   const schema = z.object({
     name: z.string().nonempty("Field cannot be empty"),
@@ -47,6 +47,7 @@ const EditExhibition = ({ exhibition, onCancel }) => {
   };
 
   const onSubmit = (data) => {
+    console.log(imageUrl);
     const exhibitionData = {
       ...data,
       image: imageUrl,

@@ -50,15 +50,23 @@ const getExhibitionById = async (req, res, next) => {
 const updateExhibition = async (req, res, next) => {
   try {
     const exhibitionId = req.params.id;
-    const updatedExhibition = await Exhibition.findByIdAndUpdate(
-      exhibitionId,
-      req.body,
-      { new: true }
-    );
+    const updateFields = req.body;
 
-    if (!updateExhibition) {
+    const exhibition = await Exhibition.findById(exhibitionId);
+    if (!exhibition) {
       return res.status(404).json({ message: "Exhibition not found" });
     }
+
+    console.log(updateFields);
+    console.log(exhibition);
+
+    if (updateFields.image === "") {
+      updateFields.image = exhibition.image;
+    }
+
+    Object.assign(exhibition, updateFields);
+
+    const updatedExhibition = await exhibition.save();
 
     res.status(200).json(updatedExhibition);
   } catch (error) {

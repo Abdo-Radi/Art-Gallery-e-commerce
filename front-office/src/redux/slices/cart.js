@@ -37,6 +37,30 @@ export const removeItemFromCart = createAsyncThunk(
   }
 );
 
+export const increaseItemQuantity = createAsyncThunk(
+  "cart/increaseQuantity",
+  async (body, { rejectWithValue }) => {
+    return axiosInstance
+      .post("/cart/increase", body)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => rejectWithValue(err.response.data.message));
+  }
+);
+
+export const decreaseItemQuantity = createAsyncThunk(
+  "cart/decreaseQuantity",
+  async (body, { rejectWithValue }) => {
+    return axiosInstance
+      .post("/cart/decrease", body)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => rejectWithValue(err.response.data.message));
+  }
+);
+
 const initialState = {
   items: [],
   reset: false,
@@ -69,6 +93,20 @@ const cartSlice = createSlice({
         state.reset = !state.reset;
       })
       .addCase(removeItemFromCart.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+
+      .addCase(increaseItemQuantity.fulfilled, (state) => {
+        state.reset = !state.reset;
+      })
+      .addCase(increaseItemQuantity.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+
+      .addCase(decreaseItemQuantity.fulfilled, (state) => {
+        state.reset = !state.reset;
+      })
+      .addCase(decreaseItemQuantity.rejected, (state, action) => {
         state.error = action.payload;
       });
   },

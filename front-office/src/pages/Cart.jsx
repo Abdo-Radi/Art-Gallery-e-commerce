@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { removeItemFromCart } from "@/redux/slices/cart";
+import { Separator } from "@/components/ui/separator";
+import {
+  decreaseItemQuantity,
+  increaseItemQuantity,
+  removeItemFromCart,
+} from "@/redux/slices/cart";
 import { LuMinus } from "react-icons/lu";
 import { LuPlus } from "react-icons/lu";
 import { LuTrash } from "react-icons/lu";
@@ -72,7 +76,7 @@ const Cart = () => {
                   alt="Product"
                   className="rounded-md"
                   height={100}
-                  src={item.itemDetails.image}
+                  src={item.itemDetails.exhibition.image}
                   style={{
                     aspectRatio: "100/100",
                     objectFit: "cover",
@@ -81,26 +85,59 @@ const Cart = () => {
                 />
                 <div className="flex-1">
                   <h3 className="text-lg font-medium">
-                    {item.itemDetails.title}
+                    {item.itemDetails.exhibition.name}
                   </h3>
                   <div className="mt-2 flex items-center gap-2">
-                    <Button size="icon" variant="outline">
+                    <Button
+                      onClick={() => {
+                        dispatch(
+                          decreaseItemQuantity({
+                            customer: userData._id,
+                            product: item.product,
+                            productType: "Ticket",
+                          })
+                        );
+                      }}
+                      size="icon"
+                      variant="outline"
+                    >
                       <LuMinus className="h-4 w-4" />
                     </Button>
-                    <Input
-                      className="w-16 rounded-md border border-gray-300 px-2 py-1 text-center dark:border-gray-600"
-                      defaultValue={1}
-                      min={1}
-                      type="number"
-                    />
-                    <Button size="icon" variant="outline">
+                    <p className="px-2">{item.quantity}</p>
+                    <Button
+                      onClick={() => {
+                        dispatch(
+                          increaseItemQuantity({
+                            customer: userData._id,
+                            product: item.product,
+                            productType: "Ticket",
+                          })
+                        );
+                      }}
+                      size="icon"
+                      variant="outline"
+                    >
                       <LuPlus className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-medium">$500.00</p>
-                  <Button size="icon" variant="outline">
+                  <p className="text-lg font-medium">
+                    {item.itemDetails.price} DH
+                  </p>
+                  <Button
+                    onClick={() => {
+                      dispatch(
+                        removeItemFromCart({
+                          customer: userData._id,
+                          product: item.product,
+                          productType: "Ticket",
+                        })
+                      );
+                    }}
+                    size="icon"
+                    variant="outline"
+                  >
                     <LuTrash className="h-4 w-4" />
                   </Button>
                 </div>
@@ -122,7 +159,7 @@ const Cart = () => {
               {totalPrice >= 1000 ? "Free" : "50 DH"}
             </p>
           </div>
-          {/* <Separator /> */}
+          <Separator />
           <div className="flex items-center justify-between">
             <p className="text-lg font-bold">Total</p>
             <p className="text-lg font-bold">{totalPrice} DH</p>

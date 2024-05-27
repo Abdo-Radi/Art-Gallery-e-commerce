@@ -74,7 +74,9 @@ const getItems = async (req, res, next) => {
 
     const ticketDetails = await Promise.all(
       ticketItems.map(async (item) => {
-        const ticket = await Ticket.findById(item.product);
+        const ticket = await Ticket.findById(item.product).populate({
+          path: "exhibition",
+        });
         return { ...item._doc, itemDetails: ticket };
       })
     );
@@ -89,7 +91,7 @@ const getItems = async (req, res, next) => {
   }
 };
 
-const removeItem = async (req, res) => {
+const removeItem = async (req, res, next) => {
   try {
     const { customer, product, productType } = req.body;
 
@@ -113,8 +115,86 @@ const removeItem = async (req, res) => {
   }
 };
 
+const increaseItemQuantity = async (req, res, next) => {
+  try {
+    const { customer, product, productType } = req.body;
+
+    const cart = await ShoppingCart.findOne({ customer });
+
+    if (cart) {
+      const itemIndex = cart.items.findIndex(
+        (item) =>
+          item.product.toString() === product &&
+          item.productType === productType
+      );
+
+      if (itemIndex > -1) {
+        // Item exists in cart, increase quantity
+        cart.items[itemIndex].quantity += 1;
+        cart.updatedAt = Date.now();
+        await cart.save();
+        return res
+          .status(200)
+          .json({ success: true, message: "Item quantity increased" });
+      } else {
+        return res
+          .status(404)
+          .json({ success: false, message: "Item not found in cart" });
+      }
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, message: "Cart not found" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+const decreaseItemQuantity = async (req, res, next) => {
+  try {
+    const { customer, product, productType } = req.body;
+
+    const cart = await ShoppingCart.findOne({ customer });
+
+    if (cart) {
+      const itemIndex = cart.items.findIndex(
+        (item) =>
+          item.product.toString() === product &&
+          item.productType === productType
+      );
+
+      if (itemIndex > -1) {
+        // Item exists in cart, decrease quantity
+        cart.items[itemIndex].quantity -= 1;
+        if (cart.items[itemIndex].quantity <= 0) {
+          // Remove item if quantity is zero or less
+          cart.items.splice(itemIndex, 1);
+        }
+        cart.updatedAt = Date.now();
+        await cart.save();
+        return res
+          .status(200)
+          .json({ success: true, message: "Item quantity decreased" });
+      } else {
+        return res
+          .status(404)
+          .json({ success: false, message: "Item not found in cart" });
+      }
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, message: "Cart not found" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addItem,
   getItems,
   removeItem,
+  increaseItemQuantity,
+  decreaseItemQuantity,
 };

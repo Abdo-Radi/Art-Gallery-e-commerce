@@ -14,7 +14,7 @@ const ConfigRoutes = () => {
       <Route path="/" element={<DefaultLayout />}>
         <Route index element={<Home />} />
         <Route path="/artworks" element={<Artworks />} />
-        <Route path="/tickets" element={<Tickets />} />
+        <Route path="/exhibitions" element={<Tickets />} />
         <Route path="/artworks/:id" element={<ArtworkDetail />} />
         <Route path="/cart" element={<Cart />} />
       </Route>

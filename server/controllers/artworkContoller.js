@@ -76,9 +76,9 @@ const updateArtwork = async (req, res, next) => {
 
     Object.assign(artwork, updateFields);
 
-    const updateArtwork = await artwork.save();
+    const updatedArtwork = await artwork.save();
 
-    const dataToSend = await Artwork.findById(updateArtwork._id)
+    const dataToSend = await Artwork.findById(updatedArtwork._id)
       .populate({ path: "category", select: "name" })
       .populate({ path: "artist", select: ["firstName", "lastName"] });
 

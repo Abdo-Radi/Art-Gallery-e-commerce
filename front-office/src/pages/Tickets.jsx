@@ -24,12 +24,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { addItemToCart } from "@/redux/slices/cart";
 
 const Tickets = () => {
   const dispatch = useDispatch();
   const { list: tickets, pages } = useSelector((state) => state.tickets);
-  const { list: categories } = useSelector((state) => state.categories);
-  const [price, setPrice] = useState(2500);
+  const { data: userData } = useSelector((state) => state.currentUser);
+
+  const [price, setPrice] = useState(750);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [params, setParams] = useState({});
@@ -40,14 +42,14 @@ const Tickets = () => {
 
   const resetParams = () => {
     setParams({});
-    setPrice(2500);
+    setPrice(750);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
     handleParams("page", page);
   };
-  console.log("params",params)
+  console.log("params", params);
   useEffect(() => {
     dispatch(getTickets(params));
     dispatch(getCategories());
@@ -87,27 +89,6 @@ const Tickets = () => {
           </Select>
         </div>
         <div className="flex flex-col space-y-2">
-          <Label htmlFor="category">Category</Label>
-          <Select
-            id="category"
-            onValueChange={(value) => handleParams("category", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select a category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Categories</SelectLabel>
-                {categories.map((category, i) => (
-                  <SelectItem key={i} value={category._id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex flex-col space-y-2">
           <div className="flex justify-between items-center">
             <Label htmlFor="price">Price Range</Label>
             <p>{price} DH</p>
@@ -118,8 +99,8 @@ const Tickets = () => {
               handleParams("maxPrice", value[0]);
             }}
             defaultValue={[price]}
-            max={5000}
-            step={100}
+            max={1500}
+            step={50}
           />
         </div>
         <div className="flex flex-col space-y-2">
@@ -133,12 +114,6 @@ const Tickets = () => {
               key={i}
               className="group relative overflow-hidden rounded-lg shadow-lg"
             >
-              <Link
-                className="absolute inset-0 z-10"
-                to={`/ticket/${ticket._id}`}
-              >
-                <span className="sr-only">View ticket</span>
-              </Link>
               <img
                 alt={ticket.exhibition.name}
                 className="h-64 w-full object-cover transition-all duration-300 group-hover:scale-105"
@@ -161,7 +136,21 @@ const Tickets = () => {
                   <span className="text-lg font-semibold">
                     Quantity: {ticket.quantity}
                   </span>
-                  <Button size="sm">Buy Now</Button>
+                  <Button
+                    onClick={() => {
+                      dispatch(
+                        addItemToCart({
+                          customer: userData._id,
+                          product: ticket._id,
+                          productType: "Ticket",
+                          quantity: 1,
+                        })
+                      );
+                    }}
+                    size="sm"
+                  >
+                    Add to Cart
+                  </Button>
                 </div>
               </div>
             </div>
