@@ -1,5 +1,6 @@
 import Login from "@/components/Login";
 import DefaultLayout from "@/layout/DefaultLayou";
+import About from "@/pages/About";
 import ArtworkDetail from "@/pages/ArtworkDetail";
 import Artworks from "@/pages/Artworks";
 import Tickets from "@/pages/Tickets";
@@ -14,6 +15,7 @@ const ConfigRoutes = () => {
       <Route path="/" element={<DefaultLayout />}>
         <Route index element={<Home />} />
         <Route path="/artworks" element={<Artworks />} />
+        <Route path="/about" element={<About />} />
         <Route path="/exhibitions" element={<Tickets />} />
         <Route path="/artworks/:id" element={<ArtworkDetail />} />
         <Route path="/cart" element={<Cart />} />
