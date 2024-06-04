@@ -3,7 +3,8 @@ import artworkReducer from "./slices/artwork";
 import exhibitionReducer from "./slices/exhibition";
 import categoryReducer from "./slices/category";
 import userReducer from "./slices/user";
-import ticketReducer from "./slices/ticket"
+import ticketReducer from "./slices/ticket";
+import cartReducer from "./slices/cart";
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
     exhibitions: exhibitionReducer,
     categories: categoryReducer,
     currentUser: userReducer,
-    tickets:ticketReducer
+    tickets: ticketReducer,
+    cart: cartReducer,
   },
 });
 

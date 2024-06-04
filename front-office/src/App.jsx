@@ -3,10 +3,13 @@ import { jwtDecode } from "jwt-decode";
 
 import ConfigRoutes from "./routes";
 import { clearUser, setUser } from "./redux/slices/user";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCart } from "./redux/slices/cart";
 
 function App() {
   const dispatch = useDispatch();
+
+  const { reset } = useSelector((state) => state.cart);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -20,9 +23,10 @@ function App() {
         dispatch(clearUser());
       } else {
         dispatch(setUser(JSON.parse(user)));
+        dispatch(fetchCart(JSON.parse(user)._id));
       }
     }
-  }, []);
+  }, [reset]);
 
   return <ConfigRoutes />;
 }

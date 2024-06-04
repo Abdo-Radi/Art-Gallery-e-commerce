@@ -28,6 +28,11 @@ const artworkSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["available", "sold"],
+    default: "available",
+  },
 });
 
 artworkSchema.plugin(mongoosePagination);

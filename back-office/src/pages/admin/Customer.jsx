@@ -5,6 +5,7 @@ import { deleteCustomer, getCustomers } from "../../redux/slices/customer";
 import AddCustomer from "../../components/admin/Customer/AddCustomer";
 import EditCustomer from "../../components/admin/Customer/EditCustomer";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { LuInbox } from "react-icons/lu";
 
 const CustomerPage = () => {
   const dispatch = useDispatch();
@@ -138,6 +139,13 @@ const CustomerPage = () => {
             </tbody>
           </table>
         </div>
+
+        {!list.length && (
+          <div className="w-full flex flex-col justify-center items-center p-6">
+            <LuInbox size={40} />
+            <p>No Data</p>
+          </div>
+        )}
 
         {pages > 1 && (
           <div className="my-4 flex justify-center space-x-2">
