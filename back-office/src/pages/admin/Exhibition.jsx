@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import AddExhibition from "../../components/admin/Exhibition/AddExhibition";
 import EditExhibition from "../../components/admin/Exhibition/EditExhibition";
 import Swal from "sweetalert2";
+import { LuInbox } from "react-icons/lu";
 import {
   getExhibitions,
   deleteExhibition,
@@ -107,7 +108,10 @@ const Exhibition = () => {
                   Name
                 </th>
                 <th className="p-4 font-medium text-black dark:text-white">
-                  Description
+                  Quantity
+                </th>
+                <th className="p-4 font-medium text-black dark:text-white">
+                  Price
                 </th>
                 <th className="p-4 font-medium text-black dark:text-white">
                   Date
@@ -133,7 +137,10 @@ const Exhibition = () => {
                     {exhibition.name}
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {exhibition.description}
+                    {exhibition.quantity}
+                  </td>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                    {exhibition.price}
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {new Date(exhibition.date).toDateString()}
@@ -153,6 +160,13 @@ const Exhibition = () => {
             </tbody>
           </table>
         </div>
+
+        {!list.length && (
+          <div className="w-full flex flex-col justify-center items-center p-6">
+            <LuInbox size={40} />
+            <p>No Data</p>
+          </div>
+        )}
 
         {pages > 1 && (
           <div className="my-4 flex justify-center space-x-2">

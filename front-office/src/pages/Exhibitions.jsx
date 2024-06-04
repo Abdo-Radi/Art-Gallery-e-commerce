@@ -2,8 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getArtworks } from "@/redux/slices/artwork";
-import { getCategories } from "@/redux/slices/category";
+import { getExhibitions } from "@/redux/slices/exhibition";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -28,14 +27,14 @@ import { addItemToCart } from "@/redux/slices/cart";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Artworks = () => {
+const Exhibitions = () => {
   const dispatch = useDispatch();
-
-  const { list: artworks, pages } = useSelector((state) => state.artworks);
-  const { list: categories } = useSelector((state) => state.categories);
+  const { list: exhibitions, pages } = useSelector(
+    (state) => state.exhibitions
+  );
   const { data: userData } = useSelector((state) => state.currentUser);
 
-  const [price, setPrice] = useState(2500);
+  const [price, setPrice] = useState(750);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [params, setParams] = useState({});
@@ -46,7 +45,7 @@ const Artworks = () => {
 
   const resetParams = () => {
     setParams({});
-    setPrice(2500);
+    setPrice(750);
   };
 
   const handlePageChange = (page) => {
@@ -57,13 +56,12 @@ const Artworks = () => {
   const showToastMessage = (message) => {
     toast(message, {
       position: "top-right",
-      autoClose: 2000,
+      autoClose: 1500,
     });
   };
 
   useEffect(() => {
-    dispatch(getArtworks(params));
-    dispatch(getCategories());
+    dispatch(getExhibitions(params));
   }, [params]);
 
   return (
@@ -101,30 +99,9 @@ const Artworks = () => {
             </Select>
           </div>
           <div className="flex flex-col space-y-2">
-            <Label htmlFor="category">Artwork Style</Label>
-            <Select
-              id="category"
-              onValueChange={(value) => handleParams("category", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Categories</SelectLabel>
-                  {categories.map((category, i) => (
-                    <SelectItem key={i} value={category._id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col space-y-2">
             <div className="flex justify-between items-center">
               <Label htmlFor="price">Price Range</Label>
-              <p>{price}</p>
+              <p>{price} DH</p>
             </div>
             <Slider
               onValueChange={(value) => {
@@ -132,8 +109,8 @@ const Artworks = () => {
                 handleParams("maxPrice", value[0]);
               }}
               defaultValue={[price]}
-              max={5000}
-              step={100}
+              max={1500}
+              step={50}
             />
           </div>
           <div className="flex flex-col space-y-2">
@@ -142,17 +119,17 @@ const Artworks = () => {
         </div>
         <div className="lg:w-[79%] space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-12">
-            {artworks.map((artwork, i) => (
+            {exhibitions.map((exhibition, i) => (
               <div
                 key={i}
                 className="group relative overflow-hidden rounded-lg shadow-lg"
               >
-                <Link to={artwork._id}>
+                <Link to={exhibition._id}>
                   <img
-                    alt="Artwork"
+                    alt={exhibition.name}
                     className="h-64 w-full object-cover transition-all duration-300 group-hover:scale-105"
                     height={400}
-                    src={artwork.image}
+                    src={exhibition.image}
                     style={{
                       aspectRatio: "400/400",
                       objectFit: "cover",
@@ -161,21 +138,21 @@ const Artworks = () => {
                   />
                 </Link>
                 <div className="bg-white p-4 dark:bg-gray-900">
-                  <h3 className="text-lg font-semibold">{artwork.title}</h3>
+                  <h3 className="text-lg font-semibold">{exhibition.name}</h3>
                   <p className="text-gray-500 dark:text-gray-400">
-                    {artwork.artist.firstName} {artwork.artist.lastName}
+                    {exhibition.price} DH
                   </p>
                   <div className="mt-4 flex items-center justify-between">
                     <span className="text-lg font-semibold">
-                      {artwork.price} DH
+                      Qty: {exhibition.quantity}
                     </span>
                     <Button
                       onClick={() => {
                         dispatch(
                           addItemToCart({
                             customer: userData._id,
-                            product: artwork._id,
-                            productType: "Artwork",
+                            product: exhibition._id,
+                            productType: "Exhibition",
                             quantity: 1,
                           })
                         ).then((res) => {
@@ -257,4 +234,4 @@ const Artworks = () => {
   );
 };
 
-export default Artworks;
+export default Exhibitions;

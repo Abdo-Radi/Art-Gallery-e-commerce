@@ -4,6 +4,7 @@ const mongoosePagination = require("mongoose-paginate-v2");
 const exhibitionSchema = new mongoose.Schema({
   name: {
     type: String,
+    unique: true,
     required: true,
   },
   description: {
@@ -18,8 +19,18 @@ const exhibitionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
 });
 
 exhibitionSchema.plugin(mongoosePagination);
 
-module.exports = mongoose.model("Exhibition", exhibitionSchema);
+const Exhibition = mongoose.model("Exhibition", exhibitionSchema);
+
+module.exports = Exhibition;

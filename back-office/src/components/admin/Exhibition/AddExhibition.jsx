@@ -14,7 +14,9 @@ const AddExhibition = ({ onCancel }) => {
   const schema = z.object({
     name: z.string().nonempty(errorMessage),
     description: z.string().nonempty(errorMessage),
-    date: z.string().nonempty(errorMessage), // You might want to refine this to validate date format
+    date: z.string().date(),
+    quantity: z.number().min(0),
+    price: z.number(),
   });
 
   const {
@@ -52,7 +54,7 @@ const AddExhibition = ({ onCancel }) => {
   const onSubmit = (data) => {
     const exhibitionData = {
       ...data,
-      image: imageUrl || "https://via.placeholder.com/150", // Default image URL
+      image: imageUrl, // Default image URL
     };
 
     dispatch(addExhibition(exhibitionData));
@@ -60,7 +62,7 @@ const AddExhibition = ({ onCancel }) => {
   };
 
   return (
-    <div className="mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="mx-4 w-96 overflow-y-auto h-5/6 no-scrollbar md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="sticky top-0 bg-white flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark">
         <h3 className="font-medium text-black dark:text-white">
           Add Exhibition
@@ -98,6 +100,38 @@ const AddExhibition = ({ onCancel }) => {
             />
             <p className="text-sm text-meta-1">
               {errors.date && <span>{errors.date.message}</span>}
+            </p>
+          </div>
+
+          <div className="mb-4.5">
+            <label className="mb-2.5 block text-black dark:text-white">
+              Ticket quantity <span className="text-meta-1">*</span>
+            </label>
+            <input
+              {...register("quantity", { valueAsNumber: true })}
+              type="number"
+              placeholder="Enter ticket quantity"
+              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+            />
+            <p className="text-sm text-meta-1">
+              {errors.ticketQuantity && (
+                <span>{errors.ticketQuantity.message}</span>
+              )}
+            </p>
+          </div>
+
+          <div className="mb-4.5">
+            <label className="mb-2.5 block text-black dark:text-white">
+              Ticket price <span className="text-meta-1">*</span>
+            </label>
+            <input
+              {...register("price", { valueAsNumber: true })}
+              type="number"
+              placeholder="Enter ticket price"
+              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+            />
+            <p className="text-sm text-meta-1">
+              {errors.ticketPrice && <span>{errors.ticketPrice.message}</span>}
             </p>
           </div>
 

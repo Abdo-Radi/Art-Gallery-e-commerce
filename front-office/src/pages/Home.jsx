@@ -138,6 +138,13 @@ const Home = () => {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {exhibitions.slice(0, 3).map((exhibition, i) => (
                 <Card key={i} className="h-full w-full">
+                  <img
+                    alt="Artwork 1"
+                    className="aspect-[4/3] w-full overflow-hidden rounded-t-lg object-cover"
+                    height="300"
+                    src={exhibition.image}
+                    width="400"
+                  />
                   <CardContent className="p-4">
                     <h3 className="text-lg font-semibold">{exhibition.name}</h3>
                     <p className="text-gray-500 dark:text-gray-400">

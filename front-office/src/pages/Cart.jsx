@@ -5,10 +5,12 @@ import {
   increaseItemQuantity,
   removeItemFromCart,
 } from "@/redux/slices/cart";
+import exhibition from "@/redux/slices/exhibition";
 import { LuMinus } from "react-icons/lu";
 import { LuPlus } from "react-icons/lu";
 import { LuTrash } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -76,7 +78,7 @@ const Cart = () => {
                   alt="Product"
                   className="rounded-md"
                   height={100}
-                  src={item.itemDetails.exhibition.image}
+                  src={item.itemDetails.image}
                   style={{
                     aspectRatio: "100/100",
                     objectFit: "cover",
@@ -85,7 +87,7 @@ const Cart = () => {
                 />
                 <div className="flex-1">
                   <h3 className="text-lg font-medium">
-                    {item.itemDetails.exhibition.name}
+                    {item.itemDetails.name}
                   </h3>
                   <div className="mt-2 flex items-center gap-2">
                     <Button
@@ -94,10 +96,13 @@ const Cart = () => {
                           decreaseItemQuantity({
                             customer: userData._id,
                             product: item.product,
-                            productType: "Ticket",
+                            productType: "Exhibition",
                           })
                         );
                       }}
+                      className={
+                        item.quantity === 1 && `pointer-events-none opacity-45`
+                      }
                       size="icon"
                       variant="outline"
                     >
@@ -110,10 +115,14 @@ const Cart = () => {
                           increaseItemQuantity({
                             customer: userData._id,
                             product: item.product,
-                            productType: "Ticket",
+                            productType: "Exhibition",
                           })
                         );
                       }}
+                      className={
+                        item.quantity === item.itemDetails.quantity &&
+                        `pointer-events-none opacity-45`
+                      }
                       size="icon"
                       variant="outline"
                     >
@@ -131,7 +140,7 @@ const Cart = () => {
                         removeItemFromCart({
                           customer: userData._id,
                           product: item.product,
-                          productType: "Ticket",
+                          productType: "Exhibition",
                         })
                       );
                     }}
@@ -164,14 +173,21 @@ const Cart = () => {
             <p className="text-lg font-bold">Total</p>
             <p className="text-lg font-bold">{totalPrice} DH</p>
           </div>
-          <Button className="w-full" size="lg">
-            Proceed to Checkout
-          </Button>
+          <Link to="/checkout">
+            <Button className="w-full mt-4" size="lg">
+              Proceed to Checkout
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
   ) : (
-    "Please login or create an account if you are a new member!"
+    <div className="h-full flex flex-col justify-center items-center">
+      <h1 className="text-3xl font-bold">Access Denied</h1>
+      <p className="text-gray-500 dark:text-gray-400">
+        You need to be logged in to view the shopping cart.
+      </p>
+    </div>
   );
 };
 

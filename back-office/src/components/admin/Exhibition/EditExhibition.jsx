@@ -40,6 +40,7 @@ const EditExhibition = ({ exhibition, onCancel }) => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+      console.log(response.data);
       setImageUrl(response.data.secure_url);
     } catch (error) {
       console.error("Image upload failed:", error);

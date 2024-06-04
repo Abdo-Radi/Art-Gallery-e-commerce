@@ -38,11 +38,6 @@ const Sidebar = () => {
       icon: <i className="ri-carousel-view"></i>,
     },
     {
-      name: "Tickets",
-      to: "/admin/tickets",
-      icon: <i className="ri-ticket-2-line"></i>,
-    },
-    {
       name: "Orders",
       to: "/admin/orders",
       icon: <i className="ri-shopping-basket-2-line"></i>,

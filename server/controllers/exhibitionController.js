@@ -13,12 +13,17 @@ const createExhibition = async (req, res, next) => {
 
 const getExhibitions = async (req, res, next) => {
   try {
-    const { search, page } = req.query;
+    const { search, page, priceSort, maxPrice } = req.query;
     const options = { lean: true, page };
 
     const searchQuery = {
-      name: { $regex: new RegExp(search, "i") },
+      ...(search && { name: { $regex: new RegExp(search, "i") } }),
+      ...(maxPrice && { price: { $lte: Number(maxPrice) } }),
     };
+
+    if (priceSort) {
+      options.sort = { price: priceSort === "lowToHigh" ? 1 : -1 };
+    }
 
     const exhibitions = await Exhibition.paginate(searchQuery, options);
 

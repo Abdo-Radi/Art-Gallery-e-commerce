@@ -1,15 +1,24 @@
 const ShoppingCart = require("../models/ShoppingCart");
 const Artwork = require("../models/Artwork");
-const Ticket = require("../models/Ticket");
+const Exhibition = require("../models/Exhibition");
 
 const addItem = async (req, res, next) => {
   try {
     const { customer, product, productType, quantity } = req.body;
 
-    const cart = await ShoppingCart.findOne({ customer });
-    console.log(cart);
+    let cart = await ShoppingCart.findOne({ customer });
 
-    if (cart) {
+    let message = "";
+
+    if (!cart) {
+      // Create new cart for user if it doesn't exist
+      cart = new ShoppingCart({
+        customer,
+        items: [{ product, productType, quantity }],
+      });
+      message = "New cart created and item added successfully";
+    } else {
+      // Cart exists, check if item exists
       const itemIndex = cart.items.findIndex(
         (item) =>
           item.product.toString() === product &&
@@ -17,29 +26,27 @@ const addItem = async (req, res, next) => {
       );
 
       if (itemIndex > -1) {
-        // Item exists in cart, update quantity
-        if (productType === "Ticket")
+        // Item exists in cart, update quantity if productType is "Ticket"
+        if (productType === "Exhibition") {
           cart.items[itemIndex].quantity += quantity;
+          message = "Item quantity updated successfully";
+        } else {
+          // Optionally, handle other product types differently or throw an error
+          message = "Unsupported type for quantity update";
+        }
       } else {
         // Item does not exist in cart, add new item
         cart.items.push({ product, productType, quantity });
+        message = "Item added to cart successfully";
       }
 
       cart.updatedAt = Date.now();
-      await cart.save();
-    } else {
-      // Create new cart for user
-      const newCart = new ShoppingCart({
-        customer,
-        items: [{ product, productType, quantity }],
-      });
-
-      await newCart.save();
     }
 
-    res.status(200).json({ success: true });
+    await cart.save();
+    res.status(200).json({ success: true, message });
   } catch (error) {
-    next(error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -58,7 +65,7 @@ const getItems = async (req, res, next) => {
       (item) => item.productType === "Artwork"
     );
     const ticketItems = cart.items.filter(
-      (item) => item.productType === "Ticket"
+      (item) => item.productType === "Exhibition"
     );
 
     // Fetch details for each type
@@ -74,10 +81,8 @@ const getItems = async (req, res, next) => {
 
     const ticketDetails = await Promise.all(
       ticketItems.map(async (item) => {
-        const ticket = await Ticket.findById(item.product).populate({
-          path: "exhibition",
-        });
-        return { ...item._doc, itemDetails: ticket };
+        const exhibition = await Exhibition.findById(item.product);
+        return { ...item._doc, itemDetails: exhibition };
       })
     );
 

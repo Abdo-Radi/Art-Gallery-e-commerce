@@ -3,53 +3,22 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getExhibitions = createAsyncThunk(
   "exhibitions/getExhibitions",
-  async ({ search, page = 1 } = {}, { rejectWithValue }) => {
+  async (params, { rejectWithValue }) => {
     try {
-      const params = { page };
-      if (search !== undefined && search !== "") {
-        params.search = search;
-      }
-
       const response = await axiosInstance.get("/exhibitions", { params });
       return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Unknown error");
+      return rejectWithValue(err.response?.data?.message);
     }
   }
 );
 
-export const addExhibition = createAsyncThunk(
-  "exhibitions/addExhibition",
-  async (body, { rejectWithValue }) => {
-    return axiosInstance
-      .post("/exhibitions", body)
-      .then((res) => {
-        return res.data;
-      })
-      .catch((err) => rejectWithValue(err.response.data.message));
-  }
-);
-
-export const deleteExhibition = createAsyncThunk(
-  "exhibitions/deleteExhibition",
+export const getExhibitionById = createAsyncThunk(
+  "exhibitions/getExhibitionById",
   async (id, { rejectWithValue }) => {
     return axiosInstance
-      .delete(`/exhibitions/${id}`)
-      .then((res) => {
-        return id;
-      })
-      .catch((err) => rejectWithValue(err.response.data.message));
-  }
-);
-
-export const editExhibition = createAsyncThunk(
-  "exhibition/editExhibition",
-  async ({ id, body }, { rejectWithValue }) => {
-    return axiosInstance
-      .put(`/exhibitions/${id}`, body)
-      .then((res) => {
-        return res.data;
-      })
+      .get(`/exhibitions/${id}`)
+      .then((res) => res.data)
       .catch((err) => rejectWithValue(err.response.data.message));
   }
 );
@@ -59,6 +28,7 @@ const initialState = {
   pages: 0,
   reset: false,
   error: null,
+  exhibitionDetail: null,
 };
 
 const exhibitionSlice = createSlice({
@@ -76,30 +46,10 @@ const exhibitionSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Create
-
-      .addCase(addExhibition.fulfilled, (state) => {
-        state.reset = !state.reset;
+      .addCase(getExhibitionById.fulfilled, (state, action) => {
+        state.exhibitionDetail = action.payload;
       })
-      .addCase(addExhibition.rejected, (state, action) => {
-        state.error = action.payload;
-      })
-
-      // Delete
-      .addCase(deleteExhibition.fulfilled, (state) => {
-        state.reset = !state.reset;
-      })
-      .addCase(deleteExhibition.rejected, (state, action) => {
-        state.error = action.payload;
-      })
-
-      // Update
-      .addCase(editExhibition.fulfilled, (state, action) => {
-        state.list = state.list.map((exhibition) =>
-          exhibition._id === action.payload._id ? action.payload : exhibition
-        );
-      })
-      .addCase(editExhibition.rejected, (state, action) => {
+      .addCase(getExhibitionById.rejected, (state, action) => {
         state.error = action.payload;
       });
   },

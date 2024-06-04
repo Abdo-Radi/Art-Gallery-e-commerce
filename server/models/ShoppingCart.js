@@ -10,7 +10,7 @@ const cartItemSchema = new mongoose.Schema(
     productType: {
       type: String,
       required: true,
-      enum: ["Artwork", "Ticket"],
+      enum: ["Artwork", "Exhibition"],
     },
     quantity: {
       type: Number,
