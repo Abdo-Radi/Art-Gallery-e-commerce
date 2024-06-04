@@ -1,0 +1,4 @@
+scipy==1.11.1
+sentence-transformers==2.2.2
+flask
+flask-cors
