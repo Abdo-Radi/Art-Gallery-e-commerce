@@ -97,7 +97,7 @@ input {
   font-size: 16px;
 }
 
-button {
+.send {
   background-color: #007bff;
   color: white;
   border: none;
@@ -108,7 +108,7 @@ button {
   transition: background-color 0.2s ease-in-out;
 }
 
-button:hover {
+.send:hover {
   background-color: #0056b3;
 }
 
