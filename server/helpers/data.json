@@ -1,7 +1,7 @@
 {
   "What is this platform about?": "Our platform allows you to browse, purchase, and explore various artworks and exhibitions. Artists can showcase their creations, and customers can discover and acquire unique pieces of art.",
-  "How can I contact support?": "You can contact our support team via email at support@artgallery.com or by filling out the contact form on our website.",
-  "How do I create an account?": "To create an account, click on the 'Sign Up' button at the top right corner of the page, and fill in the required details.",
+  "How can I contact support?": "You can contact our support team via email at support@artgallery.com or by filling out the contact form on our website(you can find it in the home page).",
+  "How do I create an account?": "To create an account, click on the 'Sign Up' after clicking on the login buuton first, and fill in the required details.",
   "How do I log in?": "Click on the 'Log In' button at the top right corner of the page and enter your username and password.",
   "I forgot my password, what should I do?": "Click on the 'Forgot Password' link on the login page, and follow the instructions to reset your password.",
   "How can I update my profile information?": "After logging in, go to your account settings by clicking on your profile icon. You can update your personal information there.",
@@ -55,5 +55,5 @@
   "Bye! If you have any more questions, feel free to ask!": "Farewell! Come back soon!",
   "Farewell! Come back soon!": "See you later! Take care!",
   "Take care! We're here if you need us!": "Bye! If you have any more questions, feel free to ask!",
-  "Are there benefits to being a member?": "Yes, we offer membership plans that include benefits such as discounts on purchases, early access to new collections, and exclusive invites to exhibitions."
-}
+  "Are there benefits to being a member?": "Yes, we offer membership plans that include benefits such as discounts on purchases, early access to new collections, and exclusive invites to exhibitions.",
+"What can I explore on this platform?":"You can explore a wide range of artworks, participate in virtual exhibitions, and connect with artists."}
