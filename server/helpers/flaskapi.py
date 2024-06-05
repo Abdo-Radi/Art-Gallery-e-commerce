@@ -53,7 +53,7 @@ def chat():
     if max_similarity > 0.65:
         return jsonify({"answer": best_answer})
     else:
-        return jsonify({"answer": "I don't know. Can you please give me some time..."})
+        return jsonify({"answer": "sry I don't know. you can ask the support for it"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
