@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   decreaseItemQuantity,
   increaseItemQuantity,
@@ -13,6 +12,10 @@ import { Link } from "react-router-dom";
 
 const FREE_SHIPPING_THRESHOLD = 1000;
 const SHIPPING_FEE = 50;
+
+const labelCls = "text-[11px] font-semibold uppercase tracking-[0.18em] text-stone";
+const qtyBtn =
+  "flex h-7 w-7 items-center justify-center border border-line text-ink transition-colors hover:border-klein hover:text-klein";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -34,192 +37,223 @@ const Cart = () => {
   const grandTotal = totalPrice + shipping;
 
   return userData ? (
-    <section className="container px-4 md:px-6 lg:px-20 py-12 grid grid-cols-1 gap-8 md:grid-cols-[2fr_1fr]">
-      <div className="rounded-lg border border-gray-200 p-6 shadow-sm dark:border-gray-700">
-        <h2 className="mb-4 text-2xl font-bold">Your Cart</h2>
-        {validItems.length === 0 && (
-          <p className="text-gray-500">
-            Your cart is empty.{" "}
-            <Link className="underline" to="/artworks">
-              Browse artworks
-            </Link>{" "}
-            or{" "}
-            <Link className="underline" to="/exhibitions">
-              exhibitions
-            </Link>
-            .
-          </p>
-        )}
-        <div className="space-y-6">
-          {validItems.map((item) =>
-            item.productType === "Artwork" ? (
-              <div key={`${item.productType}-${item.product}`} className="flex items-center gap-4">
-                <img
-                  alt={item.itemDetails.title}
-                  className="rounded-md"
-                  height={100}
-                  src={item.itemDetails.image}
-                  style={{
-                    aspectRatio: "100/100",
-                    objectFit: "cover",
-                  }}
-                  width={100}
-                />
-                <div className="flex-1">
-                  <h3 className="text-lg font-medium">
-                    {item.itemDetails.title}
-                  </h3>
-                  <p className="text-gray-500">
-                    {item.itemDetails.artist?.firstName}{" "}
-                    {item.itemDetails.artist?.lastName}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-medium">
-                    {item.itemDetails.price} DH
-                  </p>
-                  <Button
-                    onClick={() => {
-                      dispatch(
-                        removeItemFromCart({
-                          customer: userData._id,
-                          product: item.product,
-                          productType: "Artwork",
-                        })
-                      );
-                    }}
-                    size="icon"
-                    variant="outline"
-                  >
-                    <LuTrash className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div key={`${item.productType}-${item.product}`} className="flex items-center gap-4">
-                <img
-                  alt={item.itemDetails.name}
-                  className="rounded-md"
-                  height={100}
-                  src={item.itemDetails.image}
-                  style={{
-                    aspectRatio: "100/100",
-                    objectFit: "cover",
-                  }}
-                  width={100}
-                />
-                <div className="flex-1">
-                  <h3 className="text-lg font-medium">
-                    {item.itemDetails.name}
-                  </h3>
-                  <div className="mt-2 flex items-center gap-2">
-                    <Button
+    <>
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-7xl px-4 py-14 md:px-6 lg:px-8">
+          <p className="eyebrow">Your selection</p>
+          <h1 className="mt-4 font-display text-5xl font-bold sm:text-6xl">
+            Cart
+          </h1>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-14 px-4 py-14 md:px-6 lg:grid-cols-[2fr_1fr] lg:gap-20 lg:px-8">
+        <div>
+          {validItems.length === 0 && (
+            <p className="font-display text-lg italic text-stone">
+              Your cart is empty —{" "}
+              <Link className="text-klein underline-offset-4 hover:underline" to="/artworks">
+                browse artworks
+              </Link>{" "}
+              or{" "}
+              <Link className="text-klein underline-offset-4 hover:underline" to="/exhibitions">
+                exhibitions
+              </Link>
+              .
+            </p>
+          )}
+
+          <div className="divide-y divide-line border-y border-line">
+            {validItems.map((item) =>
+              item.productType === "Artwork" ? (
+                <div
+                  key={`${item.productType}-${item.product}`}
+                  className="flex items-center gap-6 py-6"
+                >
+                  <div className="shrink-0 border border-line p-1">
+                    <img
+                      alt={item.itemDetails.title}
+                      className="h-24 w-24 object-cover"
+                      src={item.itemDetails.image}
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className={labelCls}>Artwork</p>
+                    <h3 className="mt-1 truncate font-display text-xl font-semibold italic">
+                      {item.itemDetails.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-stone">
+                      {item.itemDetails.artist?.firstName}{" "}
+                      {item.itemDetails.artist?.lastName}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-3">
+                    <p className="font-display text-lg tabular-nums">
+                      {item.itemDetails.price} DH
+                    </p>
+                    <button
                       onClick={() => {
                         dispatch(
-                          decreaseItemQuantity({
+                          removeItemFromCart({
                             customer: userData._id,
                             product: item.product,
-                            productType: "Exhibition",
+                            productType: "Artwork",
                           })
                         );
                       }}
-                      className={
-                        item.quantity === 1 ? "pointer-events-none opacity-45" : ""
-                      }
-                      size="icon"
-                      variant="outline"
+                      className="text-stone transition-colors hover:text-klein"
+                      aria-label="Remove from cart"
                     >
-                      <LuMinus className="h-4 w-4" />
-                    </Button>
-                    <p className="px-2">{item.quantity}</p>
-                    <Button
-                      onClick={() => {
-                        dispatch(
-                          increaseItemQuantity({
-                            customer: userData._id,
-                            product: item.product,
-                            productType: "Exhibition",
-                          })
-                        );
-                      }}
-                      className={
-                        item.quantity === item.itemDetails.quantity
-                          ? "pointer-events-none opacity-45"
-                          : ""
-                      }
-                      size="icon"
-                      variant="outline"
-                    >
-                      <LuPlus className="h-4 w-4" />
-                    </Button>
+                      <LuTrash className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-lg font-medium">
-                    {item.itemDetails.price} DH
-                  </p>
-                  <Button
-                    onClick={() => {
-                      dispatch(
-                        removeItemFromCart({
-                          customer: userData._id,
-                          product: item.product,
-                          productType: "Exhibition",
-                        })
-                      );
-                    }}
-                    size="icon"
-                    variant="outline"
-                  >
-                    <LuTrash className="h-4 w-4" />
-                  </Button>
+              ) : (
+                <div
+                  key={`${item.productType}-${item.product}`}
+                  className="flex items-center gap-6 py-6"
+                >
+                  <div className="shrink-0 border border-line p-1">
+                    <img
+                      alt={item.itemDetails.name}
+                      className="h-24 w-24 object-cover"
+                      src={item.itemDetails.image}
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className={labelCls}>Exhibition ticket</p>
+                    <h3 className="mt-1 truncate font-display text-xl font-semibold italic">
+                      {item.itemDetails.name}
+                    </h3>
+                    <div className="mt-3 flex items-center gap-3">
+                      <button
+                        onClick={() => {
+                          dispatch(
+                            decreaseItemQuantity({
+                              customer: userData._id,
+                              product: item.product,
+                              productType: "Exhibition",
+                            })
+                          );
+                        }}
+                        className={
+                          item.quantity === 1
+                            ? `${qtyBtn} pointer-events-none opacity-40`
+                            : qtyBtn
+                        }
+                        aria-label="Decrease quantity"
+                      >
+                        <LuMinus className="h-3.5 w-3.5" />
+                      </button>
+                      <p className="w-6 text-center text-sm tabular-nums">
+                        {item.quantity}
+                      </p>
+                      <button
+                        onClick={() => {
+                          dispatch(
+                            increaseItemQuantity({
+                              customer: userData._id,
+                              product: item.product,
+                              productType: "Exhibition",
+                            })
+                          );
+                        }}
+                        className={
+                          item.quantity === item.itemDetails.quantity
+                            ? `${qtyBtn} pointer-events-none opacity-40`
+                            : qtyBtn
+                        }
+                        aria-label="Increase quantity"
+                      >
+                        <LuPlus className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-3">
+                    <p className="font-display text-lg tabular-nums">
+                      {item.itemDetails.price} DH
+                    </p>
+                    <button
+                      onClick={() => {
+                        dispatch(
+                          removeItemFromCart({
+                            customer: userData._id,
+                            product: item.product,
+                            productType: "Exhibition",
+                          })
+                        );
+                      }}
+                      className="text-stone transition-colors hover:text-klein"
+                      aria-label="Remove from cart"
+                    >
+                      <LuTrash className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )
-          )}
+              )
+            )}
+          </div>
         </div>
-      </div>
-      <div className="rounded-lg border border-gray-200 p-6 shadow-sm dark:border-gray-700">
-        <h2 className="mb-4 text-2xl font-bold">Order Summary</h2>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p>Items</p>
-            <p className="font-medium">{itemsCount}</p>
-          </div>
-          <div className="flex items-center justify-between">
-            <p>Subtotal</p>
-            <p className="font-medium">{totalPrice} DH</p>
-          </div>
-          <div className="flex items-center justify-between">
-            <p>Shipping</p>
-            <p className="font-medium">
-              {shipping === 0 ? "Free" : `${shipping} DH`}
+
+        {/* Summary */}
+        <aside>
+          <div className="border border-line p-8 lg:sticky lg:top-24">
+            <h2 className="font-display text-2xl font-semibold">Summary</h2>
+            <dl className="mt-6 space-y-4">
+              <div className="flex items-baseline justify-between">
+                <dt className={labelCls}>Items</dt>
+                <dd className="text-sm tabular-nums">{itemsCount}</dd>
+              </div>
+              <div className="flex items-baseline justify-between">
+                <dt className={labelCls}>Subtotal</dt>
+                <dd className="text-sm tabular-nums">{totalPrice} DH</dd>
+              </div>
+              <div className="flex items-baseline justify-between">
+                <dt className={labelCls}>Shipping</dt>
+                <dd className="text-sm tabular-nums">
+                  {shipping === 0 ? "Free" : `${shipping} DH`}
+                </dd>
+              </div>
+              <div className="flex items-baseline justify-between border-t border-line pt-4">
+                <dt className="font-display text-lg font-semibold">Total</dt>
+                <dd className="font-display text-2xl tabular-nums">
+                  {grandTotal} DH
+                </dd>
+              </div>
+            </dl>
+            {validItems.length > 0 ? (
+              <Button
+                asChild
+                size="lg"
+                className="mt-8 w-full text-[12px] font-semibold uppercase tracking-[0.15em]"
+              >
+                <Link to="/checkout">Proceed to checkout</Link>
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                className="mt-8 w-full text-[12px] font-semibold uppercase tracking-[0.15em]"
+                disabled
+              >
+                Proceed to checkout
+              </Button>
+            )}
+            <p className="mt-4 text-center text-xs text-stone">
+              Free shipping on orders over {FREE_SHIPPING_THRESHOLD} DH
             </p>
           </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <p className="text-lg font-bold">Total</p>
-            <p className="text-lg font-bold">{grandTotal} DH</p>
-          </div>
-          {validItems.length > 0 ? (
-            <Link to="/checkout">
-              <Button className="w-full mt-4" size="lg">
-                Proceed to Checkout
-              </Button>
-            </Link>
-          ) : (
-            <Button className="w-full mt-4" size="lg" disabled>
-              Proceed to Checkout
-            </Button>
-          )}
-        </div>
-      </div>
-    </section>
+        </aside>
+      </section>
+    </>
   ) : (
-    <div className="h-full flex flex-col justify-center items-center">
-      <h1 className="text-3xl font-bold">Access Denied</h1>
-      <p className="text-gray-500 dark:text-gray-400">
-        You need to be logged in to view the shopping cart.
+    <div className="mx-auto flex max-w-7xl flex-col items-center px-4 py-32 text-center">
+      <p className="eyebrow">Members only</p>
+      <h1 className="mt-4 font-display text-4xl font-semibold">
+        Sign in to see your cart
+      </h1>
+      <p className="mt-4 max-w-sm text-sm leading-relaxed text-stone">
+        Your selection is saved to your account — log in from the header to
+        pick up where you left off.
       </p>
     </div>
   );

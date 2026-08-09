@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RiCloseFill } from "react-icons/ri";
 import {
@@ -20,11 +19,14 @@ import { fetchCart } from "@/redux/slices/cart";
 import Register from "./Register";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const formSchema = z.object({
   identifier: z.string().nonempty("Required Field"),
   password: z.string().nonempty("Required Field"),
 });
+
+const labelCls = "text-[11px] font-semibold uppercase tracking-[0.18em] text-stone";
 
 const Login = ({ onClose }) => {
   const dispatch = useDispatch();
@@ -63,27 +65,42 @@ const Login = ({ onClose }) => {
       localStorage.setItem("user", JSON.stringify(user));
       if (onClose) onClose();
     } catch (error) {
-      showErrorMessage(error.response?.data?.message ?? "Login failed. Please try again.");
+      showErrorMessage(
+        error.response?.data?.message ?? "Login failed. Please try again."
+      );
     }
   };
 
   return (
     <>
-      <Card className="w-96 px-4 py-12 lg:px-6">
-        <div className="mb-6 flex justify-between items-center">
-          <h1 className="text-3xl">Login</h1>
-          <RiCloseFill className="cursor-pointer" onClick={onClose} size={24} />
+      <div className="w-[26rem] max-w-[calc(100vw-2rem)] border border-line bg-paper px-8 py-10 shadow-2xl">
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <p className="eyebrow">Welcome back</p>
+            <h1 className="mt-3 font-display text-3xl font-semibold">Sign in</h1>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1 text-stone transition-colors hover:text-klein"
+            aria-label="Close"
+          >
+            <RiCloseFill size={24} />
+          </button>
         </div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(login)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(login)} className="space-y-5">
             <FormField
               control={form.control}
               name="identifier"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Identifier</FormLabel>
+                  <FormLabel className={labelCls}>Email or username</FormLabel>
                   <FormControl>
-                    <Input placeholder="m@example.com" {...field} />
+                    <Input
+                      placeholder="you@example.com"
+                      className="h-11 border-line bg-transparent"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -94,32 +111,39 @@ const Login = ({ onClose }) => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className={labelCls}>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input
+                      type="password"
+                      className="h-11 border-line bg-transparent"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
-              Login
+            <Button
+              type="submit"
+              className="h-11 w-full text-[12px] font-semibold uppercase tracking-[0.15em]"
+            >
+              Sign in
             </Button>
           </form>
         </Form>
-        <div className="w-full text-center mt-4">
-          You are not a member?
+        <div className="mt-6 border-t border-line pt-5 text-center text-sm text-stone">
+          Not a member yet?
           <Button
             onClick={() => setRegisterForm(true)}
             variant="link"
-            className="px-2"
+            className="px-2 text-klein"
           >
-            Register
+            Create an account
           </Button>
         </div>
-      </Card>
+      </div>
       {registerForm && (
-        <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-50">
+        <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-stone/50 backdrop-blur-sm">
           <Register
             onClose={() => {
               setRegisterForm(false);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { RiShoppingCartLine } from "react-icons/ri";
+import { RiShoppingBagLine } from "react-icons/ri";
 import { RiMenuLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 
@@ -24,9 +24,9 @@ import { clearCart } from "@/redux/slices/cart";
 const Header = () => {
   const menu = [
     { name: "Home", to: "/" },
-    { name: "About", to: "/about" },
     { name: "Artworks", to: "/artworks" },
     { name: "Exhibitions", to: "/exhibitions" },
+    { name: "About", to: "/about" },
   ];
 
   const dispatch = useDispatch();
@@ -36,6 +36,8 @@ const Header = () => {
 
   const [open, setOpen] = useState(false);
   const [loginForm, setLoginForm] = useState(false);
+
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const logout = () => {
     dispatch(clearUser());
@@ -50,84 +52,107 @@ const Header = () => {
 
   return (
     <>
-      <header className="px-4 md:px-6 lg:px-20 py-6 text-black flex justify-between items-center border-b-[1px]">
-        <h1 className="text-3xl font-bold">
-          <Link to="/"><span className="text-primary">H</span>orizons</Link>
-        </h1>
-        <nav className="hidden lg:flex justify-between items-center">
-          <ul className="flex font-medium flex-row space-x-6">
-            {menu.map((navLink, key) => (
-              <li key={key} className="block hover:text-primary">
-                <Link to={navLink.to}>{navLink.name}</Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="flex items-center">
-          <button className="mr-4 relative">
-            <Link to="/cart">
-              <RiShoppingCartLine size={28} />
+      <header className="sticky top-0 z-40 border-b border-line bg-paper/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6 lg:px-8">
+          <Link to="/" className="group flex items-baseline gap-1">
+            <span className="font-display text-2xl font-semibold tracking-wide">
+              Horizons
+            </span>
+            <span className="mb-0.5 inline-block h-2 w-2 bg-klein transition-transform duration-300 group-hover:-translate-y-1" />
+          </Link>
+
+          <nav className="hidden lg:block">
+            <ul className="flex items-center gap-10">
+              {menu.map((navLink, key) => (
+                <li key={key}>
+                  <Link className="nav-link" to={navLink.to}>
+                    {navLink.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <Link
+              to="/cart"
+              className="relative p-1 text-ink transition-colors hover:text-klein"
+              aria-label="Shopping cart"
+            >
+              <RiShoppingBagLine size={22} />
+              {items.length > 0 && (
+                <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center bg-klein px-1 text-[10px] font-medium leading-none text-paper">
+                  {cartCount}
+                </span>
+              )}
             </Link>
-            {items.length > 0 && (
-              <p className="flex justify-center items-center absolute top-0 right-0 bg-destructive rounded-full text-[60%] w-[14px] h-[14px] text-white">
-                {items.reduce((sum, item) => sum + item.quantity, 0)}
-              </p>
-            )}
-          </button>
-          {data ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
+
+            {data ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-9 w-9 rounded-full p-0"
+                  >
+                    <Avatar className="h-9 w-9 cursor-pointer">
+                      <AvatarFallback className="bg-klein font-display text-sm text-paper">
+                        {data.firstName.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="mt-2 w-52 border-line bg-paper"
+                  align="end"
+                  forceMount
                 >
-                  <Avatar className="cursor-pointer">
-                    <AvatarFallback>
-                      {data.firstName.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48 mt-1" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {data.username}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {data.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
-                  <LuUser className="mr-2 h-4 w-4 " />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout} className="cursor-pointer" >
-                  <LuLogOut className="mr-2 h-4 w-4" />
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button onClick={() => setLoginForm(true)}>Login</Button>
-          )}
-          <button
-            onClick={() => {
-              setOpen(true);
-            }}
-            className="ml-4 lg:hidden"
-          >
-            <RiMenuLine size={28} />
-          </button>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {data.username}
+                      </p>
+                      <p className="text-xs leading-none text-stone">
+                        {data.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-line" />
+                  <DropdownMenuItem className="cursor-pointer">
+                    <LuUser className="mr-2 h-4 w-4" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-line" />
+                  <DropdownMenuItem onClick={logout} className="cursor-pointer">
+                    <LuLogOut className="mr-2 h-4 w-4" />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                onClick={() => setLoginForm(true)}
+                className="hidden h-9 px-5 text-[12px] font-semibold uppercase tracking-[0.15em] sm:inline-flex"
+              >
+                Sign in
+              </Button>
+            )}
+
+            <button
+              onClick={() => {
+                setOpen(true);
+              }}
+              className="p-1 text-ink transition-colors hover:text-klein lg:hidden"
+              aria-label="Open menu"
+            >
+              <RiMenuLine size={24} />
+            </button>
+          </div>
         </div>
         {open && <MobileMenu menu={menu} onClose={close} />}
       </header>
 
       {loginForm && (
-        <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
+        <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-stone/50 backdrop-blur-sm">
           <Login
             onClose={() => {
               setLoginForm(false);

@@ -2,15 +2,17 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axiosInstance from "@/api/axiosInstance";
 import { clearCart, fetchCart } from "@/redux/slices/cart";
 
 const FREE_SHIPPING_THRESHOLD = 1000;
 const SHIPPING_FEE = 50;
+
+const labelCls = "text-[11px] font-semibold uppercase tracking-[0.18em] text-stone";
 
 const Checkout = () => {
   const dispatch = useDispatch();
@@ -89,7 +91,8 @@ const Checkout = () => {
       setTimeout(() => navigate("/"), 2000);
     } catch (error) {
       toast.error(
-        error.response?.data?.message ?? "Could not place the order. Please try again.",
+        error.response?.data?.message ??
+          "Could not place the order. Please try again.",
         { position: "top-right", autoClose: 2500 }
       );
       setPlacingOrder(false);
@@ -97,113 +100,144 @@ const Checkout = () => {
   };
 
   return (
-    <main className="flex-1 container px-4 md:px-6 lg:px-20 py-12">
-      <div className="grid md:grid-cols-[2fr_1fr] gap-12">
-        <div className="rounded-lg border border-gray-200 p-6">
-          <h1 className="text-3xl font-bold mb-8">Checkout</h1>
-          <div className="border-b border-gray-200 pb-8 mb-8">
-            <h2 className="text-2xl font-bold mb-4">Your Cart</h2>
-            <div className="grid gap-6">
-              {validItems.map((item) => (
-                <div
-                  key={`${item.productType}-${item.product}`}
-                  className="grid grid-cols-[80px_1fr_80px] items-center gap-4"
-                >
+    <>
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-7xl px-4 py-14 md:px-6 lg:px-8">
+          <p className="eyebrow">Almost yours</p>
+          <h1 className="mt-4 font-display text-5xl font-bold sm:text-6xl">
+            Checkout
+          </h1>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-14 px-4 py-14 md:px-6 lg:grid-cols-[2fr_1fr] lg:gap-20 lg:px-8">
+        {/* Order recap */}
+        <div>
+          <h2 className="font-display text-2xl font-semibold">Your order</h2>
+          <div className="mt-6 divide-y divide-line border-y border-line">
+            {validItems.map((item) => (
+              <div
+                key={`${item.productType}-${item.product}`}
+                className="flex items-center gap-6 py-5"
+              >
+                <div className="shrink-0 border border-line p-1">
                   <img
                     src={item.itemDetails.image}
                     alt={item.itemDetails.name ?? item.itemDetails.title}
-                    className="rounded-md"
-                    style={{
-                      aspectRatio: "100/100",
-                      objectFit: "cover",
-                    }}
-                    width={100}
+                    className="h-20 w-20 object-cover"
                   />
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      {item.itemDetails.name ?? item.itemDetails.title}
-                    </h3>
-                    <p className="text-gray-500">{item.productType}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-semibold">
-                      {item.itemDetails.price} DH
-                    </p>
-                    <p className="text-gray-500">Qty: {item.quantity}</p>
-                  </div>
                 </div>
-              ))}
-            </div>
+                <div className="min-w-0 flex-1">
+                  <p className={labelCls}>
+                    {item.productType === "Artwork"
+                      ? "Artwork"
+                      : "Exhibition ticket"}
+                  </p>
+                  <h3 className="mt-1 truncate font-display text-lg font-semibold italic">
+                    {item.itemDetails.name ?? item.itemDetails.title}
+                  </h3>
+                </div>
+                <div className="text-right">
+                  <p className="font-display text-lg tabular-nums">
+                    {item.itemDetails.price} DH
+                  </p>
+                  <p className="mt-1 text-xs text-stone">
+                    Qty {item.quantity}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="rounded-lg border border-gray-200 p-6">
-          <h2 className="text-2xl font-bold mb-4">Payment Information</h2>
-          <form
-            className="grid gap-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              placeOrder();
-            }}
-          >
-            <div className="grid gap-2">
-              <Label htmlFor="card-number">Card Number</Label>
-              <Input
-                id="card-number"
-                placeholder="Enter your card number"
-                value={card.number}
-                onChange={(e) => setCard({ ...card, number: e.target.value })}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+
+        {/* Payment */}
+        <aside>
+          <div className="border border-line p-8 lg:sticky lg:top-24">
+            <h2 className="font-display text-2xl font-semibold">Payment</h2>
+            <form
+              className="mt-6 grid gap-5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                placeOrder();
+              }}
+            >
               <div className="grid gap-2">
-                <Label htmlFor="expiry-date">Expiry Date</Label>
+                <Label htmlFor="card-number" className={labelCls}>
+                  Card number
+                </Label>
                 <Input
-                  id="expiry-date"
-                  placeholder="MM/YY"
-                  value={card.expiry}
-                  onChange={(e) => setCard({ ...card, expiry: e.target.value })}
+                  id="card-number"
+                  placeholder="4242 4242 4242 4242"
+                  value={card.number}
+                  onChange={(e) => setCard({ ...card, number: e.target.value })}
+                  className="h-11 border-line bg-transparent tabular-nums"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="cvc">CVC</Label>
-                <Input
-                  id="cvc"
-                  placeholder="CVC"
-                  value={card.cvc}
-                  onChange={(e) => setCard({ ...card, cvc: e.target.value })}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="expiry-date" className={labelCls}>
+                    Expiry
+                  </Label>
+                  <Input
+                    id="expiry-date"
+                    placeholder="MM/YY"
+                    value={card.expiry}
+                    onChange={(e) =>
+                      setCard({ ...card, expiry: e.target.value })
+                    }
+                    className="h-11 border-line bg-transparent tabular-nums"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="cvc" className={labelCls}>
+                    CVC
+                  </Label>
+                  <Input
+                    id="cvc"
+                    placeholder="123"
+                    value={card.cvc}
+                    onChange={(e) => setCard({ ...card, cvc: e.target.value })}
+                    className="h-11 border-line bg-transparent tabular-nums"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="mt-4">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-gray-500">Subtotal</p>
-                <p className="text-lg font-semibold">{subtotal} DH</p>
-              </div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-gray-500">Shipping</p>
-                <p className="text-lg font-semibold">
-                  {shipping === 0 ? "Free" : `${shipping} DH`}
-                </p>
-              </div>
-              <Separator className="my-4" />
-              <div className="flex items-center justify-between">
-                <p className="text-xl font-bold">Total</p>
-                <p className="text-xl font-bold">{total} DH</p>
-              </div>
+
+              <dl className="mt-2 space-y-3 border-t border-line pt-5">
+                <div className="flex items-baseline justify-between">
+                  <dt className={labelCls}>Subtotal</dt>
+                  <dd className="text-sm tabular-nums">{subtotal} DH</dd>
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <dt className={labelCls}>Shipping</dt>
+                  <dd className="text-sm tabular-nums">
+                    {shipping === 0 ? "Free" : `${shipping} DH`}
+                  </dd>
+                </div>
+                <div className="flex items-baseline justify-between border-t border-line pt-4">
+                  <dt className="font-display text-lg font-semibold">Total</dt>
+                  <dd className="font-display text-2xl tabular-nums">
+                    {total} DH
+                  </dd>
+                </div>
+              </dl>
+
               <Button
                 type="submit"
                 size="lg"
-                className="w-full mt-6"
+                className="mt-2 w-full text-[12px] font-semibold uppercase tracking-[0.15em]"
                 disabled={placingOrder}
               >
-                {placingOrder ? "Placing Order..." : "Place Order"}
+                {placingOrder ? "Placing order…" : "Place order"}
               </Button>
-            </div>
-          </form>
-        </div>
-      </div>
+              <p className="text-center text-xs text-stone">
+                Demo checkout — card details are validated but never stored.
+              </p>
+            </form>
+          </div>
+        </aside>
+      </section>
       <ToastContainer />
-    </main>
+    </>
   );
 };
 

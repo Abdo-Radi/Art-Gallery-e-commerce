@@ -1,16 +1,16 @@
 import about from "@/assets/img/about.jpg";
-import alice from "@/assets/img/Alice-Johnson.jpg"
-import michael from "@/assets/img/Michael-Brown.jpg"
-import samanta from "@/assets/img/Samantha-Lee.jpeg"
-import abdo from "@/assets/img/abdo.jpg"
+import alice from "@/assets/img/Alice-Johnson.jpg";
+import michael from "@/assets/img/Michael-Brown.jpg";
+import samanta from "@/assets/img/Samantha-Lee.jpeg";
+import abdo from "@/assets/img/abdo.jpg";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { CardContent, Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 // Neutral SVG avatar for team members without a photo.
 const placeholderAvatar = (initials) =>
     `data:image/svg+xml;utf8,${encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="#e5e7eb"/><circle cx="200" cy="110" r="50" fill="#9ca3af"/><path d="M100 300c0-55 45-90 100-90s100 35 100 90" fill="#9ca3af"/><text x="200" y="285" font-family="sans-serif" font-size="28" fill="#4b5563" text-anchor="middle">${initials}</text></svg>`
+        `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect width="400" height="500" fill="#E7E4DC"/><circle cx="200" cy="190" r="70" fill="#A3A29F"/><path d="M60 500c0-80 62-130 140-130s140 50 140 130" fill="#A3A29F"/><text x="200" y="470" font-family="Georgia, serif" font-style="italic" font-size="36" fill="#FBFAF7" text-anchor="middle">${initials}</text></svg>`
     )}`;
 
 const About = () => {
@@ -28,158 +28,169 @@ const About = () => {
     const comments = [
         {
             name: "Alice Johnson",
-            comment: "Visiting this gallery was a truly inspiring experience. The collection is breathtaking, and the atmosphere is so welcoming.",
+            comment:
+                "Visiting this gallery was a truly inspiring experience. The collection is breathtaking, and the atmosphere is so welcoming.",
             image: alice,
         },
         {
             name: "Michael Brown",
-            comment: "A hidden gem in the city! The staff is incredibly knowledgeable and friendly. I can't wait to come back.",
+            comment:
+                "A hidden gem in the city! The staff is incredibly knowledgeable and friendly. I can't wait to come back.",
             image: michael,
         },
         {
             name: "Samantha Lee",
-            comment: "An amazing gallery with a fantastic selection of artworks. It's a perfect place to spend an afternoon.",
+            comment:
+                "An amazing gallery with a fantastic selection of artworks. It's a perfect place to spend an afternoon.",
             image: samanta,
         },
     ];
 
     return (
-        <>
-            <section className="w-full py-12 md:py-24 lg:py-32">
-                <div className="container px-4 md:px-6 lg:px-20">
-                    <div className="grid items-center gap-6 lg:grid-cols-[1fr_1fr] lg:gap-12 xl:grid-cols-[1fr_1fr]">
-                        <div className="flex flex-col justify-center space-y-4">
-                            <div className="space-y-2">
-                                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-                                    About Our Gallery
-                                </h1>
-                                <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                                    At our art gallery, we are passionate about showcasing the
-                                    incredible talent and creativity of artists from around the
-                                    world. Our mission is to provide a platform for these artists
-                                    to share their unique perspectives and to inspire and
-                                    captivate our visitors.
-                                </p>
-                                <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                                    Founded in 2024, our gallery has hosted numerous exhibitions
-                                    and has been a hub for art enthusiasts and collectors alike.
-                                    We believe in the transformative power of art and strive to
-                                    create an inclusive and welcoming space for all.
-                                </p>
-                            </div>
-                            <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                                <Link
-                                    to="/artworks"
-                                    className="inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-medium shadow transition-colors bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
-                                >
-                                    Explore Artworks
-                                </Link>
-                                <button
-                                    onClick={() => {
-                                        setShowTeam(true);
-                                        teamRef.current?.scrollIntoView({ behavior: "smooth" });
-                                    }}
-                                    className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
-                                >
-                                    Our Team
-                                </button>
-                            </div>
-                        </div>
-                        <img
-                            alt="About Image"
-                            className="mx-auto overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last lg:w-[700px] lg:h-[500px]"
-                            src={about}
-                        />
-                    </div>
-                </div>
-            </section>
-            <section className="w-full py-12 md:py-24 lg:py-32">
-                <div className="container px-4 md:px-6 lg:px-20">
-                    <div className="space-y-4 text-center">
-                        <div className="space-y-2">
-                            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                                What Our Lovely Clients Say
-                            </h2>
-                            <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                                Hear from our satisfied visitors and clients.
+        <main>
+            {/* ——— Statement ——— */}
+            <section className="mx-auto max-w-7xl px-4 pb-20 pt-14 md:px-6 lg:px-8 lg:pb-28 lg:pt-20">
+                <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
+                    <div>
+                        <p className="eyebrow">About the gallery</p>
+                        <h1 className="mt-6 font-display text-5xl font-bold leading-[1.08] sm:text-6xl">
+                            Founded for artists.
+                            <br />
+                            Open to <em className="not-italic text-klein">everyone</em>.
+                        </h1>
+                        <div className="mt-8 max-w-md space-y-5 text-base leading-relaxed text-stone">
+                            <p>
+                                At Horizons, we are passionate about showcasing the incredible
+                                talent and creativity of artists from around the world. Our
+                                mission is to provide a platform for these artists to share
+                                their unique perspectives — and to inspire and captivate our
+                                visitors.
+                            </p>
+                            <p>
+                                Founded in 2024, the gallery has hosted numerous exhibitions
+                                and become a hub for art enthusiasts and collectors alike. We
+                                believe in the transformative power of art, and strive to
+                                create an inclusive, welcoming space for all.
                             </p>
                         </div>
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {comments.map((comment, i) => (
-                                <Card key={i} className="h-full w-full">
+                        <div className="mt-10 flex flex-wrap items-center gap-6">
+                            <Button asChild size="lg" className="px-8 text-[12px] font-semibold uppercase tracking-[0.15em]">
+                                <Link to="/artworks">Explore artworks</Link>
+                            </Button>
+                            <button
+                                onClick={() => {
+                                    setShowTeam(true);
+                                    teamRef.current?.scrollIntoView({ behavior: "smooth" });
+                                }}
+                                className="group text-[12px] font-semibold uppercase tracking-[0.15em] text-ink transition-colors hover:text-klein"
+                            >
+                                Meet the team
+                                <span className="ml-2 inline-block transition-transform group-hover:translate-y-1">
+                                    ↓
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                    <figure>
+                        <div className="frame">
+                            <img
+                                alt="Inside the Horizons gallery"
+                                className="aspect-[4/3] w-full object-cover"
+                                src={about}
+                            />
+                        </div>
+                        <figcaption className="mt-6 font-display text-sm italic text-stone">
+                            The main room, Horizons gallery
+                        </figcaption>
+                    </figure>
+                </div>
+            </section>
+
+            {/* ——— Visitors ——— */}
+            <section className="border-y border-line bg-secondary/50">
+                <div className="mx-auto max-w-7xl px-4 py-20 md:px-6 lg:px-8 lg:py-24">
+                    <p className="eyebrow">Guest book</p>
+                    <h2 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">
+                        What our visitors say
+                    </h2>
+                    <div className="mt-12 grid gap-8 md:grid-cols-3">
+                        {comments.map((comment) => (
+                            <figure
+                                key={comment.name}
+                                className="flex flex-col justify-between border border-line bg-paper p-8"
+                            >
+                                <blockquote className="font-display text-lg italic leading-relaxed">
+                                    “{comment.comment}”
+                                </blockquote>
+                                <figcaption className="mt-8 flex items-center gap-4 border-t border-line pt-5">
                                     <img
                                         alt={comment.name}
-                                        className="aspect-[4/3] w-full overflow-hidden rounded-t-lg object-cover"
-                                        height="300"
+                                        className="h-10 w-10 rounded-full object-cover"
                                         src={comment.image}
-                                        width="400"
                                     />
-                                    <CardContent className="p-4">
-                                        <h3 className="text-lg font-semibold">{comment.name}</h3>
-                                        <p className="text-gray-500 dark:text-gray-400">
-                                            {comment.comment}
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
+                                    <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone">
+                                        {comment.name}
+                                    </span>
+                                </figcaption>
+                            </figure>
+                        ))}
                     </div>
                 </div>
             </section>
 
+            {/* ——— Team ——— */}
             <section
                 ref={teamRef}
-                className={`w-full py-12 md:py-24 lg:py-32 ${showTeam ? "" : "hidden"}`}
+                className={`mx-auto max-w-7xl px-4 py-20 md:px-6 lg:px-8 lg:py-28 ${
+                    showTeam ? "" : "hidden"
+                }`}
             >
-                <div className="container px-4 md:px-6 lg:px-20">
-                    <div className="space-y-4 text-center">
-                        <div className="space-y-2">
-                            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                                Our Team
-                            </h2>
-                            <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                                Meet the passionate individuals behind our gallery.
-                            </p>
+                <p className="eyebrow">The people</p>
+                <h2 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">
+                    Our team
+                </h2>
+                <p className="mt-4 max-w-md text-sm leading-relaxed text-stone">
+                    The passionate individuals behind the gallery.
+                </p>
+                <div className="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+                    {[
+                        {
+                            name: "Abdellah Radi",
+                            role: "CEO",
+                            image: abdo,
+                        },
+                        {
+                            name: "Mohamed Elmahfoudi",
+                            role: "Manager",
+                            image: placeholderAvatar("ME"),
+                        },
+                        {
+                            name: "Yassin Lajnaoudi",
+                            role: "Art Director",
+                            image: placeholderAvatar("YL"),
+                        },
+                    ].map((member) => (
+                        <div key={member.name} className="group">
+                            <div className="overflow-hidden border border-line bg-secondary">
+                                <img
+                                    alt={member.name}
+                                    className="aspect-[4/5] w-full object-cover grayscale transition-all duration-500 group-hover:scale-[1.03] group-hover:grayscale-0"
+                                    src={member.image}
+                                />
+                            </div>
+                            <div className="mt-5 flex items-baseline justify-between border-t border-line pt-4">
+                                <h3 className="font-display text-lg font-semibold">
+                                    {member.name}
+                                </h3>
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-klein">
+                                    {member.role}
+                                </p>
+                            </div>
                         </div>
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {[
-                                {
-                                    name: "Abdellah Radi",
-                                    role: "CEO",
-                                    image: abdo,
-                                },
-                                {
-                                    name: "Mohamed Elmahfoudi",
-                                    role: "Manager",
-                                    image: placeholderAvatar("ME"),
-                                },
-                                {
-                                    name: "Yassin Lajnaoudi",
-                                    role: "Art Director",
-                                    image: placeholderAvatar("YL"),
-                                },
-                            ].map((member, i) => (
-                                <Card key={i} className="h-full w-full">
-                                    <img
-                                        alt={member.name}
-                                        className="aspect-[4/3] w-full overflow-hidden rounded-t-lg object-cover"
-                                        height="300"
-                                        src={member.image}
-                                        width="400"
-                                    />
-                                    <CardContent className="p-4">
-                                        <h3 className="text-lg font-semibold">{member.name}</h3>
-                                        <p className="text-gray-500 dark:text-gray-400">
-                                            {member.role}
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </section>
-        </>
+        </main>
     );
 };
 

@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RiCloseFill } from "react-icons/ri";
 import {
@@ -15,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import axiosInstance from "@/api/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const formSchema = z
   .object({
@@ -33,6 +33,9 @@ const formSchema = z
     path: ["confirmPassword"],
     message: "Passwords do not match",
   });
+
+const labelCls = "text-[11px] font-semibold uppercase tracking-[0.18em] text-stone";
+const inputCls = "h-10 border-line bg-transparent";
 
 const Register = ({ onClose }) => {
   const form = useForm({
@@ -73,52 +76,65 @@ const Register = ({ onClose }) => {
       showSuccessMessage(response.data.message);
       onClose();
     } catch (error) {
-      showErrorMessage(error.response?.data?.message ?? "Registration failed. Please try again.");
+      showErrorMessage(
+        error.response?.data?.message ?? "Registration failed. Please try again."
+      );
     }
   };
 
   return (
-    <Card className="w-96 h-5/6 overflow-scroll no-scrollbar px-4 py-12 lg:px-6">
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-3xl">Register</h1>
-        <RiCloseFill className="cursor-pointer" onClick={onClose} size={24} />
+    <div className="no-scrollbar max-h-[85vh] w-[26rem] max-w-[calc(100vw-2rem)] overflow-y-auto border border-line bg-paper px-8 py-10 shadow-2xl">
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <p className="eyebrow">Join the gallery</p>
+          <h1 className="mt-3 font-display text-3xl font-semibold">Register</h1>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-1 text-stone transition-colors hover:text-klein"
+          aria-label="Close"
+        >
+          <RiCloseFill size={24} />
+        </button>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(register)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="firstName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Arkadian" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="lastName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="ARKADIAN" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={labelCls}>First name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Jane" className={inputCls} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={labelCls}>Last name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Doe" className={inputCls} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
             name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel className={labelCls}>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="arkadian123" {...field} />
+                  <Input placeholder="janedoe" className={inputCls} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -129,9 +145,13 @@ const Register = ({ onClose }) => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className={labelCls}>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="m@example.com" {...field} />
+                  <Input
+                    placeholder="you@example.com"
+                    className={inputCls}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -142,9 +162,9 @@ const Register = ({ onClose }) => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className={labelCls}>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" className={inputCls} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -155,20 +175,24 @@ const Register = ({ onClose }) => {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel className={labelCls}>Confirm password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" className={inputCls} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">
-            Register
+          <Button
+            type="submit"
+            className="h-11 w-full text-[12px] font-semibold uppercase tracking-[0.15em]"
+          >
+            Create account
           </Button>
         </form>
       </Form>
-    </Card>
+      <ToastContainer />
+    </div>
   );
 };
 

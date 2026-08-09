@@ -27,6 +27,9 @@ import { addItemToCart } from "@/redux/slices/cart";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const filterLabel =
+  "text-[11px] font-semibold uppercase tracking-[0.18em] text-stone";
+
 const Exhibitions = () => {
   const dispatch = useDispatch();
   const { list: exhibitions, pages } = useSelector(
@@ -74,89 +77,127 @@ const Exhibitions = () => {
 
   return (
     <>
-      <section className="relative flex flex-col gap-6 lg:gap-12 lg:flex-row w-full py-12 px-4 md:px-6 lg:px-20">
-        <div className="lg:w-[21%] space-y-8">
-          <div className="flex flex-col space-y-2">
-            <Label htmlFor="search">Search</Label>
-            <Input
-              onChange={(e) => {
-                // Searching starts a fresh query: clear the other filters.
-                setPrice(750);
-                setCurrentPage(1);
-                setParams(e.target.value ? { search: e.target.value } : {});
-              }}
-              id="search"
-              type="text"
-              placeholder="Search"
-            />
-          </div>
-          <div className="flex flex-col space-y-2">
-            <Label htmlFor="sort">Order</Label>
-            <Select
-              id="sort"
-              onValueChange={(value) => handleParams("priceSort", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Sort by</SelectLabel>
-                  <SelectItem value="lowToHigh">Low to High</SelectItem>
-                  <SelectItem value="highToLow">High to Low</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col space-y-2">
-            <div className="flex justify-between items-center">
-              <Label htmlFor="price">Price Range</Label>
-              <p>{price} DH</p>
-            </div>
-            <Slider
-              onValueChange={(value) => {
-                setPrice(value[0]);
-                handleParams("maxPrice", value[0]);
-              }}
-              value={[price]}
-              max={1500}
-              step={50}
-            />
-          </div>
-          <div className="flex flex-col space-y-2">
-            <Button onClick={resetParams}>Reset</Button>
-          </div>
+      {/* Page header */}
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-7xl px-4 py-14 md:px-6 lg:px-8">
+          <p className="eyebrow">On view</p>
+          <h1 className="mt-4 font-display text-5xl font-bold sm:text-6xl">
+            Exhibitions
+          </h1>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-stone">
+            Book your ticket online and stand in front of the work — the way it
+            was meant to be seen.
+          </p>
         </div>
-        <div className="lg:w-[79%] space-y-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-12">
-            {exhibitions.map((exhibition) => (
-              <div
-                key={exhibition._id}
-                className="group relative overflow-hidden rounded-lg shadow-lg"
+      </section>
+
+      <section className="mx-auto flex max-w-7xl flex-col gap-12 px-4 py-14 md:px-6 lg:flex-row lg:gap-16 lg:px-8">
+        {/* Filters */}
+        <aside className="shrink-0 lg:w-60">
+          <div className="space-y-9 lg:sticky lg:top-24">
+            <div className="flex flex-col space-y-2.5">
+              <Label htmlFor="search" className={filterLabel}>
+                Search
+              </Label>
+              <Input
+                onChange={(e) => {
+                  // Searching starts a fresh query: clear the other filters.
+                  setPrice(750);
+                  setCurrentPage(1);
+                  setParams(e.target.value ? { search: e.target.value } : {});
+                }}
+                id="search"
+                type="text"
+                placeholder="Name of an exhibition…"
+                className="h-10 border-line bg-transparent"
+              />
+            </div>
+            <div className="flex flex-col space-y-2.5">
+              <Label htmlFor="sort" className={filterLabel}>
+                Order
+              </Label>
+              <Select
+                id="sort"
+                onValueChange={(value) => handleParams("priceSort", value)}
               >
-                <Link to={exhibition._id}>
+                <SelectTrigger className="h-10 border-line bg-transparent">
+                  <SelectValue placeholder="Sort by price" />
+                </SelectTrigger>
+                <SelectContent className="border-line bg-paper">
+                  <SelectGroup>
+                    <SelectLabel>Sort by</SelectLabel>
+                    <SelectItem value="lowToHigh">Price — low to high</SelectItem>
+                    <SelectItem value="highToLow">Price — high to low</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col space-y-2.5">
+              <div className="flex items-baseline justify-between">
+                <Label htmlFor="price" className={filterLabel}>
+                  Max price
+                </Label>
+                <p className="font-display text-sm tabular-nums">{price} DH</p>
+              </div>
+              <Slider
+                onValueChange={(value) => {
+                  setPrice(value[0]);
+                  handleParams("maxPrice", value[0]);
+                }}
+                value={[price]}
+                max={1500}
+                step={50}
+              />
+            </div>
+            <Button
+              onClick={resetParams}
+              variant="outline"
+              className="h-10 w-full border-stone/30 text-[11px] font-semibold uppercase tracking-[0.18em] hover:border-klein hover:text-klein"
+            >
+              Reset filters
+            </Button>
+          </div>
+        </aside>
+
+        {/* Grid */}
+        <div className="min-w-0 flex-1 space-y-16">
+          {exhibitions.length === 0 && (
+            <p className="py-20 text-center font-display text-lg italic text-stone">
+              No exhibitions match these filters — try widening the search.
+            </p>
+          )}
+          <div className="grid gap-x-8 gap-y-14 sm:grid-cols-2 xl:grid-cols-3">
+            {exhibitions.map((exhibition) => (
+              <div key={exhibition._id} className="group">
+                <Link
+                  to={exhibition._id}
+                  className="block overflow-hidden border border-line bg-secondary"
+                >
                   <img
                     alt={exhibition.name}
-                    className="h-64 w-full object-cover transition-all duration-300 group-hover:scale-105"
-                    height={400}
+                    className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                     src={exhibition.image}
-                    style={{
-                      aspectRatio: "400/400",
-                      objectFit: "cover",
-                    }}
-                    width={400}
                   />
                 </Link>
-                <div className="bg-white p-4 dark:bg-gray-900">
-                  <h3 className="text-lg font-semibold">{exhibition.name}</h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    {exhibition.price} DH
+                <div className="mt-5 border-t border-line pt-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone">
+                    {new Date(exhibition.date).toDateString()}
                   </p>
+                  <div className="mt-1 flex items-baseline justify-between gap-4">
+                    <Link to={exhibition._id} className="min-w-0">
+                      <h3 className="truncate font-display text-lg font-semibold italic transition-colors hover:text-klein">
+                        {exhibition.name}
+                      </h3>
+                    </Link>
+                    <p className="whitespace-nowrap font-display text-lg tabular-nums">
+                      {exhibition.price} DH
+                    </p>
+                  </div>
                   <div className="mt-4 flex items-center justify-between">
-                    <span className="text-lg font-semibold">
-                      Qty: {exhibition.quantity}
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone">
+                      {exhibition.quantity} tickets left
                     </span>
-                    <Button
+                    <button
                       onClick={() => {
                         if (!userData) {
                           showToastMessage("Please login to buy tickets!");
@@ -171,29 +212,32 @@ const Exhibitions = () => {
                           })
                         ).then((res) => {
                           showToastMessage(
-                            res.payload?.message ?? res.payload ?? "Something went wrong"
+                            res.payload?.message ??
+                              res.payload ??
+                              "Something went wrong"
                           );
                         });
                       }}
-                      size="sm"
+                      className="text-[11px] font-semibold uppercase tracking-[0.18em] text-klein transition-colors hover:text-klein-deep"
                     >
-                      Add to Cart
-                    </Button>
+                      Book ticket +
+                    </button>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+
           {pages > 1 && (
             <Pagination>
-              <PaginationContent>
+              <PaginationContent className="gap-2">
                 <PaginationItem>
                   <PaginationPrevious
                     onClick={() => handlePageChange(currentPage - 1)}
                     className={
                       currentPage === 1
-                        ? `pointer-events-none opacity-45`
-                        : `cursor-pointer`
+                        ? `pointer-events-none opacity-40`
+                        : `cursor-pointer hover:text-klein`
                     }
                   />
                 </PaginationItem>
@@ -202,7 +246,7 @@ const Exhibitions = () => {
                   <PaginationItem>
                     <PaginationLink
                       onClick={() => handlePageChange(currentPage - 1)}
-                      className="cursor-pointer"
+                      className="cursor-pointer hover:text-klein"
                     >
                       {currentPage - 1}
                     </PaginationLink>
@@ -212,7 +256,7 @@ const Exhibitions = () => {
                 <PaginationItem>
                   <PaginationLink
                     isActive
-                    className="pointer-events-none opacity-50"
+                    className="pointer-events-none border-klein bg-klein text-paper"
                   >
                     {currentPage}
                   </PaginationLink>
@@ -222,7 +266,7 @@ const Exhibitions = () => {
                   <PaginationItem>
                     <PaginationLink
                       onClick={() => handlePageChange(currentPage + 1)}
-                      className="cursor-pointer"
+                      className="cursor-pointer hover:text-klein"
                     >
                       {currentPage + 1}
                     </PaginationLink>
@@ -234,8 +278,8 @@ const Exhibitions = () => {
                     onClick={() => handlePageChange(currentPage + 1)}
                     className={
                       currentPage === pages
-                        ? `pointer-events-none opacity-45`
-                        : `cursor-pointer`
+                        ? `pointer-events-none opacity-40`
+                        : `cursor-pointer hover:text-klein`
                     }
                     disabled={currentPage === pages}
                   />

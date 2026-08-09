@@ -1,7 +1,6 @@
 import hero from "@/assets/img/hero.jpg";
 import about from "@/assets/img/about.jpg";
 import { Link } from "react-router-dom";
-import { CardContent, Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,222 +22,327 @@ const Home = () => {
     dispatch(getArtworks());
     dispatch(getExhibitions());
   }, [dispatch]);
+
   return (
     <main>
-      <section className="w-full py-12 md:py-24">
-        <div className="container px-4 md:px-6 lg:px-20">
-          <div className="grid gap-6 lg:grid-cols-[1fr_450px] lg:gap-12 xl:grid-cols-[1fr_550px]">
-            <div className="flex flex-col justify-center space-y-4">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none">
-                  Discover the Beauty of Art
-                </h1>
-                <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                  Immerse yourself in a world of captivating artworks, where
-                  creativity and emotion come together to inspire and captivate.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Link
-                  to="/artworks"
-                  className="inline-flex h-10 items-center justify-center rounded-md  px-8 text-sm font-medium  shadow transition-colors bg-primary text-primary-foreground hover:bg-primary/90  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
-                >
-                  Explore Gallery
-                </Link>
-                <Link
-                  to="/about"
-                  className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
-                >
-                  Learn More
-                </Link>
-              </div>
-            </div>
-            <img
-              alt="Hero Image"
-              className="mx-auto aspect-square overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
-              height="450"
-              src={hero}
-              width="450"
-            />
-          </div>
-        </div>
-      </section>
-      <section className="w-full py-12 md:py-24 bg-gray-100 dark:bg-gray-800">
-        <div className="container px-4 md:px-6 lg:px-20">
-          <div className="space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                Featured Artworks
-              </h2>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                Discover our curated selection of stunning artworks from
-                talented artists.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {artworks.slice(0, 3).map((artwork) => (
-                <Card key={artwork._id} className="h-full w-full">
-                  <img
-                    alt={artwork.title}
-                    className="aspect-[4/3] w-full overflow-hidden rounded-t-lg object-cover"
-                    height="300"
-                    src={artwork.image}
-                    width="400"
-                  />
-                  <CardContent className="p-4">
-                    <h3 className="text-lg font-semibold">{artwork.title}</h3>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      by {artwork.artist?.firstName} {artwork.artist?.lastName}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="w-full py-12 md:py-24">
-        <div className="container px-4 md:px-6 lg:px-20">
-          <div className="grid items-center gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_550px]">
-            <div className="flex flex-col justify-center space-y-4">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                  About Our Gallery
-                </h2>
-                <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                  At our art gallery, we are passionate about showcasing the
-                  incredible talent and creativity of artists from around the
-                  world. Our mission is to provide a platform for these artists
-                  to share their unique perspectives and to inspire and
-                  captivate our visitors.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Link
-                  to="/about"
-                  className="inline-flex h-10 items-center justify-center rounded-md  px-8 text-sm font-medium  shadow transition-colors bg-primary text-primary-foreground hover:bg-primary/90  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
-                >
-                  Learn More
-                </Link>
-                <a
-                  href="#contact"
-                  className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
-                >
-                  Contact Us
-                </a>
-              </div>
-            </div>
-            <img
-              alt="About Image"
-              className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
-              height="310"
-              src={about}
-              width="550"
-            />
-          </div>
-        </div>
-      </section>
-      <section className="w-full py-12 md:py-24 bg-gray-100 dark:bg-gray-800">
-        <div className="container px-4 md:px-6 lg:px-20">
-          <div className="space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                Trending Exhibitions
-              </h2>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                Check out our latest and most popular art exhibitions.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {exhibitions.slice(0, 3).map((exhibition) => (
-                <Card key={exhibition._id} className="h-full w-full">
-                  <img
-                    alt={exhibition.name}
-                    className="aspect-[4/3] w-full overflow-hidden rounded-t-lg object-cover"
-                    height="300"
-                    src={exhibition.image}
-                    width="400"
-                  />
-                  <CardContent className="p-4">
-                    <h3 className="text-lg font-semibold">{exhibition.name}</h3>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      {new Date(exhibition.date).toDateString()}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="w-full py-12 md:py-24">
-        <div className="container px-4 md:px-6 lg:px-20">
-          <div className="flex flex-col items-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
-                Explore Our Full Collection
-              </h2>
-              <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                Browse our extensive collection of unique and captivating
-                artworks from talented artists around the world.
-              </p>
-            </div>
-            <Link
-              className="inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-medium  shadow transition-colors bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
-              to="/artworks"
+      {/* ——— Hero ——— */}
+      <section className="mx-auto max-w-7xl px-4 pb-20 pt-14 md:px-6 lg:px-8 lg:pb-28 lg:pt-20">
+        <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
+          <div>
+            <p className="eyebrow animate-fade-up">
+              Contemporary art gallery — est. 2024
+            </p>
+            <h1
+              className="mt-6 animate-fade-up font-display text-5xl font-bold leading-[1.05] sm:text-6xl lg:text-7xl"
+              style={{ animationDelay: "80ms" }}
             >
-              Browse Collection
+              Where art finds
+              <br />
+              its <em className="not-italic text-klein">horizon</em>.
+            </h1>
+            <p
+              className="mt-7 max-w-md animate-fade-up text-base leading-relaxed text-stone"
+              style={{ animationDelay: "160ms" }}
+            >
+              Original works by living artists — to browse, to collect, and to
+              stand in front of. Every piece ships from the gallery; every
+              exhibition is open to you.
+            </p>
+            <div
+              className="mt-10 flex animate-fade-up flex-wrap items-center gap-6"
+              style={{ animationDelay: "240ms" }}
+            >
+              <Button asChild size="lg" className="px-8 text-[12px] font-semibold uppercase tracking-[0.15em]">
+                <Link to="/artworks">Explore the gallery</Link>
+              </Button>
+              <Link
+                to="/exhibitions"
+                className="group text-[12px] font-semibold uppercase tracking-[0.15em] text-ink transition-colors hover:text-klein"
+              >
+                Current exhibitions
+                <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">
+                  →
+                </span>
+              </Link>
+            </div>
+          </div>
+
+          <figure className="animate-fade-up" style={{ animationDelay: "200ms" }}>
+            <div className="frame">
+              <img
+                alt="Featured artwork from the current collection"
+                className="aspect-[4/5] w-full object-cover"
+                src={hero}
+              />
+            </div>
+            <figcaption className="mt-6 flex items-baseline justify-between">
+              <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-stone">
+                From the current collection
+              </span>
+              <span className="font-display text-sm italic text-stone">
+                Horizons, 2026
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      {/* ——— What we do ——— */}
+      <section className="border-y border-line">
+        <div className="mx-auto grid max-w-7xl divide-y divide-line px-4 md:px-6 lg:grid-cols-3 lg:divide-x lg:divide-y-0 lg:px-8">
+          {[
+            {
+              title: "Original artworks",
+              text: "One-of-a-kind pieces, straight off the gallery wall.",
+            },
+            {
+              title: "Living artists",
+              text: "Every sale supports the artist behind the work.",
+            },
+            {
+              title: "Open exhibitions",
+              text: "Book tickets online and see the collection in person.",
+            },
+          ].map((item) => (
+            <div key={item.title} className="py-8 lg:px-10 lg:first:pl-0 lg:last:pr-0">
+              <h3 className="font-display text-lg font-semibold">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-stone">
+                {item.text}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ——— Featured artworks ——— */}
+      <section className="mx-auto max-w-7xl px-4 py-20 md:px-6 lg:px-8 lg:py-28">
+        <div className="mb-12 flex items-end justify-between">
+          <div>
+            <p className="eyebrow">The collection</p>
+            <h2 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">
+              Featured artworks
+            </h2>
+          </div>
+          <Link
+            to="/artworks"
+            className="group hidden text-[12px] font-semibold uppercase tracking-[0.15em] text-ink transition-colors hover:text-klein sm:block"
+          >
+            View all
+            <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">
+              →
+            </span>
+          </Link>
+        </div>
+
+        <div className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+          {artworks.slice(0, 3).map((artwork) => (
+            <Link
+              key={artwork._id}
+              to={`/artworks/${artwork._id}`}
+              className="group block"
+            >
+              <div className="overflow-hidden border border-line bg-secondary">
+                <img
+                  alt={artwork.title}
+                  className="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  src={artwork.image}
+                />
+              </div>
+              <div className="mt-5 flex items-baseline justify-between gap-4 border-t border-line pt-4">
+                <div>
+                  <h3 className="font-display text-lg font-semibold italic transition-colors group-hover:text-klein">
+                    {artwork.title}
+                  </h3>
+                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-stone">
+                    {artwork.artist?.firstName} {artwork.artist?.lastName}
+                  </p>
+                </div>
+                <p className="whitespace-nowrap font-display text-lg tabular-nums">
+                  {artwork.price} DH
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ——— The gallery ——— */}
+      <section className="border-y border-line bg-secondary">
+        <div className="mx-auto grid max-w-7xl items-center gap-14 px-4 py-20 md:px-6 lg:grid-cols-2 lg:gap-20 lg:px-8 lg:py-28">
+          <div className="order-2 lg:order-1">
+            <img
+              alt="Inside the Horizons gallery"
+              className="aspect-[16/11] w-full border border-line object-cover"
+              src={about}
+            />
+          </div>
+          <div className="order-1 lg:order-2">
+            <p className="eyebrow">The gallery</p>
+            <h2 className="mt-4 font-display text-4xl font-semibold leading-tight sm:text-5xl">
+              A room where
+              <br />
+              art can breathe.
+            </h2>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-stone">
+              We are passionate about showcasing the talent and creativity of
+              artists from around the world — providing a platform for their
+              unique perspectives, and an inclusive, welcoming space for
+              everyone who walks in.
+            </p>
+            <Link
+              to="/about"
+              className="group mt-8 inline-block text-[12px] font-semibold uppercase tracking-[0.15em] text-ink transition-colors hover:text-klein"
+            >
+              Learn more
+              <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">
+                →
+              </span>
             </Link>
           </div>
         </div>
       </section>
-      <section id="contact" className="w-full py-12 md:py-24 bg-gray-100">
-        <div className="container px-4 md:px-6 lg:px-20">
-          <div className="flex flex-col items-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
-                Contact Us
-              </h2>
-              <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                Get in touch with us for any inquiries or to learn more about
-                our gallery and upcoming events.
-              </p>
-            </div>
-            <div className="w-full max-w-md">
-              {messageSent && (
-                <p className="mb-4 text-green-600 font-medium">
-                  Thank you for your message! We will get back to you soon.
+
+      {/* ——— Trending exhibitions ——— */}
+      <section className="mx-auto max-w-7xl px-4 py-20 md:px-6 lg:px-8 lg:py-28">
+        <div className="mb-12 flex items-end justify-between">
+          <div>
+            <p className="eyebrow">On view</p>
+            <h2 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">
+              Trending exhibitions
+            </h2>
+          </div>
+          <Link
+            to="/exhibitions"
+            className="group hidden text-[12px] font-semibold uppercase tracking-[0.15em] text-ink transition-colors hover:text-klein sm:block"
+          >
+            View all
+            <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">
+              →
+            </span>
+          </Link>
+        </div>
+
+        <div className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+          {exhibitions.slice(0, 3).map((exhibition) => (
+            <Link
+              key={exhibition._id}
+              to={`/exhibitions/${exhibition._id}`}
+              className="group block"
+            >
+              <div className="overflow-hidden border border-line bg-secondary">
+                <img
+                  alt={exhibition.name}
+                  className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  src={exhibition.image}
+                />
+              </div>
+              <div className="mt-5 border-t border-line pt-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone">
+                  {new Date(exhibition.date).toDateString()}
                 </p>
-              )}
-              <form
-                className="grid gap-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  e.target.reset();
-                  setMessageSent(true);
-                }}
+                <h3 className="mt-1 font-display text-lg font-semibold italic transition-colors group-hover:text-klein">
+                  {exhibition.name}
+                </h3>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ——— CTA ——— */}
+      <section className="bg-klein text-paper">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-4 py-16 md:px-6 lg:flex-row lg:items-center lg:px-8">
+          <h2 className="font-display text-3xl font-semibold leading-snug sm:text-4xl">
+            Begin your collection —
+            <br className="hidden sm:block" /> the wall is waiting.
+          </h2>
+          <Button
+            asChild
+            size="lg"
+            className="bg-paper px-8 text-[12px] font-semibold uppercase tracking-[0.15em] text-ink hover:bg-paper/90"
+          >
+            <Link to="/artworks">Browse the collection</Link>
+          </Button>
+        </div>
+      </section>
+
+      {/* ——— Contact ——— */}
+      <section id="contact" className="mx-auto max-w-7xl px-4 py-20 md:px-6 lg:px-8 lg:py-28">
+        <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
+          <div>
+            <p className="eyebrow">Contact</p>
+            <h2 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">
+              Write to us.
+            </h2>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-stone">
+              A question about a piece, a visit, or a commission — we read
+              everything and reply quickly.
+            </p>
+            <a
+              className="mt-8 inline-block font-display text-lg italic text-klein underline-offset-4 hover:underline"
+              href="mailto:support@artgallery.com"
+            >
+              support@artgallery.com
+            </a>
+          </div>
+          <div>
+            {messageSent && (
+              <p className="mb-6 border border-klein/30 bg-klein/5 px-4 py-3 text-sm text-klein">
+                Thank you for your message! We will get back to you soon.
+              </p>
+            )}
+            <form
+              className="grid gap-6"
+              onSubmit={(e) => {
+                e.preventDefault();
+                e.target.reset();
+                setMessageSent(true);
+              }}
+            >
+              <div className="grid gap-2">
+                <Label
+                  htmlFor="name"
+                  className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone"
+                >
+                  Name
+                </Label>
+                <Input id="name" placeholder="Your name" className="h-11 border-line bg-transparent" />
+              </div>
+              <div className="grid gap-2">
+                <Label
+                  htmlFor="email"
+                  className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone"
+                >
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  placeholder="you@example.com"
+                  type="email"
+                  className="h-11 border-line bg-transparent"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label
+                  htmlFor="message"
+                  className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone"
+                >
+                  Message
+                </Label>
+                <Textarea
+                  id="message"
+                  placeholder="Tell us what's on your mind"
+                  rows={5}
+                  className="border-line bg-transparent"
+                />
+              </div>
+              <Button
+                className="h-11 w-full text-[12px] font-semibold uppercase tracking-[0.15em] sm:w-auto sm:justify-self-start sm:px-10"
+                type="submit"
               >
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" placeholder="Enter your name" />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    placeholder="Enter your email"
-                    type="email"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea id="message" placeholder="Enter your message" />
-                </div>
-                <Button className="w-full" type="submit">
-                  Submit
-                </Button>
-              </form>
-            </div>
+                Send message
+              </Button>
+            </form>
           </div>
         </div>
       </section>

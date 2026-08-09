@@ -2,50 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Horizons design system — "White Cube"
+  Porcelain ground, near-black ink, warm hairlines,
+  one bold move: International-Klein-adjacent cobalt.
+  Display: Bodoni Moda. Body/UI: Archivo. Sharp corners.
+*/
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --background: 45 33% 98%; /* paper  #FBFAF7 */
+    --foreground: 240 8% 7%; /* ink    #111114 */
+    --card: 45 33% 98%;
+    --card-foreground: 240 8% 7%;
+    --popover: 45 33% 98%;
+    --popover-foreground: 240 8% 7%;
+    --primary: 228 75% 42%; /* klein  #1B33BE */
+    --primary-foreground: 45 33% 98%;
+    --secondary: 44 24% 94%;
+    --secondary-foreground: 240 8% 7%;
+    --muted: 44 24% 94%;
+    --muted-foreground: 247 5% 35%; /* stone  #55545C */
+    --accent: 44 24% 94%;
+    --accent-foreground: 240 8% 7%;
+    /* Deep oxblood rather than an alarm red, so validation errors sit with
+       the warm neutrals. The only hue outside the core palette. */
+    --destructive: 5 66% 39%;
+    --destructive-foreground: 45 33% 98%;
+    --border: 44 19% 88%; /* line   #E7E4DC */
+    --input: 44 19% 82%;
+    --ring: 228 75% 42%;
+    --radius: 0.125rem; /* near-sharp: gallery frames, not app bubbles */
   }
 }
 
@@ -54,7 +40,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-taviraj;
+    @apply bg-paper text-ink font-sans antialiased;
   }
 
   h1,
@@ -63,7 +49,52 @@
   h4,
   h5,
   h6 {
-    @apply font-yeseva;
+    @apply font-display font-semibold;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: #1b33be;
+    color: #fbfaf7;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Small uppercase section label */
+  .eyebrow {
+    @apply font-sans text-[11px] font-bold uppercase tracking-[0.22em] text-klein;
+  }
+
+  /* Artwork "hung" on the wall: thin ink frame + offset cobalt mat */
+  .frame {
+    @apply relative border border-line bg-paper p-2;
+  }
+  .frame::after {
+    content: "";
+    @apply absolute -bottom-3 -right-3 -z-10 h-full w-full bg-klein;
+  }
+
+  /* Nav link with sliding underline */
+  .nav-link {
+    @apply relative pb-1 text-[12px] font-semibold uppercase tracking-[0.18em] text-ink transition-colors hover:text-klein;
+  }
+  .nav-link::after {
+    content: "";
+    @apply absolute bottom-0 left-0 h-px w-0 bg-klein transition-all duration-300;
+  }
+  .nav-link:hover::after {
+    @apply w-full;
   }
 }
 
@@ -74,9 +105,38 @@
   }
 
   .no-scrollbar {
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
-    /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
+}
+
+/*
+  react-toastify ships its own green/blue/red skin. Repaint it in the gallery
+  palette. Selectors are doubled up so they win regardless of CSS import order.
+*/
+.Toastify .Toastify__toast {
+  background: #fbfaf7;
+  color: #111114;
+  border: 1px solid #e7e4dc;
+  border-radius: 0;
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  box-shadow: 0 12px 32px rgba(85, 84, 92, 0.16);
+}
+
+.Toastify .Toastify__toast-body {
+  color: #111114;
+}
+
+.Toastify .Toastify__progress-bar {
+  background: #1b33be;
+}
+
+.Toastify .Toastify__toast-icon svg {
+  fill: #1b33be;
+}
+
+.Toastify .Toastify__close-button {
+  color: #55545c;
+  opacity: 1;
 }
