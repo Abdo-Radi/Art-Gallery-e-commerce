@@ -19,7 +19,7 @@ export const getExhibitionById = createAsyncThunk(
     return axiosInstance
       .get(`/exhibitions/${id}`)
       .then((res) => res.data)
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -34,7 +34,11 @@ const initialState = {
 const exhibitionSlice = createSlice({
   name: "exhibitions",
   initialState,
-  reducers: {},
+  reducers: {
+    clearExhibitionDetail: (state) => {
+      state.exhibitionDetail = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Read
@@ -55,4 +59,5 @@ const exhibitionSlice = createSlice({
   },
 });
 
+export const { clearExhibitionDetail } = exhibitionSlice.actions;
 export default exhibitionSlice.reducer;

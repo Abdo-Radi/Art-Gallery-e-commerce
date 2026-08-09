@@ -18,9 +18,9 @@ import { ToastContainer, toast } from "react-toastify";
 
 const formSchema = z
   .object({
-    firstName: z.string(),
-    lastName: z.string(),
-    username: z.string(),
+    firstName: z.string().min(1, { message: "Required Field" }),
+    lastName: z.string().min(1, { message: "Required Field" }),
+    username: z.string().min(1, { message: "Required Field" }),
     email: z.string().email(),
     password: z
       .string()
@@ -37,6 +37,14 @@ const formSchema = z
 const Register = ({ onClose }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 
   const showSuccessMessage = (message) => {
@@ -65,7 +73,7 @@ const Register = ({ onClose }) => {
       showSuccessMessage(response.data.message);
       onClose();
     } catch (error) {
-      showErrorMessage(error.response.data.message);
+      showErrorMessage(error.response?.data?.message ?? "Registration failed. Please try again.");
     }
   };
 

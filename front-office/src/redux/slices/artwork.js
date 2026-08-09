@@ -19,7 +19,7 @@ export const getArtworkById = createAsyncThunk(
     return axiosInstance
       .get(`/artworks/${id}`)
       .then((res) => res.data)
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -34,7 +34,11 @@ const initialState = {
 const artworkSlice = createSlice({
   name: "artworks",
   initialState,
-  reducers: {},
+  reducers: {
+    clearArtworkDetail: (state) => {
+      state.artworkDetail = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getArtworks.fulfilled, (state, action) => {
@@ -54,4 +58,5 @@ const artworkSlice = createSlice({
   },
 });
 
+export const { clearArtworkDetail } = artworkSlice.actions;
 export default artworkSlice.reducer;

@@ -39,18 +39,26 @@ const Exhibitions = () => {
 
   const [params, setParams] = useState({});
 
+  // Functional updates avoid stale-state overwrites when several params
+  // change in the same event; changing any filter resets pagination.
   const handleParams = (name, value) => {
-    setParams({ ...params, [name]: value });
+    if (name !== "page") setCurrentPage(1);
+    setParams((prev) => {
+      const next = { ...prev, [name]: value };
+      if (name !== "page") delete next.page;
+      return next;
+    });
   };
 
   const resetParams = () => {
     setParams({});
     setPrice(750);
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    handleParams("page", page);
+    setParams((prev) => ({ ...prev, page }));
   };
 
   const showToastMessage = (message) => {
@@ -62,7 +70,7 @@ const Exhibitions = () => {
 
   useEffect(() => {
     dispatch(getExhibitions(params));
-  }, [params]);
+  }, [dispatch, params]);
 
   return (
     <>
@@ -72,8 +80,10 @@ const Exhibitions = () => {
             <Label htmlFor="search">Search</Label>
             <Input
               onChange={(e) => {
-                resetParams();
-                handleParams("search", e.target.value);
+                // Searching starts a fresh query: clear the other filters.
+                setPrice(750);
+                setCurrentPage(1);
+                setParams(e.target.value ? { search: e.target.value } : {});
               }}
               id="search"
               type="text"
@@ -108,7 +118,7 @@ const Exhibitions = () => {
                 setPrice(value[0]);
                 handleParams("maxPrice", value[0]);
               }}
-              defaultValue={[price]}
+              value={[price]}
               max={1500}
               step={50}
             />
@@ -119,9 +129,9 @@ const Exhibitions = () => {
         </div>
         <div className="lg:w-[79%] space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-12">
-            {exhibitions.map((exhibition, i) => (
+            {exhibitions.map((exhibition) => (
               <div
-                key={i}
+                key={exhibition._id}
                 className="group relative overflow-hidden rounded-lg shadow-lg"
               >
                 <Link to={exhibition._id}>
@@ -160,7 +170,9 @@ const Exhibitions = () => {
                             quantity: 1,
                           })
                         ).then((res) => {
-                          showToastMessage(res.payload.message);
+                          showToastMessage(
+                            res.payload?.message ?? res.payload ?? "Something went wrong"
+                          );
                         });
                       }}
                       size="sm"

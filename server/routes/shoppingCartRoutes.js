@@ -3,7 +3,7 @@ const router = require("express").Router();
 const shoppingCartController = require("../controllers/shoppingCartController");
 const { verifyToken } = require("../middleware/jwt");
 
-// router.use(verifyToken);
+router.use(verifyToken);
 
 router.get("/:customer", shoppingCartController.getItems);
 router.post("/add", shoppingCartController.addItem);
@@ -14,5 +14,8 @@ router.post("/increase", shoppingCartController.increaseItemQuantity);
 
 // Route to decrease the quantity of an item in the cart
 router.post("/decrease", shoppingCartController.decreaseItemQuantity);
+
+// Route to empty the cart (used after a successful checkout)
+router.post("/clear", shoppingCartController.clearCart);
 
 module.exports = router;

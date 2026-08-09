@@ -19,6 +19,15 @@ const registerHandler = async (req, res, next) => {
   const { accountType, password } = req.body;
 
   try {
+    // Public registration is only open to customers and artists.
+    // Admin accounts must be created by an existing admin via /admins.
+    if (!["customer", "artist"].includes(accountType)) {
+      return res.status(400).json({ message: "Invalid account type" });
+    }
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
+
     const hashedPassword = await hash(password);
     const Model = getModel(accountType);
 
@@ -41,10 +50,13 @@ const loginHandler = async (req, res, next) => {
 
   try {
     const Model = getModel(accountType);
+    if (!Model) {
+      return res.status(400).json({ message: "Invalid account type" });
+    }
     const user = await Model.findOne({
       $or: [{ username: identifier }, { email: identifier }],
     });
-    if (user && (await validatePassword(password, user.password))) {
+    if (user && password && (await validatePassword(password, user.password))) {
       const token = jwt.sign(
         { userId: user._id, accountType: accountType },
         process.env.JWT_SECRET,
@@ -52,7 +64,13 @@ const loginHandler = async (req, res, next) => {
       );
       return res.status(200).json({
         message: "Login successful",
-        user: ({ _id, username, email, firstName, lastName } = user),
+        user: {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
         token: token,
       });
     } else {

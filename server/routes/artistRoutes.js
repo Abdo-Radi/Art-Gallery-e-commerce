@@ -8,7 +8,6 @@ router.use(verifyToken);
 router.get("/", artistController.getArtists);
 router.get("/:id", artistController.getArtistById);
 
-router.use(verifyToken);
 router.use(isAuthorized("admin"));
 
 router.post("/", artistController.addArtist);

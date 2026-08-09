@@ -33,7 +33,8 @@ const AddTicket = ({ onCancel }) => {
   };
 
   useEffect(() => {
-    dispatch(getExhibitions());
+    // High limit so the dropdown lists every exhibition, not just page 1.
+    dispatch(getExhibitions({ limit: 1000 }));
   }, [dispatch]);
 
   return (

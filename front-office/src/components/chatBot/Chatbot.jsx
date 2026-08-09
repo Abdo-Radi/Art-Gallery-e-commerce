@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "./Chatbot.css";
 
+const CHATBOT_URL =
+  import.meta.env.VITE_CHATBOT_URL || "http://localhost:5000/chat";
+
 const Chatbot = () => {
   const [question, setQuestion] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
@@ -24,41 +27,37 @@ const Chatbot = () => {
   }, [chatHistory]);
 
   const handleSend = async () => {
-    if (question.trim() === "") return;
-    const newChatHistory = [...chatHistory, { type: "user", text: question }];
-    setChatHistory(newChatHistory);
+    if (question.trim() === "" || isTyping) return;
+    // Functional updates keep concurrent sends from clobbering each other.
+    setChatHistory((prev) => [...prev, { type: "user", text: question }]);
     setIsTyping(true);
+    setQuestion("");
 
     try {
-      const response = await axios.post("http://localhost:5000/chat", {
+      const response = await axios.post(CHATBOT_URL, {
         question,
       });
-      setTimeout(() => {
-        setIsTyping(false);
-        setChatHistory([
-          ...newChatHistory,
-          { type: "bot", text: response.data.answer },
-        ]);
-      }, 2000);
+      setIsTyping(false);
+      setChatHistory((prev) => [
+        ...prev,
+        { type: "bot", text: response.data.answer },
+      ]);
     } catch (error) {
       console.error("Error sending message:", error);
-      setTimeout(() => {
-        setIsTyping(false);
-        setChatHistory([
-          ...newChatHistory,
-          { type: "bot", text: "Error: Could not get a response." },
-        ]);
-      }, 1000);
+      setIsTyping(false);
+      setChatHistory((prev) => [
+        ...prev,
+        { type: "bot", text: "Error: Could not get a response." },
+      ]);
     }
-    setQuestion("");
   };
 
   const handleOpenChat = () => {
     setIsOpen(!isOpen);
-    if (!isOpen) {
+    if (!isOpen && chatHistory.length === 0) {
       const randomGreeting =
         greetings[Math.floor(Math.random() * greetings.length)];
-      setChatHistory([...chatHistory, { type: "bot", text: randomGreeting }]);
+      setChatHistory((prev) => [...prev, { type: "bot", text: randomGreeting }]);
     }
   };
 
@@ -103,7 +102,7 @@ const Chatbot = () => {
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              onKeyPress={(e) => {
+              onKeyDown={(e) => {
                 if (e.key === "Enter") handleSend();
               }}
             />

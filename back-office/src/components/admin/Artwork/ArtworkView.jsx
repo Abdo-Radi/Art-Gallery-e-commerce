@@ -1,5 +1,3 @@
-import React from "react";
-
 const ArtworkViewPopup = ({ artwork, onClose }) => {
   return (
     <div className="overflow-y-auto h-5/6 no-scrollbar mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -24,11 +22,11 @@ const ArtworkViewPopup = ({ artwork, onClose }) => {
           <span className="font-bold">Price:</span> {artwork.price} DH
         </p>
         <p>
-          <span className="font-bold">Category:</span> {artwork.category.name}
+          <span className="font-bold">Category:</span> {artwork.category?.name}
         </p>
         <p>
-          <span className="font-bold">Artist:</span> {artwork.artist.firstName}{" "}
-          {artwork.artist.lastName}
+          <span className="font-bold">Artist:</span> {artwork.artist?.firstName}{" "}
+          {artwork.artist?.lastName}
         </p>
         <p>
           <span className="font-bold">Description:</span> {artwork.description}{" "}

@@ -6,8 +6,11 @@ export const fetchOrders = createAsyncThunk(
   "orders/getOrders",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/orders"); // Endpoint to fetch orders
-      return response.data; 
+      // Large limit: the page paginates client-side over the full list
+      const response = await axiosInstance.get("/orders", {
+        params: { limit: 1000 },
+      });
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Error fetching orders");
     }
@@ -30,8 +33,8 @@ export const deleteOrder = createAsyncThunk(
   "orders/deleteOrder",
   async (orderId, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/orders/${orderId}`); // Endpoint to delete orders
-      return response.data;
+      await axiosInstance.delete(`/orders/${orderId}`);
+      return orderId;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Error deleting order");
     }
@@ -56,11 +59,13 @@ const orderSlice = createSlice({
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.orders = action.payload.data;
+        // The server returns a mongoose-paginate result: { docs, totalPages, ... }
+        state.orders = action.payload.docs ?? [];
+        state.totalPages = action.payload.totalPages ?? 1;
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload.message;
+        state.error = action.payload?.message ?? action.payload ?? "Error";
       })
       .addCase(createOrder.pending, (state) => {
         state.isLoading = true;
@@ -71,7 +76,7 @@ const orderSlice = createSlice({
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload.message;
+        state.error = action.payload?.message ?? action.payload ?? "Error";
       })
       .addCase(deleteOrder.pending, (state) => {
         state.isLoading = true;
@@ -79,12 +84,12 @@ const orderSlice = createSlice({
       .addCase(deleteOrder.fulfilled, (state, action) => {
         state.isLoading = false;
         state.orders = state.orders.filter(
-          (order) => order._id !== action.payload._id
+          (order) => order._id !== action.payload
         );
       })
       .addCase(deleteOrder.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload.message;
+        state.error = action.payload?.message ?? action.payload ?? "Error";
       });
   },
 });

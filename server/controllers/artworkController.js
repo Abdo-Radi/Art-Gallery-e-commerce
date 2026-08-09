@@ -1,4 +1,5 @@
 const Artwork = require("../models/Artwork");
+const { escapeRegex } = require("../utils/regexUtils");
 
 const createArtwork = async (req, res, next) => {
   try {
@@ -26,7 +27,7 @@ const getArtworks = async (req, res, next) => {
     };
 
     const searchQuery = {
-      ...(search && { title: { $regex: new RegExp(search, "i") } }),
+      ...(search && { title: { $regex: new RegExp(escapeRegex(search), "i") } }),
       ...(category && { category }),
       ...(maxPrice && { price: { $lte: Number(maxPrice) } }),
     };
@@ -43,7 +44,7 @@ const getArtworks = async (req, res, next) => {
   }
 };
 
-const getArtworkById = async (req, res) => {
+const getArtworkById = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
     const artwork = await Artwork.findById(artworkId)
@@ -88,7 +89,7 @@ const updateArtwork = async (req, res, next) => {
   }
 };
 
-const deleteArtwork = async (req, res) => {
+const deleteArtwork = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
     const deletedArtwork = await Artwork.findByIdAndDelete(artworkId);
@@ -103,40 +104,7 @@ const deleteArtwork = async (req, res) => {
   }
 };
 
-const addToCart = async (req, res, next) => {
-  const { id } = req.params;
-  // const customer = req.customer;
-
-  try {
-    const artwork = await Artwork.findById(id);
-    if (!artwork) {
-      return res.status(404).send("Artwork not found");
-    }
-
-    const existingCartItem = await Cart.findOne({
-      // customer_id: customer._id,
-      artwork: artwork._id,
-    });
-
-    if (existingCartItem) {
-      return res.status(400).send("Artwork is already in the cart");
-    }
-
-    const newCartItem = new Cart({
-      // customer_id: customer._id,
-      artwork: artwork,
-    });
-
-    await newCartItem.save();
-
-    res.status(200).send("Artwork added to cart successfully");
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = {
-  addToCart,
   createArtwork,
   getArtworks,
   getArtworkById,

@@ -10,16 +10,16 @@ const Footer = () => {
           </span>
         </div>
         <nav className="flex items-center gap-4 md:gap-6">
-          <Link className="text-sm hover:underline" href="#">
+          <Link className="text-sm hover:underline" to="/">
             Home
           </Link>
-          <Link className="text-sm hover:underline" href="#">
+          <Link className="text-sm hover:underline" to="/about">
             About
           </Link>
-          <Link className="text-sm hover:underline" href="#">
+          <Link className="text-sm hover:underline" to="/artworks">
             Artworks
           </Link>
-          <Link className="text-sm hover:underline" href="#">
+          <Link className="text-sm hover:underline" to="/exhibitions">
             Exhibitions
           </Link>
         </nav>

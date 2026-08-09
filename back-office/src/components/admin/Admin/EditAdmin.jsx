@@ -1,15 +1,14 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { editAdmin } from "../../../redux/slices/admin";
 
 const EditAdmin = ({ admin, onCancel }) => {
   const schema = z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    username: z.string(),
+    firstName: z.string().min(1, { message: "Field cannot be empty" }),
+    lastName: z.string().min(1, { message: "Field cannot be empty" }),
+    username: z.string().min(1, { message: "Field cannot be empty" }),
     email: z.string().email(),
   });
 
@@ -19,6 +18,12 @@ const EditAdmin = ({ admin, onCancel }) => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
+    defaultValues: {
+      firstName: admin.firstName,
+      lastName: admin.lastName,
+      username: admin.username,
+      email: admin.email,
+    },
   });
 
   const dispatch = useDispatch();

@@ -17,7 +17,9 @@ const Artwork = () => {
   const [isViewPopupVisible, setIsViewPopupVisible] = useState(false);
 
   const [searchParams] = useSearchParams();
-  const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page") ?? 1)
+  );
   const [search, setSearch] = useState(searchParams.get("search") || "");
 
   const [addForm, setAddForm] = useState(false);
@@ -80,14 +82,14 @@ const Artwork = () => {
     queryParams.set("page", currentPage);
 
     const newUrl = `/admin/artworks?${queryParams.toString()}`;
-    navigate(newUrl);
+    navigate(newUrl, { replace: true });
   }, [dispatch, currentPage, search, reset]);
 
   return (
     <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-title-lg font-semibold text-black dark/text-white">
+          <h2 className="text-title-lg font-semibold text-black dark:text-white">
             Artworks
           </h2>
           <div className="flex items-center gap-4">
@@ -129,8 +131,8 @@ const Artwork = () => {
               </tr>
             </thead>
             <tbody>
-              {list.map((artwork, key) => (
-                <tr key={key}>
+              {list.map((artwork) => (
+                <tr key={artwork._id}>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark flex items-center gap-4">
                     <div className="h-12.5 w-15">
                       <img
@@ -142,10 +144,10 @@ const Artwork = () => {
                     <p>{artwork.title}</p>
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {artwork.artist.firstName} {artwork.artist.lastName}
+                    {artwork.artist?.firstName} {artwork.artist?.lastName}
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {artwork.category.name}
+                    {artwork.category?.name}
                   </td>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {artwork.price} DH

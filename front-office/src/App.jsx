@@ -16,14 +16,23 @@ function App() {
     const user = localStorage.getItem("user");
 
     if (token && user) {
-      const { exp } = jwtDecode(token);
-      if (Date.now() >= exp * 1000) {
+      try {
+        const { exp } = jwtDecode(token);
+        if (Date.now() >= exp * 1000) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          dispatch(clearUser());
+        } else {
+          const parsedUser = JSON.parse(user);
+          dispatch(setUser(parsedUser));
+          dispatch(fetchCart(parsedUser._id));
+        }
+      } catch {
+        // Corrupted token/user in localStorage — clear the session instead of
+        // crashing the whole app on load.
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         dispatch(clearUser());
-      } else {
-        dispatch(setUser(JSON.parse(user)));
-        dispatch(fetchCart(JSON.parse(user)._id));
       }
     }
   }, [reset]);

@@ -1,30 +1,42 @@
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
-import axiosInstance from "../api/axiosInstance";
 import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { getUser } from "../redux/slices/user";
 
+const decodeToken = (token) => {
+  if (!token) return null;
+  try {
+    const payload = jwtDecode(token);
+    if (payload.exp && Date.now() >= payload.exp * 1000) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+};
+
 const ProtectedA = () => {
-  const { isLoading, loggedIn } = useSelector((state) => state.user);
-  const token = localStorage.getItem("token");
-
-  if (!token) return <Navigate to="admin/login" />;
-
-  axiosInstance.interceptors.request.use(function (config) {
-    config.headers.Authorization = `Bearer ${token}`;
-
-    return config;
-  });
-
   const dispatch = useDispatch();
-  const payload = jwtDecode(token);
+  const { isLoading, loggedIn } = useSelector((state) => state.user);
+
+  const token = localStorage.getItem("token");
+  const payload = decodeToken(token);
 
   useEffect(() => {
-    dispatch(getUser(payload));
-  }, []);
+    if (payload) {
+      dispatch(getUser(payload));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
-  return !isLoading && (loggedIn ? <Outlet /> : <Navigate to="admin/login" />);
+  if (!payload) {
+    localStorage.removeItem("token");
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  return (
+    !isLoading && (loggedIn ? <Outlet /> : <Navigate to="/admin/login" replace />)
+  );
 };
 
 export default ProtectedA;

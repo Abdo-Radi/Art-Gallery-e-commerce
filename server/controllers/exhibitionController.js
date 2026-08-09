@@ -1,4 +1,5 @@
 const Exhibition = require("../models/Exhibition");
+const { escapeRegex } = require("../utils/regexUtils");
 
 const createExhibition = async (req, res, next) => {
   try {
@@ -13,11 +14,11 @@ const createExhibition = async (req, res, next) => {
 
 const getExhibitions = async (req, res, next) => {
   try {
-    const { search, page, priceSort, maxPrice } = req.query;
-    const options = { lean: true, page };
+    const { search, page, limit, priceSort, maxPrice } = req.query;
+    const options = { lean: true, page, limit: limit || 10 };
 
     const searchQuery = {
-      ...(search && { name: { $regex: new RegExp(search, "i") } }),
+      ...(search && { name: { $regex: new RegExp(escapeRegex(search), "i") } }),
       ...(maxPrice && { price: { $lte: Number(maxPrice) } }),
     };
 
@@ -26,10 +27,6 @@ const getExhibitions = async (req, res, next) => {
     }
 
     const exhibitions = await Exhibition.paginate(searchQuery, options);
-
-    if (exhibitions.length === 0) {
-      return res.status(204).json({ message: "No exhibitions found" });
-    }
 
     res.status(200).json(exhibitions);
   } catch (error) {
@@ -61,9 +58,6 @@ const updateExhibition = async (req, res, next) => {
     if (!exhibition) {
       return res.status(404).json({ message: "Exhibition not found" });
     }
-
-    console.log(updateFields);
-    console.log(exhibition);
 
     if (updateFields.image === "") {
       updateFields.image = exhibition.image;

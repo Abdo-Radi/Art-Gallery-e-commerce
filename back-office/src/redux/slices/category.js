@@ -9,7 +9,7 @@ export const getCategories = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -21,7 +21,7 @@ export const addCategory = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -33,7 +33,7 @@ export const deleteCategory = createAsyncThunk(
       .then(() => {
         return id;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -45,7 +45,7 @@ export const editCategory = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -87,7 +87,7 @@ const categorySlice = createSlice({
 
       // Update
       .addCase(editCategory.fulfilled, (state, action) => {
-        state.categories = state.categories.map((category) =>
+        state.list = state.list.map((category) =>
           category._id === action.payload._id ? action.payload : category
         );
       })

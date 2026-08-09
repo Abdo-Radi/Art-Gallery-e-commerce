@@ -25,17 +25,32 @@ const EditTicket = ({ ticket, onCancel }) => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
+    defaultValues: {
+      exhibition: ticket.exhibition?._id ?? "",
+      price: ticket.price,
+      quantity: ticket.quantity,
+    },
   });
 
   const onSubmit = (data) => {
-    console.log(data);
     dispatch(editTicket({ id: ticket._id, body: data }));
     onCancel();
   };
 
   useEffect(() => {
-    dispatch(getExhibitions());
-  }, []);
+    // High limit so the dropdown lists every exhibition, not just page 1.
+    dispatch(getExhibitions({ limit: 1000 }));
+  }, [dispatch]);
+
+  // Wait for the dropdown data before rendering: a native select mounted
+  // without its options silently falls back to the placeholder.
+  if (!exhibitions?.length) {
+    return (
+      <div className="mx-4 w-96 border border-stroke bg-white p-6.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -53,7 +68,6 @@ const EditTicket = ({ ticket, onCancel }) => {
             </label>
             <select
               {...register("exhibition")}
-              defaultValue={ticket.exhibition._id}
               className="relative z-20 w-full appearance-none border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white"
             >
               <option

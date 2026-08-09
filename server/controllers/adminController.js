@@ -11,7 +11,10 @@ const addAdmin = async (req, res, next) => {
       password: hashedPassword,
     });
 
-    res.status(201).json(newAdmin);
+    const adminToSend = newAdmin.toObject();
+    delete adminToSend.password;
+
+    res.status(201).json(adminToSend);
   } catch (error) {
     next(error);
   }
@@ -19,11 +22,7 @@ const addAdmin = async (req, res, next) => {
 
 const getAdmins = async (req, res, next) => {
   try {
-    const admins = await Admin.find();
-
-    if (admins.length === 0) {
-      return res.status(404).json({ message: "No admins found" });
-    }
+    const admins = await Admin.find().select("-password");
 
     return res.status(200).json(admins);
   } catch (error) {
@@ -34,7 +33,7 @@ const getAdmins = async (req, res, next) => {
 const getAdminById = async (req, res, next) => {
   try {
     const adminId = req.params.id;
-    const admin = await Admin.findById(adminId);
+    const admin = await Admin.findById(adminId).select("-password");
 
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
@@ -49,15 +48,25 @@ const getAdminById = async (req, res, next) => {
 const updateAdmin = async (req, res, next) => {
   try {
     const adminId = req.params.id;
-    const updatedAdmin = await Admin.findByIdAndUpdate(adminId, req.body, {
+    const updateFields = { ...req.body };
+
+    // Hash a new password if one was provided; ignore empty values so an
+    // edit form leaving the field blank doesn't wipe the password.
+    if (updateFields.password) {
+      updateFields.password = await hash(updateFields.password);
+    } else {
+      delete updateFields.password;
+    }
+
+    const updatedAdmin = await Admin.findByIdAndUpdate(adminId, updateFields, {
       new: true,
-    });
+    }).select("-password");
 
     if (!updatedAdmin) {
       return res.status(404).json({ message: "Admin not found" });
     }
 
-    res.status(200).json({ message: "Admin updated successfully" });
+    res.status(200).json(updatedAdmin);
   } catch (error) {
     next(error);
   }

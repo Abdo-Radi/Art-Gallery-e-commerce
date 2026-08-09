@@ -10,7 +10,7 @@ export const getCustomers = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -22,7 +22,7 @@ export const addCustomer = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -34,7 +34,7 @@ export const deleteCustomer = createAsyncThunk(
       .then((res) => {
         return id;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -46,7 +46,7 @@ export const editCustomer = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -90,7 +90,7 @@ const customerSlice = createSlice({
 
       // Update
       .addCase(editCustomer.fulfilled, (state, action) => {
-        state.list = state.customers.map((customer) =>
+        state.list = state.list.map((customer) =>
           customer._id === action.payload._id ? action.payload : customer
         );
       })

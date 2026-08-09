@@ -5,12 +5,14 @@ import {
   increaseItemQuantity,
   removeItemFromCart,
 } from "@/redux/slices/cart";
-import exhibition from "@/redux/slices/exhibition";
 import { LuMinus } from "react-icons/lu";
 import { LuPlus } from "react-icons/lu";
 import { LuTrash } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+
+const FREE_SHIPPING_THRESHOLD = 1000;
+const SHIPPING_FEE = 50;
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -18,21 +20,42 @@ const Cart = () => {
   const { items } = useSelector((state) => state.cart);
   const { data: userData } = useSelector((state) => state.currentUser);
 
-  const totalPrice = items.reduce(
+  // Items whose artwork/exhibition was deleted server-side come back with
+  // itemDetails: null — skip them instead of crashing.
+  const validItems = items.filter((item) => item.itemDetails);
+
+  const itemsCount = validItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = validItems.reduce(
     (sum, item) => sum + item.itemDetails.price * item.quantity,
     0
   );
+  const shipping =
+    totalPrice === 0 || totalPrice >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const grandTotal = totalPrice + shipping;
 
   return userData ? (
     <section className="container px-4 md:px-6 lg:px-20 py-12 grid grid-cols-1 gap-8 md:grid-cols-[2fr_1fr]">
       <div className="rounded-lg border border-gray-200 p-6 shadow-sm dark:border-gray-700">
         <h2 className="mb-4 text-2xl font-bold">Your Cart</h2>
+        {validItems.length === 0 && (
+          <p className="text-gray-500">
+            Your cart is empty.{" "}
+            <Link className="underline" to="/artworks">
+              Browse artworks
+            </Link>{" "}
+            or{" "}
+            <Link className="underline" to="/exhibitions">
+              exhibitions
+            </Link>
+            .
+          </p>
+        )}
         <div className="space-y-6">
-          {items.map((item, i) =>
+          {validItems.map((item) =>
             item.productType === "Artwork" ? (
-              <div key={i} className="flex items-center gap-4">
+              <div key={`${item.productType}-${item.product}`} className="flex items-center gap-4">
                 <img
-                  alt="Product"
+                  alt={item.itemDetails.title}
                   className="rounded-md"
                   height={100}
                   src={item.itemDetails.image}
@@ -47,8 +70,8 @@ const Cart = () => {
                     {item.itemDetails.title}
                   </h3>
                   <p className="text-gray-500">
-                    {item.itemDetails.artist.firstName}{" "}
-                    {item.itemDetails.artist.lastName}
+                    {item.itemDetails.artist?.firstName}{" "}
+                    {item.itemDetails.artist?.lastName}
                   </p>
                 </div>
                 <div className="text-right">
@@ -73,9 +96,9 @@ const Cart = () => {
                 </div>
               </div>
             ) : (
-              <div key={i} className="flex items-center gap-4">
+              <div key={`${item.productType}-${item.product}`} className="flex items-center gap-4">
                 <img
-                  alt="Product"
+                  alt={item.itemDetails.name}
                   className="rounded-md"
                   height={100}
                   src={item.itemDetails.image}
@@ -101,7 +124,7 @@ const Cart = () => {
                         );
                       }}
                       className={
-                        item.quantity === 1 && `pointer-events-none opacity-45`
+                        item.quantity === 1 ? "pointer-events-none opacity-45" : ""
                       }
                       size="icon"
                       variant="outline"
@@ -120,8 +143,9 @@ const Cart = () => {
                         );
                       }}
                       className={
-                        item.quantity === item.itemDetails.quantity &&
-                        `pointer-events-none opacity-45`
+                        item.quantity === item.itemDetails.quantity
+                          ? "pointer-events-none opacity-45"
+                          : ""
                       }
                       size="icon"
                       variant="outline"
@@ -160,24 +184,34 @@ const Cart = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <p>Items</p>
-            <p className="font-medium">{items.length}</p>
+            <p className="font-medium">{itemsCount}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p>Subtotal</p>
+            <p className="font-medium">{totalPrice} DH</p>
           </div>
           <div className="flex items-center justify-between">
             <p>Shipping</p>
             <p className="font-medium">
-              {totalPrice >= 1000 ? "Free" : "50 DH"}
+              {shipping === 0 ? "Free" : `${shipping} DH`}
             </p>
           </div>
           <Separator />
           <div className="flex items-center justify-between">
             <p className="text-lg font-bold">Total</p>
-            <p className="text-lg font-bold">{totalPrice} DH</p>
+            <p className="text-lg font-bold">{grandTotal} DH</p>
           </div>
-          <Link to="/checkout">
-            <Button className="w-full mt-4" size="lg">
+          {validItems.length > 0 ? (
+            <Link to="/checkout">
+              <Button className="w-full mt-4" size="lg">
+                Proceed to Checkout
+              </Button>
+            </Link>
+          ) : (
+            <Button className="w-full mt-4" size="lg" disabled>
               Proceed to Checkout
             </Button>
-          </Link>
+          )}
         </div>
       </div>
     </section>

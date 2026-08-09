@@ -9,7 +9,8 @@ from scipy.spatial.distance import cosine
 def encode_sentence(sentence):
     return sentence_model.encode([sentence])[0]
 
-CACHE_FILE = "./data.json"
+# Resolve relative to this file so the API works from any working directory
+CACHE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
 cache = OrderedDict()  # OrderedDict to maintain insertion order
 encoded_cache = OrderedDict()
 

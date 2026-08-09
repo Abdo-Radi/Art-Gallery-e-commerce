@@ -8,7 +8,6 @@ import orderReducer from "./slices/order";
 import ticketReducer from "./slices/ticket";
 import admin from "./slices/admin";
 import customer from "./slices/customer";
-import cartReducer from "./slices/cartSlice";
 import statsReducer from "./slices/stats";
 
 export const store = configureStore({
@@ -23,7 +22,6 @@ export const store = configureStore({
     orders: orderReducer,
     tickets: ticketReducer,
     stats: statsReducer,
-    cart: cartReducer,
   },
 });
 

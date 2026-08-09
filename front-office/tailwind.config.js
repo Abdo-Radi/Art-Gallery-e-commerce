@@ -16,11 +16,11 @@ module.exports = {
         "2xl": "1400px",
       },
     },
-    fontFamily: {
-      taviraj: ["Taviraj", "serif"],
-      yeseva: ["Yeseva One", "serif"],
-    },
     extend: {
+      fontFamily: {
+        taviraj: ["Taviraj", "serif"],
+        yeseva: ["Yeseva One", "serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

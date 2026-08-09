@@ -13,7 +13,9 @@ const EditExhibition = ({ exhibition, onCancel }) => {
   const schema = z.object({
     name: z.string().nonempty("Field cannot be empty"),
     description: z.string().nonempty("Field cannot be empty"),
-    date: z.string().nonempty("Field cannot be empty"), // Optionally refine to validate date format
+    date: z.string().nonempty("Field cannot be empty"),
+    quantity: z.number().min(0),
+    price: z.number().min(0),
   });
 
   const {
@@ -40,7 +42,6 @@ const EditExhibition = ({ exhibition, onCancel }) => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      console.log(response.data);
       setImageUrl(response.data.secure_url);
     } catch (error) {
       console.error("Image upload failed:", error);
@@ -48,7 +49,6 @@ const EditExhibition = ({ exhibition, onCancel }) => {
   };
 
   const onSubmit = (data) => {
-    console.log(imageUrl);
     const exhibitionData = {
       ...data,
       image: imageUrl,
@@ -101,6 +101,38 @@ const EditExhibition = ({ exhibition, onCancel }) => {
             />
             <p className="text-sm text-meta-1">
               {errors.date && <span>{errors.date.message}</span>}
+            </p>
+          </div>
+
+          <div className="mb-4.5">
+            <label className="mb-2.5 block text-black dark:text-white">
+              Ticket quantity <span className="text-meta-1">*</span>
+            </label>
+            <input
+              {...register("quantity", { valueAsNumber: true })}
+              defaultValue={exhibition.quantity}
+              type="number"
+              placeholder="Enter ticket quantity"
+              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+            />
+            <p className="text-sm text-meta-1">
+              {errors.quantity && <span>{errors.quantity.message}</span>}
+            </p>
+          </div>
+
+          <div className="mb-4.5">
+            <label className="mb-2.5 block text-black dark:text-white">
+              Ticket price <span className="text-meta-1">*</span>
+            </label>
+            <input
+              {...register("price", { valueAsNumber: true })}
+              defaultValue={exhibition.price}
+              type="number"
+              placeholder="Enter ticket price"
+              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+            />
+            <p className="text-sm text-meta-1">
+              {errors.price && <span>{errors.price.message}</span>}
             </p>
           </div>
 

@@ -5,23 +5,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { editCustomer } from "../../../redux/slices/customer";
 
 const EditCustomer = ({ customer, onCancel }) => {
-  const schema = z
-    .object({
-      firstName: z.string(),
-      lastName: z.string(),
-      email: z.string().email(),
-      username: z.string(),
-      password: z
-        .string()
-        .min(8, { message: "Password must be at least 8 characters" }),
-      confirmPassword: z
-        .string()
-        .min(8, { message: "Password must be at least 8 characters" }),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      path: ["confirmPassword"],
-      message: "Passwords do not match",
-    });
+  // The form has no password inputs, so the schema must not require them —
+  // otherwise validation always fails and the form can never be submitted.
+  const schema = z.object({
+    firstName: z.string().min(1, { message: "Field cannot be empty" }),
+    lastName: z.string().min(1, { message: "Field cannot be empty" }),
+    email: z.string().email(),
+    username: z.string().min(1, { message: "Field cannot be empty" }),
+  });
 
   const {
     register,
@@ -34,14 +25,7 @@ const EditCustomer = ({ customer, onCancel }) => {
   const dispatch = useDispatch();
 
   const onSubmit = (data) => {
-    // Only include password fields if they're not empty
-    const editedCustomer = {
-      ...data,
-      password: data.password ? data.password : undefined,
-      confirmPassword: data.confirmPassword ? data.confirmPassword : undefined,
-    };
-
-    dispatch(editCustomer({ id: customer._id, body: editedCustomer }));
+    dispatch(editCustomer({ id: customer._id, body: data }));
     onCancel();
   };
 

@@ -29,10 +29,6 @@ const getCategories = async (req, res, next) => {
   try {
     const categories = await Category.find();
 
-    if (categories.length === 0) {
-      return res.status(404).json({ message: "No categories found" });
-    }
-
     res.status(200).json(categories);
   } catch (error) {
     next(error);

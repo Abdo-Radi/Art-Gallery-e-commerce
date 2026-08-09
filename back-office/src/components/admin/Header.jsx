@@ -1,15 +1,18 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { clearUser } from "../../redux/slices/user";
 
 const Header = () => {
   const { user } = useSelector((state) => state.user);
   const [open, setOpen] = useState(false);
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const signout = () => {
     localStorage.removeItem("token");
+    dispatch(clearUser());
     navigate("/admin/login");
   };
 

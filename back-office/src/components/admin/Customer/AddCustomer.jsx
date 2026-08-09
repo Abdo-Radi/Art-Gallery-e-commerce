@@ -8,10 +8,10 @@ import { addCustomer } from "../../../redux/slices/customer";
 const AddCustomer = ({ onCancel }) => {
   const schema = z
     .object({
-      firstName: z.string(),
-      lastName: z.string(),
+      firstName: z.string().min(1, { message: "Field cannot be empty" }),
+      lastName: z.string().min(1, { message: "Field cannot be empty" }),
       email: z.string().email(),
-      username: z.string(),
+      username: z.string().min(1, { message: "Field cannot be empty" }),
       password: z
         .string()
         .min(8, { message: "Password must be at least 8 characters" }),

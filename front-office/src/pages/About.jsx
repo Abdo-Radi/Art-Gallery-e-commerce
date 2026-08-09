@@ -3,21 +3,31 @@ import alice from "@/assets/img/Alice-Johnson.jpg"
 import michael from "@/assets/img/Michael-Brown.jpg"
 import samanta from "@/assets/img/Samantha-Lee.jpeg"
 import abdo from "@/assets/img/abdo.jpg"
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { CardContent, Card } from "@/components/ui/card";
+
+// Neutral SVG avatar for team members without a photo.
+const placeholderAvatar = (initials) =>
+    `data:image/svg+xml;utf8,${encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="#e5e7eb"/><circle cx="200" cy="110" r="50" fill="#9ca3af"/><path d="M100 300c0-55 45-90 100-90s100 35 100 90" fill="#9ca3af"/><text x="200" y="285" font-family="sans-serif" font-size="28" fill="#4b5563" text-anchor="middle">${initials}</text></svg>`
+    )}`;
 
 const About = () => {
     const [showTeam, setShowTeam] = useState(false);
     const teamRef = useRef(null);
 
-    const scrollToTeam = () => {
-        teamRef.current.scrollIntoView({ behavior: "smooth" });
-    };
+    // Scroll after the section is actually visible: scrollIntoView on a
+    // display:none element is a no-op, so it must run post-render.
+    useEffect(() => {
+        if (showTeam && teamRef.current) {
+            teamRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [showTeam]);
 
     const comments = [
         {
-            name: "David Chang",
+            name: "Alice Johnson",
             comment: "Visiting this gallery was a truly inspiring experience. The collection is breathtaking, and the atmosphere is so welcoming.",
             image: alice,
         },
@@ -67,7 +77,7 @@ const About = () => {
                                 <button
                                     onClick={() => {
                                         setShowTeam(true);
-                                        scrollToTeam();
+                                        teamRef.current?.scrollIntoView({ behavior: "smooth" });
                                     }}
                                     className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
                                 >
@@ -141,12 +151,12 @@ const About = () => {
                                 {
                                     name: "Mohamed Elmahfoudi",
                                     role: "Manager",
-                                    image: "path/to/mohamed_elmahfoudi.jpg",
+                                    image: placeholderAvatar("ME"),
                                 },
                                 {
                                     name: "Yassin Lajnaoudi",
                                     role: "Art Director",
-                                    image: "path/to/yassin_lajnaoudi.jpg",
+                                    image: placeholderAvatar("YL"),
                                 },
                             ].map((member, i) => (
                                 <Card key={i} className="h-full w-full">

@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const artworkController = require("../controllers/artworkContoller");
+const artworkController = require("../controllers/artworkController");
 const { isAuthorized } = require("../middleware/authorization");
 const { verifyToken } = require("../middleware/jwt");
 

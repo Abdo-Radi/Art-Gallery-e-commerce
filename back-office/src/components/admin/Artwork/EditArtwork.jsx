@@ -32,6 +32,13 @@ const EditArtwork = ({ artwork, onCancel }) => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
+    defaultValues: {
+      title: artwork.title,
+      artist: artwork.artist?._id ?? "",
+      category: artwork.category?._id ?? "",
+      price: artwork.price,
+      description: artwork.description,
+    },
   });
 
   const uploadImage = async (e) => {
@@ -68,9 +75,20 @@ const EditArtwork = ({ artwork, onCancel }) => {
   };
 
   useEffect(() => {
-    dispatch(getArtists());
+    // High limit so the dropdown lists every artist, not just page 1.
+    dispatch(getArtists({ limit: 1000 }));
     dispatch(getCategories());
-  }, []);
+  }, [dispatch]);
+
+  // Wait for the dropdown data before rendering: a native select mounted
+  // without its options silently falls back to the first option.
+  if (!artists?.length || !categories?.length) {
+    return (
+      <div className="mx-4 w-96 border border-stroke bg-white p-6.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-y-auto h-5/6 no-scrollbar mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -104,7 +122,6 @@ const EditArtwork = ({ artwork, onCancel }) => {
             </label>
             <select
               {...register("artist")}
-              defaultValue={artwork.artist._id}
               className="relative z-20 w-full appearance-none border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white"
             >
               {artists &&
@@ -129,7 +146,6 @@ const EditArtwork = ({ artwork, onCancel }) => {
             </label>
             <select
               {...register("category")}
-              defaultValue={artwork.category._id}
               className="relative z-20 w-full appearance-none border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white"
             >
               {categories &&

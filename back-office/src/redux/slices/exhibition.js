@@ -4,13 +4,13 @@ import axiosInstance from "../../api/axiosInstance";
 
 export const getExhibitions = createAsyncThunk(
   "exhibitions/getExhibitions",
-  async ({ search = "", page = 1 } = {}, { rejectWithValue }) => {
+  async ({ search = "", page = 1, limit } = {}, { rejectWithValue }) => {
     return axiosInstance
-      .get(`/exhibitions?page=${page}&search=${search}`)
+      .get(`/exhibitions`, { params: { page, search, limit } })
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -22,7 +22,7 @@ export const addExhibition = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -34,7 +34,7 @@ export const deleteExhibition = createAsyncThunk(
       .then((res) => {
         return id;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -46,7 +46,7 @@ export const editExhibition = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 

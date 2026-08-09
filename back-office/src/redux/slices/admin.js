@@ -10,7 +10,7 @@ export const getAdmins = createAsyncThunk(
       const response = await axiosInstance.get("/admins");
       return response.data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error.response?.data?.message ?? "Network error");
     }
   }
 );
@@ -22,7 +22,7 @@ export const addAdmin = createAsyncThunk(
       const response = await axiosInstance.post("/admins", body);
       return response.data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error.response?.data?.message ?? "Network error");
     }
   }
 );
@@ -34,7 +34,7 @@ export const deleteAdmin = createAsyncThunk(
       await axiosInstance.delete(`/admins/${id}`);
       return id;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error.response?.data?.message ?? "Network error");
     }
   }
 );
@@ -46,7 +46,7 @@ export const editAdmin = createAsyncThunk(
       const response = await axiosInstance.put(`/admins/${id}`, body);
       return response.data;
     } catch (error) {
-      rejectWithValue(error);
+      return rejectWithValue(error.response?.data?.message ?? "Network error");
     }
   }
 );

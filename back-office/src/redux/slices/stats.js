@@ -9,7 +9,7 @@ export const getStats = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 

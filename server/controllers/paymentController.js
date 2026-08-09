@@ -1,4 +1,4 @@
-const Payment = require('../models/payment');
+const Payment = require('../models/Payment');
 const mongoose = require('mongoose');
 
 const recordPayment = async (req, res, next) => {
@@ -27,10 +27,6 @@ const getPayments = async (req, res, next) => {
 
     const totalPaymentsCount = await Payment.countDocuments();
     const payments = await Payment.find().skip(skipCount).limit(limit);
-
-    if (payments.length === 0) {
-      return res.status(404).json({ message: "No payments found" });
-    }
 
     res.status(200).json({
       data: payments,

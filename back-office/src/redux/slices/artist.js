@@ -4,13 +4,13 @@ import axiosInstance from "../../api/axiosInstance";
 
 export const getArtists = createAsyncThunk(
   "artists/getArtists",
-  async ({ search = "", page = 1 } = {}, { rejectWithValue }) => {
+  async ({ search = "", page = 1, limit } = {}, { rejectWithValue }) => {
     return axiosInstance
-      .get(`/artists?page=${page}&search=${search}`)
+      .get(`/artists`, { params: { page, search, limit } })
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -22,7 +22,7 @@ export const addArtist = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -34,7 +34,7 @@ export const deleteArtist = createAsyncThunk(
       .then((res) => {
         return id;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -46,7 +46,7 @@ export const editArtist = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 

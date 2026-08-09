@@ -9,7 +9,7 @@ export const fetchCart = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? err.response?.data?.error ?? "Network error"));
   }
 );
 
@@ -21,7 +21,7 @@ export const addItemToCart = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? err.response?.data?.error ?? "Network error"));
   }
 );
 
@@ -33,7 +33,7 @@ export const removeItemFromCart = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? err.response?.data?.error ?? "Network error"));
   }
 );
 
@@ -45,7 +45,7 @@ export const increaseItemQuantity = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? err.response?.data?.error ?? "Network error"));
   }
 );
 
@@ -57,7 +57,7 @@ export const decreaseItemQuantity = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? err.response?.data?.error ?? "Network error"));
   }
 );
 

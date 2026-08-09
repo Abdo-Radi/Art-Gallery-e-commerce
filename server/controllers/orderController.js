@@ -13,16 +13,12 @@ const createOrder = async (req, res, next) => {
 
 const getOrders = async (req, res, next) => {
   try {
-    const { page } = req.query;
-    const options = { lean: true, page };
+    const { page, limit } = req.query;
+    const options = { lean: true, page, limit: limit || 10 };
 
-    const artists = await Order.paginate({}, options);
+    const orders = await Order.paginate({}, options);
 
-    if (artists.length === 0) {
-      return res.status(204).json({ message: "No orders found" });
-    }
-
-    res.status(200).json({ artists });
+    res.status(200).json(orders);
   } catch (error) {
     next(error);
   }
@@ -43,14 +39,14 @@ const getOrderById = async (req, res, next) => {
   }
 };
 
-const updateOrder = async (req, res) => {
+const updateOrder = async (req, res, next) => {
   try {
     const orderId = req.params.id;
     const updatedOrder = await Order.findByIdAndUpdate(orderId, req.body, {
       new: true,
     });
 
-    if (!updateOrder) {
+    if (!updatedOrder) {
       return res.status(404).json({ message: "Order not found" });
     }
 
@@ -60,7 +56,7 @@ const updateOrder = async (req, res) => {
   }
 };
 
-const deleteOrderById = async (req, res) => {
+const deleteOrderById = async (req, res, next) => {
   try {
     const orderId = req.params.id;
     const deletedOrder = await Order.findByIdAndDelete(orderId);

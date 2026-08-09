@@ -2,7 +2,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axiosInstance from "../../api/axiosInstance";
 
@@ -38,7 +38,7 @@ const SignIn = () => {
       localStorage.setItem("token", token);
       navigate("/admin");
     } catch (error) {
-      showErrorMessage(error.response.data.message);
+      showErrorMessage(error.response?.data?.message ?? "Login failed. Please try again.");
     }
   };
 
@@ -100,7 +100,7 @@ const SignIn = () => {
         draggable={false}
         pauseOnHover
         theme="light"
-        transition:Bounce
+        transition={Bounce}
       />
     </div>
   );

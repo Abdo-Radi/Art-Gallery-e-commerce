@@ -61,9 +61,9 @@ const Login = ({ onClose }) => {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      onClose();
+      if (onClose) onClose();
     } catch (error) {
-      showErrorMessage(error.response.data.message);
+      showErrorMessage(error.response?.data?.message ?? "Login failed. Please try again.");
     }
   };
 

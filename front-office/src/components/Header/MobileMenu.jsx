@@ -8,7 +8,9 @@ const MobileMenu = ({ menu, onClose }) => {
         <ul className="flex font-medium flex-col space-y-4">
           {menu.map((navLink, key) => (
             <li key={key} className="block text-2xl hover:text-primary">
-              <Link to={navLink.to}>{navLink.name}</Link>
+              <Link onClick={onClose} to={navLink.to}>
+                {navLink.name}
+              </Link>
             </li>
           ))}
         </ul>

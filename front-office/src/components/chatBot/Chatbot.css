@@ -88,7 +88,8 @@
   border-bottom-left-radius: 0;
 }
 
-input {
+/* Scoped to the chatbot so it doesn't restyle inputs app-wide */
+.chatbot-input-container input {
   border: 1px solid #ccc;
   padding: 10px;
   border-top: none;

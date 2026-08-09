@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2";
 import { fetchOrders, deleteOrder } from "../../redux/slices/order";
 
 const OrderPage = () => {
-  const { orders, isLoading, error } = useSelector((state) => state.order);
+  const { orders, isLoading, error } = useSelector((state) => state.orders);
   const dispatch = useDispatch();
 
-  const [limit, setLimit] = useState(5);
+  const limit = 5;
   const [currPage, setCurrPage] = useState(0);
   const totalPages = Math.ceil(orders.length / limit);
   const paginatedOrders = orders.slice(
@@ -19,10 +19,6 @@ const OrderPage = () => {
 
   useEffect(() => {
     dispatch(fetchOrders());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(fetchOrders()); // Re-fetch orders when refreshFlag changes
   }, [dispatch, refreshFlag]);
 
   const handleDelete = async (orderId) => {
@@ -37,8 +33,8 @@ const OrderPage = () => {
 
     if (result.isConfirmed) {
       dispatch(deleteOrder(orderId));
-      Swal.fire("Deleted!", "The order has been deleted.", "success"); // Show success message
-      setRefreshFlag((prev) => !prev); // Toggle to trigger re-fetch
+      Swal.fire("Deleted!", "The order has been deleted.", "success");
+      setRefreshFlag((prev) => !prev);
     }
   };
 
@@ -47,10 +43,10 @@ const OrderPage = () => {
   };
 
   return (
-    <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark/border-strokedark dark/bg-boxdark sm/px-7.5 xl/pb-1">
+    <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-title-lg font-semibold text-black dark/text-white">
+          <h2 className="text-title-lg font-semibold text-black dark:text-white">
             Orders
           </h2>
         </div>
@@ -64,23 +60,23 @@ const OrderPage = () => {
             <div className="overflow-x-auto">
               <table className="w-full table-auto">
                 <thead>
-                  <tr className="bg-gray-2 text-left dark/bg-meta-4">
-                    <th className="p-4 font-medium text-black dark/text-white">
+                  <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                    <th className="p-4 font-medium text-black dark:text-white">
                       Order ID
                     </th>
-                    <th className="p-4 font-medium text-black dark/text-white">
+                    <th className="p-4 font-medium text-black dark:text-white">
                       Customer ID
                     </th>
-                    <th className="p-4 font-medium text-black dark/text-white">
+                    <th className="p-4 font-medium text-black dark:text-white">
                       Total Amount
                     </th>
-                    <th className="p-4 font-medium text-black dark/text-white">
+                    <th className="p-4 font-medium text-black dark:text-white">
                       Status
                     </th>
-                    <th className="p-4 font-medium text-black dark/text-white">
+                    <th className="p-4 font-medium text-black dark:text-white">
                       Date
                     </th>
-                    <th className="p-4 font-medium text-black dark/text-white">
+                    <th className="p-4 font-medium text-black dark:text-white">
                       Actions
                     </th>
                   </tr>
@@ -88,25 +84,25 @@ const OrderPage = () => {
                 <tbody>
                   {paginatedOrders.map((order) => (
                     <tr key={order._id}>
-                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                         {order._id}
                       </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
-                        {order.customerId}
+                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                        {order.customer}
                       </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
-                        {order.totalAmount.toFixed(2)}
+                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                        {order.totalAmount?.toFixed(2)}
                       </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                         {order.status}
                       </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                         {new Date(order.date).toDateString()}
                       </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                         <div className="flex items-center text-lg gap-2.5">
                           <button onClick={() => handleDelete(order._id)}>
-                            <i className="ri-delete-bin-6-line hover-text-primary"></i>
+                            <i className="ri-delete-bin-6-line hover:text-primary"></i>
                           </button>
                         </div>
                       </td>

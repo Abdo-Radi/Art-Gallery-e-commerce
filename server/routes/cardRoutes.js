@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const cardController = require("../controllers/cardController");
+const { isAuthorized } = require("../middleware/authorization");
+const { verifyToken } = require("../middleware/jwt");
+
+router.use(verifyToken);
+router.use(isAuthorized("admin"));
 
 // Create a new card
 router.post("/", cardController.createCard);

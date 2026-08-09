@@ -7,7 +7,7 @@ export const getArtworks = createAsyncThunk(
     return axiosInstance
       .get(`/artworks?page=${page}&search=${search}`)
       .then((res) => res.data)
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -17,7 +17,7 @@ export const addArtwork = createAsyncThunk(
     return axiosInstance
       .post("/artworks", body)
       .then((res) => res.data)
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -27,7 +27,7 @@ export const editArtwork = createAsyncThunk(
     return axiosInstance
       .put(`/artworks/${id}`, body)
       .then((res) => res.data)
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -37,7 +37,7 @@ export const deleteArtwork = createAsyncThunk(
     return axiosInstance
       .delete(`/artworks/${id}`)
       .then(() => id)
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -47,18 +47,9 @@ export const getArtworkById = createAsyncThunk(
     return axiosInstance
       .get(`/artworks/${id}`)
       .then((res) => res.data)
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
-export const addProductToCart = createAsyncThunk(
-  "product/addProductToCart",
-  async (artwork, { rejectWithValue }) => {
-    return axiosInstance
-      .post(`/artworks/add/to/cart/${artwork._id}`)
-      .then((response) => response)
-      .catch((error) => rejectWithValue(error.response.data.message));
-  }
-); 
 const initialState = {
   list: [],
   pages: 0,
@@ -107,14 +98,6 @@ const artworkSlice = createSlice({
       .addCase(editArtwork.rejected, (state, action) => {
         state.error = action.payload;
       })
-      //! Add product to cart
-      .addCase(addProductToCart.fulfilled, (state, action) => {
-        state.products = action.payload;
-      })
-      .addCase(addProductToCart.rejected, (state, action) => {
-        state.error = action.payload;
-      })
-
 
       // Get single artwork by ID
       .addCase(getArtworkById.fulfilled, (state, action) => {

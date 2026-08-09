@@ -40,18 +40,26 @@ const Artworks = () => {
 
   const [params, setParams] = useState({});
 
+  // Functional updates avoid stale-state overwrites when several params
+  // change in the same event; changing any filter resets pagination.
   const handleParams = (name, value) => {
-    setParams({ ...params, [name]: value });
+    if (name !== "page") setCurrentPage(1);
+    setParams((prev) => {
+      const next = { ...prev, [name]: value };
+      if (name !== "page") delete next.page;
+      return next;
+    });
   };
 
   const resetParams = () => {
     setParams({});
     setPrice(2500);
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    handleParams("page", page);
+    setParams((prev) => ({ ...prev, page }));
   };
 
   const showToastMessage = (message) => {
@@ -63,8 +71,11 @@ const Artworks = () => {
 
   useEffect(() => {
     dispatch(getArtworks(params));
+  }, [dispatch, params]);
+
+  useEffect(() => {
     dispatch(getCategories());
-  }, [params]);
+  }, [dispatch]);
 
   return (
     <>
@@ -74,8 +85,10 @@ const Artworks = () => {
             <Label htmlFor="search">Search</Label>
             <Input
               onChange={(e) => {
-                resetParams();
-                handleParams("search", e.target.value);
+                // Searching starts a fresh query: clear the other filters.
+                setPrice(2500);
+                setCurrentPage(1);
+                setParams(e.target.value ? { search: e.target.value } : {});
               }}
               id="search"
               type="text"
@@ -131,7 +144,7 @@ const Artworks = () => {
                 setPrice(value[0]);
                 handleParams("maxPrice", value[0]);
               }}
-              defaultValue={[price]}
+              value={[price]}
               max={5000}
               step={100}
             />
@@ -142,9 +155,9 @@ const Artworks = () => {
         </div>
         <div className="lg:w-[79%] space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-12">
-            {artworks.map((artwork, i) => (
+            {artworks.map((artwork) => (
               <div
-                key={i}
+                key={artwork._id}
                 className="group relative overflow-hidden rounded-lg shadow-lg"
               >
                 <Link to={artwork._id}>
@@ -163,7 +176,7 @@ const Artworks = () => {
                 <div className="bg-white p-4 dark:bg-gray-900">
                   <h3 className="text-lg font-semibold">{artwork.title}</h3>
                   <p className="text-gray-500 dark:text-gray-400">
-                    {artwork.artist.firstName} {artwork.artist.lastName}
+                    {artwork.artist?.firstName} {artwork.artist?.lastName}
                   </p>
                   <div className="mt-4 flex items-center justify-between">
                     <span className="text-lg font-semibold">
@@ -172,7 +185,7 @@ const Artworks = () => {
                     <Button
                       onClick={() => {
                         if (!userData) {
-                          showToastMessage("Please login to buy tickets!");
+                          showToastMessage("Please login to add items to your cart!");
                           return;
                         }
                         dispatch(
@@ -183,7 +196,9 @@ const Artworks = () => {
                             quantity: 1,
                           })
                         ).then((res) => {
-                          showToastMessage(res.payload.message);
+                          showToastMessage(
+                            res.payload?.message ?? res.payload ?? "Something went wrong"
+                          );
                         });
                       }}
                       size="sm"

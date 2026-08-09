@@ -196,10 +196,26 @@ const decreaseItemQuantity = async (req, res, next) => {
   }
 };
 
+const clearCart = async (req, res, next) => {
+  try {
+    const { customer } = req.body;
+
+    await ShoppingCart.findOneAndUpdate(
+      { customer },
+      { items: [], updatedAt: Date.now() }
+    );
+
+    res.status(200).json({ success: true, message: "Cart cleared" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addItem,
   getItems,
   removeItem,
   increaseItemQuantity,
   decreaseItemQuantity,
+  clearCart,
 };

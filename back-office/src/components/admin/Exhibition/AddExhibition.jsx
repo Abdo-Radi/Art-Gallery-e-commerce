@@ -8,6 +8,7 @@ import { addExhibition } from "../../../redux/slices/exhibition"; // Import the 
 
 const AddExhibition = ({ onCancel }) => {
   const [imageUrl, setImageUrl] = useState("");
+  const [imageError, setImageError] = useState("");
 
   const errorMessage = "Field cannot be empty";
 
@@ -46,15 +47,23 @@ const AddExhibition = ({ onCancel }) => {
         }
       );
       setImageUrl(response.data.secure_url);
+      setImageError("");
     } catch (error) {
       console.error("Image upload failed:", error);
+      setImageError("Image upload failed, please try again");
     }
   };
 
   const onSubmit = (data) => {
+    // The Exhibition model requires an image; block submit until one is uploaded.
+    if (!imageUrl) {
+      setImageError("Please upload an image");
+      return;
+    }
+
     const exhibitionData = {
       ...data,
-      image: imageUrl, // Default image URL
+      image: imageUrl,
     };
 
     dispatch(addExhibition(exhibitionData));
@@ -114,9 +123,7 @@ const AddExhibition = ({ onCancel }) => {
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <p className="text-sm text-meta-1">
-              {errors.ticketQuantity && (
-                <span>{errors.ticketQuantity.message}</span>
-              )}
+              {errors.quantity && <span>{errors.quantity.message}</span>}
             </p>
           </div>
 
@@ -131,7 +138,7 @@ const AddExhibition = ({ onCancel }) => {
               className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <p className="text-sm text-meta-1">
-              {errors.ticketPrice && <span>{errors.ticketPrice.message}</span>}
+              {errors.price && <span>{errors.price.message}</span>}
             </p>
           </div>
 
@@ -161,6 +168,9 @@ const AddExhibition = ({ onCancel }) => {
               onChange={uploadImage}
               className="w-full cursor-pointer border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
             />
+            <p className="text-sm text-meta-1">
+              {imageError && <span>{imageError}</span>}
+            </p>
             {imageUrl && (
               <div className="mt-4">
                 <img

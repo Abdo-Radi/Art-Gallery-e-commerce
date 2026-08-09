@@ -13,7 +13,9 @@ const Artist = () => {
   const { list, pages, reset } = useSelector((state) => state.artists);
 
   const [searchParams] = useSearchParams();
-  const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page") ?? 1)
+  );
   const [search, setSearch] = useState(searchParams.get("search") || "");
 
   const [addForm, setAddForm] = useState(false);
@@ -66,7 +68,7 @@ const Artist = () => {
     queryParams.set("page", currentPage);
 
     const newUrl = `/admin/artists?${queryParams.toString()}`;
-    navigate(newUrl);
+    navigate(newUrl, { replace: true });
   }, [dispatch, currentPage, search, reset]);
 
   return (
@@ -112,8 +114,8 @@ const Artist = () => {
               </tr>
             </thead>
             <tbody>
-              {list.map((artist, key) => (
-                <tr key={key}>
+              {list.map((artist) => (
+                <tr key={artist._id}>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {artist.firstName} {artist.lastName}
                   </td>
@@ -129,7 +131,7 @@ const Artist = () => {
                         <i className="ri-edit-box-line hover:text-primary"></i>
                       </button>
                       <button onClick={() => handleDelete(artist._id)}>
-                        <i className="ri-delete-bin-6-line hover-text-primary"></i>
+                        <i className="ri-delete-bin-6-line hover:text-primary"></i>
                       </button>
                     </div>
                   </td>

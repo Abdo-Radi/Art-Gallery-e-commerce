@@ -14,7 +14,9 @@ const CustomerPage = () => {
   const { list, pages, reset } = useSelector((state) => state.customers);
 
   const [searchParams] = useSearchParams();
-  const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page") ?? 1)
+  );
   const [search, setSearch] = useState(searchParams.get("search") || "");
 
   const [addForm, setAddForm] = useState(false);
@@ -67,7 +69,7 @@ const CustomerPage = () => {
     queryParams.set("page", currentPage);
 
     const newUrl = `/admin/customers?${queryParams.toString()}`;
-    navigate(newUrl);
+    navigate(newUrl, { replace: true });
   }, [dispatch, currentPage, search, reset]);
 
   return (
@@ -113,8 +115,8 @@ const CustomerPage = () => {
               </tr>
             </thead>
             <tbody>
-              {list.map((customer, key) => (
-                <tr key={key}>
+              {list.map((customer) => (
+                <tr key={customer._id}>
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {customer.firstName} {customer.lastName}
                   </td>
@@ -127,10 +129,10 @@ const CustomerPage = () => {
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center text-lg gap-2.5">
                       <button onClick={() => showEditForm(customer)}>
-                        <i className="ri-edit-box-line hover-text-primary"></i>
+                        <i className="ri-edit-box-line hover:text-primary"></i>
                       </button>
                       <button onClick={() => handleDelete(customer._id)}>
-                        <i className="ri-delete-bin-6-line hover-text-primary"></i>
+                        <i className="ri-delete-bin-6-line hover:text-primary"></i>
                       </button>
                     </div>
                   </td>

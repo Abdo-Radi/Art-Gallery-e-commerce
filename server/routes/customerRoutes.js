@@ -7,6 +7,9 @@ const {
   deleteCustomer,
 } = require("../controllers/customerController");
 const { isAuthorized } = require("../middleware/authorization");
+const { verifyToken } = require("../middleware/jwt");
+
+router.use(verifyToken);
 
 router.get("/", getCustomers);
 router.get("/:id", getCustomerById);

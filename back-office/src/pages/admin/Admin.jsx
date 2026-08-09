@@ -48,10 +48,10 @@ const AdminPage = () => {
   };
 
   return (
-    <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark/border-strokedark dark/bg-boxdark sm/px-7.5 xl/pb-1">
+    <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-title-lg font-semibold text-black dark/text-white">
+          <h2 className="text-title-lg font-semibold text-black dark:text-white">
             Admins
           </h2>
           <button
@@ -65,40 +65,40 @@ const AdminPage = () => {
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
-              <tr className="bg-gray-2 text-left dark/bg-meta-4">
-                <th className="p-4 font-medium text-black dark/text-white">
+              <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                <th className="p-4 font-medium text-black dark:text-white">
                   Name
                 </th>
-                <th className="p-4 font-medium text-black dark/text-white">
+                <th className="p-4 font-medium text-black dark:text-white">
                   Username
                 </th>
-                <th className="p-4 font-medium text-black dark/text-white">
+                <th className="p-4 font-medium text-black dark:text-white">
                   Email
                 </th>
-                <th className="p-4 font-medium text-black dark/text-white">
+                <th className="p-4 font-medium text-black dark:text-white">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody>
-              {admins.map((admin, key) => (
-                <tr key={key}>
-                  <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+              {admins.map((admin) => (
+                <tr key={admin._id}>
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {admin.firstName} {admin.lastName}
                   </td>
-                  <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {admin.username}
                   </td>
-                  <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     {admin.email}
                   </td>
-                  <td className="border-b border-[#eee] py-5 px-4 dark/border-strokedark">
+                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center text-lg gap-2.5">
                       <button onClick={() => showEditForm(admin)}>
-                        <i className="ri-edit-box-line hover-text-primary"></i>
+                        <i className="ri-edit-box-line hover:text-primary"></i>
                       </button>
                       <button onClick={() => handleDelete(admin._id)}>
-                        <i className="ri-delete-bin-6-line hover-text-primary"></i>
+                        <i className="ri-delete-bin-6-line hover:text-primary"></i>
                       </button>
                     </div>
                   </td>

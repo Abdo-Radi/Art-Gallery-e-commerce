@@ -17,7 +17,9 @@ const Exhibition = () => {
   const { list, pages, reset } = useSelector((state) => state.exhibitions);
 
   const [searchParams] = useSearchParams();
-  const [currentPage, setCurrentPage] = useState(searchParams.get("page") ?? 1);
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page") ?? 1)
+  );
   const [search, setSearch] = useState(searchParams.get("search") || "");
 
   const [addForm, setAddForm] = useState(false);
@@ -70,7 +72,7 @@ const Exhibition = () => {
     queryParams.set("page", currentPage);
 
     const newUrl = `/admin/exhibitions?${queryParams.toString()}`;
-    navigate(newUrl);
+    navigate(newUrl, { replace: true });
   }, [dispatch, currentPage, search, reset]);
 
   return (
@@ -148,10 +150,10 @@ const Exhibition = () => {
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center text-lg gap-2.5">
                       <button onClick={() => showEditForm(exhibition)}>
-                        <i className="ri-edit-box-line hover-text-primary"></i>
+                        <i className="ri-edit-box-line hover:text-primary"></i>
                       </button>
                       <button onClick={() => handleDelete(exhibition._id)}>
-                        <i className="ri-delete-bin-6-line hover-text-primary"></i>
+                        <i className="ri-delete-bin-6-line hover:text-primary"></i>
                       </button>
                     </div>
                   </td>

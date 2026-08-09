@@ -7,9 +7,9 @@ import { useDispatch } from "react-redux";
 const AddAdmin = ({ onCancel }) => {
   const schema = z
     .object({
-      firstName: z.string(),
-      lastName: z.string(),
-      username: z.string(),
+      firstName: z.string().min(1, { message: "Field cannot be empty" }),
+      lastName: z.string().min(1, { message: "Field cannot be empty" }),
+      username: z.string().min(1, { message: "Field cannot be empty" }),
       email: z.string().email(),
       password: z
         .string()

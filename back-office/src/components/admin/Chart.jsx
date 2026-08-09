@@ -16,7 +16,7 @@ const Chart = ({ artworks }) => {
       type: "donut",
     },
     colors,
-    labels: artworks.map((el) => el.category.name),
+    labels: artworks.map((el) => el.category?.name ?? "Uncategorized"),
     legend: {
       show: false,
       position: "bottom",
@@ -78,7 +78,7 @@ const Chart = ({ artworks }) => {
           {artworks.map((el, i) => (
             <div key={i} className="flex w-full items-center">
               <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-                <span> {el.category.name} </span>
+                <span> {el.category?.name ?? "Uncategorized"} </span>
                 <span> {el.count} </span>
               </p>
             </div>

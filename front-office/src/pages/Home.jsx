@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getArtworks } from "@/redux/slices/artwork";
 import { getExhibitions } from "@/redux/slices/exhibition";
 
@@ -17,10 +17,12 @@ const Home = () => {
   const { list: artworks } = useSelector((state) => state.artworks);
   const { list: exhibitions } = useSelector((state) => state.exhibitions);
 
+  const [messageSent, setMessageSent] = useState(false);
+
   useEffect(() => {
     dispatch(getArtworks());
     dispatch(getExhibitions());
-  }, []);
+  }, [dispatch]);
   return (
     <main>
       <section className="w-full py-12 md:py-24">
@@ -37,10 +39,16 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Link className="inline-flex h-10 items-center justify-center rounded-md  px-8 text-sm font-medium  shadow transition-colors bg-primary text-primary-foreground hover:bg-primary/90  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50">
+                <Link
+                  to="/artworks"
+                  className="inline-flex h-10 items-center justify-center rounded-md  px-8 text-sm font-medium  shadow transition-colors bg-primary text-primary-foreground hover:bg-primary/90  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
+                >
                   Explore Gallery
                 </Link>
-                <Link className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300">
+                <Link
+                  to="/about"
+                  className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
+                >
                   Learn More
                 </Link>
               </div>
@@ -68,10 +76,10 @@ const Home = () => {
               </p>
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {artworks.slice(0, 3).map((artwork, i) => (
-                <Card key={i} className="h-full w-full">
+              {artworks.slice(0, 3).map((artwork) => (
+                <Card key={artwork._id} className="h-full w-full">
                   <img
-                    alt="Artwork 1"
+                    alt={artwork.title}
                     className="aspect-[4/3] w-full overflow-hidden rounded-t-lg object-cover"
                     height="300"
                     src={artwork.image}
@@ -80,7 +88,7 @@ const Home = () => {
                   <CardContent className="p-4">
                     <h3 className="text-lg font-semibold">{artwork.title}</h3>
                     <p className="text-gray-500 dark:text-gray-400">
-                      by {artwork.artist.firstName} {artwork.artist.lastName}
+                      by {artwork.artist?.firstName} {artwork.artist?.lastName}
                     </p>
                   </CardContent>
                 </Card>
@@ -106,12 +114,18 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Link className="inline-flex h-10 items-center justify-center rounded-md  px-8 text-sm font-medium  shadow transition-colors bg-primary text-primary-foreground hover:bg-primary/90  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50">
+                <Link
+                  to="/about"
+                  className="inline-flex h-10 items-center justify-center rounded-md  px-8 text-sm font-medium  shadow transition-colors bg-primary text-primary-foreground hover:bg-primary/90  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
+                >
                   Learn More
                 </Link>
-                <Link className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300">
+                <a
+                  href="#contact"
+                  className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
+                >
                   Contact Us
-                </Link>
+                </a>
               </div>
             </div>
             <img
@@ -136,10 +150,10 @@ const Home = () => {
               </p>
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {exhibitions.slice(0, 3).map((exhibition, i) => (
-                <Card key={i} className="h-full w-full">
+              {exhibitions.slice(0, 3).map((exhibition) => (
+                <Card key={exhibition._id} className="h-full w-full">
                   <img
-                    alt="Artwork 1"
+                    alt={exhibition.name}
                     className="aspect-[4/3] w-full overflow-hidden rounded-t-lg object-cover"
                     height="300"
                     src={exhibition.image}
@@ -171,14 +185,14 @@ const Home = () => {
             </div>
             <Link
               className="inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-medium  shadow transition-colors bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
-              href="#"
+              to="/artworks"
             >
               Browse Collection
             </Link>
           </div>
         </div>
       </section>
-      <section className="w-full py-12 md:py-24 bg-gray-100">
+      <section id="contact" className="w-full py-12 md:py-24 bg-gray-100">
         <div className="container px-4 md:px-6 lg:px-20">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
@@ -191,7 +205,19 @@ const Home = () => {
               </p>
             </div>
             <div className="w-full max-w-md">
-              <form className="grid gap-4">
+              {messageSent && (
+                <p className="mb-4 text-green-600 font-medium">
+                  Thank you for your message! We will get back to you soon.
+                </p>
+              )}
+              <form
+                className="grid gap-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  e.target.reset();
+                  setMessageSent(true);
+                }}
+              >
                 <div className="grid gap-2">
                   <Label htmlFor="name">Name</Label>
                   <Input id="name" placeholder="Enter your name" />

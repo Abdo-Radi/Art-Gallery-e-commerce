@@ -1,4 +1,6 @@
 const Ticket = require("../models/Ticket");
+const Exhibition = require("../models/Exhibition");
+const { escapeRegex } = require("../utils/regexUtils");
 
 const createTicket = async (req, res, next) => {
   try {
@@ -25,13 +27,22 @@ const getTickets = async (req, res, next) => {
       page: page || 1,
       limit: 9,
     };
-    console.log(search,exhibition,priceSort,maxPrice)
+    // "exhibition" is a reference, so a name search has to resolve matching
+    // exhibition ids first — regex on "exhibition.name" never matches here.
+    let exhibitionIdsFilter;
+    if (search) {
+      const matchingExhibitions = await Exhibition.find({
+        name: { $regex: new RegExp(escapeRegex(search), "i") },
+      }).select("_id");
+      exhibitionIdsFilter = { $in: matchingExhibitions.map((e) => e._id) };
+    }
+
     const searchQuery = {
-      ...(search && { "exhibition.name": { $regex: new RegExp(search, "i") } }),
+      ...(exhibitionIdsFilter && { exhibition: exhibitionIdsFilter }),
       ...(exhibition && { exhibition }),
       ...(maxPrice && { price: { $lte: Number(maxPrice) } }),
     };
-    console.log(searchQuery)
+
     if (priceSort) {
       options.sort = { price: priceSort === "lowToHigh" ? 1 : -1 };
     }

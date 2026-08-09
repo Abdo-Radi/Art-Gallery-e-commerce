@@ -9,7 +9,7 @@ export const getUser = createAsyncThunk(
       .then((res) => {
         return res.data;
       })
-      .catch((err) => rejectWithValue(err.response.data.message));
+      .catch((err) => rejectWithValue(err.response?.data?.message ?? "Network error"));
   }
 );
 
@@ -22,7 +22,9 @@ const initialState = {
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    clearUser: () => initialState,
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getUser.fulfilled, (state, action) => {
@@ -37,4 +39,5 @@ const userSlice = createSlice({
   },
 });
 
+export const { clearUser } = userSlice.actions;
 export default userSlice.reducer;
