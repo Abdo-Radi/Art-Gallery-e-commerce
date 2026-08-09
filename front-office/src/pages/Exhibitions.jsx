@@ -148,9 +148,13 @@ const Exhibitions = () => {
                     </span>
                     <Button
                       onClick={() => {
+                        if (!userData) {
+                          showToastMessage("Please login to buy tickets!");
+                          return;
+                        }
                         dispatch(
                           addItemToCart({
-                            customer: userData._id,
+                            customer: userData?._id,
                             product: exhibition._id,
                             productType: "Exhibition",
                             quantity: 1,

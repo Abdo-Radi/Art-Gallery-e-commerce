@@ -52,7 +52,7 @@ const Header = () => {
     <>
       <header className="px-4 md:px-6 lg:px-20 py-6 text-black flex justify-between items-center border-b-[1px]">
         <h1 className="text-3xl font-bold">
-          <span className="text-primary">H</span>orizons
+          <a href="/"><span className="text-primary">H</span>orizons</a>
         </h1>
         <nav className="hidden lg:flex justify-between items-center">
           <ul className="flex font-medium flex-row space-x-6">
@@ -100,12 +100,12 @@ const Header = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LuUser className="mr-2 h-4 w-4" />
+                <DropdownMenuItem className="cursor-pointer">
+                  <LuUser className="mr-2 h-4 w-4 " />
                   Profile
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>
+                <DropdownMenuItem onClick={logout} className="cursor-pointer" >
                   <LuLogOut className="mr-2 h-4 w-4" />
                   Log out
                 </DropdownMenuItem>
