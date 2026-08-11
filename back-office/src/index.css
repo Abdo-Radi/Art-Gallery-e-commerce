@@ -2,9 +2,209 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Horizons Admin — "Gallery Ledger"
+  Same identity as the storefront (Fraunces + Archivo, porcelain / ink /
+  cobalt), retuned for a tool: denser, sharper, information-first.
+  Light content on a warm ground, with one dark chrome rail for the sidebar.
+*/
+
 @layer base {
+  * {
+    border-color: theme("colors.line");
+  }
+
   body {
-    @apply font-poppins font-normal text-base text-body bg-whiten relative z-1;
+    @apply bg-surface font-sans text-base font-normal text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-semibold text-ink;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: #1b33be;
+    color: #fbfaf7;
+  }
+
+  /* Consistent keyboard focus across every control */
+  :focus-visible {
+    outline: 2px solid #1b33be;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* ——— Type helpers ——— */
+
+  .admin-eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.2em] text-klein;
+  }
+
+  .label-cap {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-stone;
+  }
+
+  /* ——— Page scaffolding ——— */
+
+  .page-head {
+    @apply mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-line pb-6;
+  }
+
+  .page-title {
+    @apply mt-2 font-display text-3xl font-bold leading-tight text-ink;
+  }
+
+  .panel {
+    @apply border border-line bg-paper;
+  }
+
+  .panel-pad {
+    @apply border border-line bg-paper p-6;
+  }
+
+  /* ——— Buttons ——— */
+
+  .btn-primary {
+    @apply inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap bg-klein px-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-paper transition-colors hover:bg-klein-deep disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-outline {
+    @apply inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap border border-stone/30 bg-transparent px-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink transition-colors hover:border-klein hover:text-klein disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-icon {
+    @apply inline-flex h-8 w-8 items-center justify-center text-base text-stone transition-colors hover:text-klein;
+  }
+
+  .btn-icon-danger {
+    @apply inline-flex h-8 w-8 items-center justify-center text-base text-stone transition-colors hover:text-danger;
+  }
+
+  /* ——— Form controls ——— */
+
+  .input-field {
+    @apply h-10 w-full border border-line bg-paper px-3 text-sm text-ink outline-none transition-colors placeholder:text-stone-light focus:border-klein disabled:cursor-not-allowed disabled:bg-surface;
+  }
+
+  .textarea-field {
+    @apply w-full border border-line bg-paper px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-stone-light focus:border-klein;
+  }
+
+  .select-field {
+    @apply h-10 w-full appearance-none border border-line bg-paper px-3 text-sm text-ink outline-none transition-colors focus:border-klein;
+  }
+
+  .file-field {
+    @apply w-full cursor-pointer border border-line bg-paper text-sm text-stone outline-none transition-colors file:mr-4 file:cursor-pointer file:border-0 file:border-r file:border-line file:bg-surface file:px-4 file:py-2.5 file:text-[11px] file:font-semibold file:uppercase file:tracking-[0.14em] file:text-ink hover:file:bg-line focus:border-klein;
+  }
+
+  .field-error {
+    @apply mt-1.5 block text-xs text-danger;
+  }
+
+  /* ——— Tables ——— */
+
+  .admin-table {
+    @apply w-full table-auto border-collapse text-sm;
+  }
+
+  .admin-table thead th {
+    @apply whitespace-nowrap border-b border-line bg-surface px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-stone;
+  }
+
+  .admin-table tbody td {
+    @apply border-b border-line px-4 py-4 align-middle text-ink;
+  }
+
+  .admin-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .admin-table tbody tr {
+    @apply transition-colors hover:bg-surface/60;
+  }
+
+  .table-empty {
+    @apply px-4 py-16 text-center font-display text-base italic text-stone;
+  }
+
+  /* ——— Status chips ——— */
+
+  .chip {
+    @apply inline-flex items-center whitespace-nowrap border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em];
+  }
+
+  .chip-neutral {
+    @apply border-line bg-surface text-stone;
+  }
+
+  .chip-accent {
+    @apply border-klein/40 bg-klein/5 text-klein;
+  }
+
+  .chip-success {
+    @apply border-success/40 bg-success/5 text-success;
+  }
+
+  .chip-warning {
+    @apply border-warning/40 bg-warning/5 text-warning;
+  }
+
+  .chip-danger {
+    @apply border-danger/40 bg-danger/5 text-danger;
+  }
+
+  /* ——— Modals ——— */
+
+  .modal-scrim {
+    @apply fixed left-0 top-0 z-9999 flex h-full w-full items-center justify-center bg-stone/50 p-4 backdrop-blur-sm;
+  }
+
+  .modal-card {
+    @apply no-scrollbar max-h-[88vh] w-[26rem] max-w-full overflow-y-auto border border-line bg-paper shadow-2xl;
+  }
+
+  .modal-card-wide {
+    @apply no-scrollbar max-h-[88vh] w-[40rem] max-w-full overflow-y-auto border border-line bg-paper shadow-2xl;
+  }
+
+  .modal-head {
+    @apply sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-line bg-paper px-7 py-5;
+  }
+
+  .modal-title {
+    @apply font-display text-xl font-bold text-ink;
+  }
+
+  .modal-body {
+    @apply px-7 py-6;
+  }
+
+  /* ——— Pagination ——— */
+
+  .page-btn {
+    @apply inline-flex h-9 min-w-9 items-center justify-center border border-line bg-paper px-2 text-sm tabular-nums text-ink transition-colors hover:border-klein hover:text-klein disabled:pointer-events-none disabled:opacity-40;
+  }
+
+  .page-btn-active {
+    @apply border-klein bg-klein text-paper hover:text-paper;
   }
 }
 
@@ -15,9 +215,98 @@
   }
 
   .no-scrollbar {
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
-    /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
+}
+
+/*
+  SweetAlert2 ships a rounded blue/red skin. Repaint it in the gallery
+  palette. Selectors are doubled up so they win regardless of import order.
+*/
+body .swal2-popup {
+  background: #fbfaf7;
+  border: 1px solid #e7e4dc;
+  border-radius: 0;
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  color: #111114;
+  box-shadow: 0 20px 56px rgba(85, 84, 92, 0.2);
+}
+
+body .swal2-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 700;
+  color: #111114;
+}
+
+body .swal2-html-container {
+  color: #55545c;
+  font-size: 14px;
+}
+
+body .swal2-styled.swal2-confirm,
+body .swal2-styled.swal2-cancel {
+  border-radius: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 11px 22px;
+  box-shadow: none;
+}
+
+body .swal2-styled.swal2-confirm {
+  background-color: #a32c22;
+  color: #fbfaf7;
+}
+
+body .swal2-styled.swal2-cancel {
+  background-color: transparent;
+  border: 1px solid rgba(85, 84, 92, 0.3);
+  color: #111114;
+}
+
+body .swal2-icon.swal2-warning {
+  border-color: #b8791f;
+  color: #b8791f;
+}
+
+body .swal2-icon.swal2-success {
+  border-color: #2f6b4f;
+}
+
+body .swal2-icon.swal2-success [class^="swal2-success-line"] {
+  background-color: #2f6b4f;
+}
+
+body .swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(47, 107, 79, 0.3);
+}
+
+/* react-toastify, themed to the palette */
+.Toastify .Toastify__toast {
+  background: #fbfaf7;
+  color: #111114;
+  border: 1px solid #e7e4dc;
+  border-radius: 0;
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  box-shadow: 0 12px 32px rgba(85, 84, 92, 0.16);
+}
+
+.Toastify .Toastify__toast-body {
+  color: #111114;
+}
+
+.Toastify .Toastify__progress-bar {
+  background: #1b33be;
+}
+
+.Toastify .Toastify__toast-icon svg {
+  fill: #1b33be;
+}
+
+.Toastify .Toastify__close-button {
+  color: #55545c;
+  opacity: 1;
 }

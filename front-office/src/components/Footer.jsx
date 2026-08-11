@@ -18,7 +18,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-paper/40">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-paper/55">
               Explore
             </p>
             <nav className="flex flex-col gap-3">
@@ -38,7 +38,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-paper/40">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-paper/55">
               Contact
             </p>
             <div className="flex flex-col gap-3 text-sm">
@@ -54,10 +54,10 @@ const Footer = () => {
         </div>
 
         <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-paper/10 pt-6 sm:flex-row sm:items-center">
-          <p className="text-xs text-paper/40">
+          <p className="text-xs text-paper/55">
             © 2026 Horizons. All rights reserved.
           </p>
-          <p className="font-display text-sm italic text-paper/40">
+          <p className="font-display text-sm italic text-paper/55">
             Art enables us to find ourselves and lose ourselves at the same time.
           </p>
         </div>

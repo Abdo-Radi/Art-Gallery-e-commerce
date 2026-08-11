@@ -38,6 +38,9 @@ const customerSchema = new mongoose.Schema({
   },
 });
 
+// Search on the list endpoint matches either name
+customerSchema.index({ firstName: 1, lastName: 1 });
+
 customerSchema.plugin(mongoosePagination);
 
 module.exports = mongoose.model("Customer", customerSchema);

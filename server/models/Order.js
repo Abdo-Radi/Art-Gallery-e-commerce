@@ -27,6 +27,10 @@ const orderSchema = new mongoose.Schema({
   },
 });
 
+// The dashboard aggregates paid orders; the list sorts by date
+orderSchema.index({ status: 1 });
+orderSchema.index({ date: -1 });
+
 orderSchema.plugin(mongoosePagination);
 
 module.exports = mongoose.model("Order", orderSchema);

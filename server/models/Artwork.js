@@ -35,6 +35,11 @@ const artworkSchema = new mongoose.Schema({
   },
 });
 
+// Indexes for the search / filter / sort paths the list endpoints use
+artworkSchema.index({ title: 1 });
+artworkSchema.index({ category: 1 });
+artworkSchema.index({ price: 1 });
+
 artworkSchema.plugin(mongoosePagination);
 
 module.exports = mongoose.model("Artwork", artworkSchema);

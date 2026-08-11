@@ -4,47 +4,50 @@ const Order = require("../models/Order");
 
 const getStats = async (req, res, next) => {
   try {
-    const totalArtists = await Artist.countDocuments();
-    const totalArtworks = await Artwork.countDocuments();
-
-    const orderStats = await Order.aggregate([
-      {
-        $match: {
-          status: "Paid",
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalOrders: { $sum: 1 },
-          totalSales: { $sum: "$totalAmount" },
-        },
-      },
-    ]);
-
-    const artworkStats = await Artwork.aggregate([
-      {
-        $group: {
-          _id: "$category",
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $lookup: {
-          from: "categories", // Assuming the collection name for categories is "categories"
-          localField: "_id",
-          foreignField: "_id",
-          as: "category",
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          category: { $arrayElemAt: ["$category", 0] },
-          count: 1,
-        },
-      },
-    ]);
+    // These four queries are independent — run them concurrently rather than
+    // paying for four sequential round trips to Atlas.
+    const [totalArtists, totalArtworks, orderStats, artworkStats] =
+      await Promise.all([
+        Artist.countDocuments(),
+        Artwork.countDocuments(),
+        Order.aggregate([
+          {
+            $match: {
+              status: "Paid",
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalOrders: { $sum: 1 },
+              totalSales: { $sum: "$totalAmount" },
+            },
+          },
+        ]),
+        Artwork.aggregate([
+          {
+            $group: {
+              _id: "$category",
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $lookup: {
+              from: "categories",
+              localField: "_id",
+              foreignField: "_id",
+              as: "category",
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              category: { $arrayElemAt: ["$category", 0] },
+              count: 1,
+            },
+          },
+        ]),
+      ]);
 
     res.json({
       totalArtists,

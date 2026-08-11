@@ -29,6 +29,10 @@ const exhibitionSchema = new mongoose.Schema({
   },
 });
 
+// Indexes for the search / filter / sort paths the list endpoints use
+exhibitionSchema.index({ price: 1 });
+exhibitionSchema.index({ date: 1 });
+
 exhibitionSchema.plugin(mongoosePagination);
 
 const Exhibition = mongoose.model("Exhibition", exhibitionSchema);

@@ -1,4 +1,3 @@
-/
 // Usage: node scripts/createAdmin.js <username> <email> <password>
 // Creates (or resets the password of) an admin account.
 require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") });

@@ -1,24 +1,26 @@
-const CardDataStats = ({
-    title,
-    total,
-    children,
-}) => {
-    return (
-        <div className="flex items-center border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
-                {children}
-            </div>
+const CardDataStats = ({ title, total, unit, children }) => {
+  const display =
+    total === undefined || total === null || total === "" ? "—" : total;
 
-            <div className="ml-4 flex items-end justify-between">
-                <div>
-                    <h4 className="text-title-md font-bold text-black dark:text-white">
-                        {total}
-                    </h4>
-                    <span className="text-sm font-medium">{title}</span>
-                </div>
-            </div>
-        </div>
-    );
+  return (
+    <div className="panel group p-6 transition-colors hover:border-klein/40">
+      <div className="flex items-start justify-between gap-4">
+        <p className="label-cap">{title}</p>
+        <span className="text-lg text-stone transition-colors group-hover:text-klein">
+          {children}
+        </span>
+      </div>
+
+      <p className="mt-5 font-display text-4xl font-bold leading-none tabular-nums text-ink">
+        {display}
+        {unit && display !== "—" && (
+          <span className="ml-1.5 font-sans text-base font-semibold text-stone">
+            {unit}
+          </span>
+        )}
+      </p>
+    </div>
+  );
 };
 
-export default CardDataStats
+export default CardDataStats;

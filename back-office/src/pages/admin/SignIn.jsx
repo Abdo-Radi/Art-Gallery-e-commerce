@@ -15,7 +15,7 @@ const SignIn = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
   });
@@ -38,57 +38,112 @@ const SignIn = () => {
       localStorage.setItem("token", token);
       navigate("/admin");
     } catch (error) {
-      showErrorMessage(error.response?.data?.message ?? "Login failed. Please try again.");
+      showErrorMessage(
+        error.response?.data?.message ?? "Login failed. Please try again."
+      );
     }
   };
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <div className="h-5/6 p-6.5 flex flex-col justify-center mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <h3 className="font-medium text-title-lg mb-9 text-black dark:text-white">
-          Sign In to Horizons
-        </h3>
-        <form onSubmit={handleSubmit(login)}>
-          <div>
-            <div className="mb-4.5">
-              <label className="mb-2.5 block text-black dark:text-white">
-                Identifier <span className="text-meta-1">*</span>
-              </label>
-              <input
-                {...register("identifier")}
-                type="text"
-                placeholder="Enter your email or username"
-                className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              />
-              <p className="text-sm text-meta-1">
-                {errors.identifier && <span>{errors.identifier.message}</span>}
-              </p>
-            </div>
-
-            <div className="mb-4.5">
-              <label className="mb-2.5 block text-black dark:text-white">
-                Password <span className="text-meta-1">*</span>
-              </label>
-              <input
-                {...register("password")}
-                type="password"
-                placeholder="Enter your password"
-                className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-              />
-              <p className="text-sm text-meta-1">
-                {errors.password && <span>{errors.password.message}</span>}
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              className="flex w-full justify-center bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
-            >
-              Sign In
-            </button>
+    /*
+      The grid holds exactly two items. Anything else rendered here — notably
+      react-toastify's static wrapper div — becomes a third grid item, wraps to
+      a second row and steals half the min-h-screen height. Keep siblings out.
+    */
+    <>
+      <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
+        {/* Brand panel */}
+        <div className="relative hidden flex-col justify-between bg-ink-deep p-12 lg:flex">
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-display text-3xl font-bold text-paper">
+              Horizons
+            </span>
+            <span className="mb-1 inline-block h-2 w-2 bg-klein" />
           </div>
-        </form>
+
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-paper/55">
+              Gallery admin
+            </p>
+            <h1 className="mt-5 max-w-md font-display text-4xl font-bold leading-tight text-paper">
+              The room behind
+              <br />
+              the white cube.
+            </h1>
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-paper/60">
+              Manage the collection, the programme and the people who keep the
+              gallery running.
+            </p>
+          </div>
+
+          <p className="text-[10px] uppercase tracking-[0.2em] text-paper/45">
+            © 2026 Horizons
+          </p>
+        </div>
+
+        {/* Form panel */}
+        <div className="flex items-center justify-center bg-paper p-6 sm:p-12">
+          <div className="w-full max-w-sm">
+            <div className="mb-10 flex items-baseline gap-1.5 lg:hidden">
+              <span className="font-display text-2xl font-bold text-ink">
+                Horizons
+              </span>
+              <span className="mb-0.5 inline-block h-1.5 w-1.5 bg-klein" />
+            </div>
+
+            <p className="admin-eyebrow">Welcome back</p>
+            <h2 className="mt-3 font-display text-3xl font-bold text-ink">
+              Sign in
+            </h2>
+            <p className="mt-3 text-sm text-stone">Administrator access only.</p>
+
+            <form onSubmit={handleSubmit(login)} className="mt-10 space-y-5">
+              <div>
+                <label htmlFor="identifier" className="label-cap mb-2 block">
+                  Email or username <span className="text-danger">*</span>
+                </label>
+                <input
+                  {...register("identifier")}
+                  id="identifier"
+                  type="text"
+                  placeholder="you@example.com"
+                  className="input-field"
+                />
+                {errors.identifier && (
+                  <span className="field-error">
+                    {errors.identifier.message}
+                  </span>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="password" className="label-cap mb-2 block">
+                  Password <span className="text-danger">*</span>
+                </label>
+                <input
+                  {...register("password")}
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  className="input-field"
+                />
+                {errors.password && (
+                  <span className="field-error">{errors.password.message}</span>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="btn-primary w-full"
+              >
+                {isSubmitting ? "Signing in…" : "Sign in"}
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
+
       <ToastContainer
         position="top-right"
         autoClose={2000}
@@ -102,7 +157,7 @@ const SignIn = () => {
         theme="light"
         transition={Bounce}
       />
-    </div>
+    </>
   );
 };
 

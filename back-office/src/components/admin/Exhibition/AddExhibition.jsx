@@ -71,122 +71,117 @@ const AddExhibition = ({ onCancel }) => {
   };
 
   return (
-    <div className="mx-4 w-96 overflow-y-auto h-5/6 no-scrollbar md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="sticky top-0 bg-white flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-        <h3 className="font-medium text-black dark:text-white">
-          Add Exhibition
-        </h3>
-        <button onClick={onCancel}>
-          <i className="ri-close-circle-line text-lg"></i>
+    <div className="modal-card">
+      <div className="modal-head">
+        <div>
+          <p className="admin-eyebrow">Programme</p>
+          <h3 className="modal-title">Add exhibition</h3>
+        </div>
+        <button onClick={onCancel} className="btn-icon" aria-label="Close">
+          <i className="ri-close-line text-xl" />
         </button>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-        <div className="p-6.5">
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Name <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("name")}
-              type="text"
-              placeholder="Enter exhibition name"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.name && <span>{errors.name.message}</span>}
-            </p>
-          </div>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        encType="multipart/form-data"
+        className="modal-body space-y-5"
+      >
+        <div>
+          <label className="label-cap mb-2 block">
+            Name <span className="text-danger">*</span>
+          </label>
+          <input
+            {...register("name")}
+            type="text"
+            placeholder="Exhibition name"
+            className="input-field"
+          />
+          {errors.name && (
+            <span className="field-error">{errors.name.message}</span>
+          )}
+        </div>
 
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Date <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("date")}
-              type="date"
-              placeholder="Enter exhibition date"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.date && <span>{errors.date.message}</span>}
-            </p>
-          </div>
+        <div>
+          <label className="label-cap mb-2 block">
+            Date <span className="text-danger">*</span>
+          </label>
+          <input
+            {...register("date")}
+            type="date"
+            placeholder="Exhibition date"
+            className="input-field"
+          />
+          {errors.date && (
+            <span className="field-error">{errors.date.message}</span>
+          )}
+        </div>
 
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Ticket quantity <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("quantity", { valueAsNumber: true })}
-              type="number"
-              placeholder="Enter ticket quantity"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.quantity && <span>{errors.quantity.message}</span>}
-            </p>
-          </div>
+        <div>
+          <label className="label-cap mb-2 block">
+            Ticket quantity <span className="text-danger">*</span>
+          </label>
+          <input
+            {...register("quantity", { valueAsNumber: true })}
+            type="number"
+            placeholder="Number of tickets"
+            className="input-field tabular-nums"
+          />
+          {errors.quantity && (
+            <span className="field-error">{errors.quantity.message}</span>
+          )}
+        </div>
 
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Ticket price <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("price", { valueAsNumber: true })}
-              type="number"
-              placeholder="Enter ticket price"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.price && <span>{errors.price.message}</span>}
-            </p>
-          </div>
+        <div>
+          <label className="label-cap mb-2 block">
+            Ticket price <span className="text-danger">*</span>
+          </label>
+          <input
+            {...register("price", { valueAsNumber: true })}
+            type="number"
+            placeholder="Price in DH"
+            className="input-field tabular-nums"
+          />
+          {errors.price && (
+            <span className="field-error">{errors.price.message}</span>
+          )}
+        </div>
 
-          <div className="mb-3">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Description <span className="text-meta-1">*</span>
-            </label>
-            <textarea
-              {...register("description")}
-              placeholder="Enter description"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
-              rows="4"
-            />
-            {errors.description && (
-              <p className="text-sm text-meta-1">
-                {errors.description.message}
-              </p>
-            )}
-          </div>
+        <div>
+          <label className="label-cap mb-2 block">
+            Description <span className="text-danger">*</span>
+          </label>
+          <textarea
+            {...register("description")}
+            placeholder="Short description"
+            className="textarea-field"
+            rows="4"
+          />
+          {errors.description && (
+            <span className="field-error">{errors.description.message}</span>
+          )}
+        </div>
 
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Image <span className="text-meta-1">*</span>
-            </label>
-            <input
-              type="file"
-              onChange={uploadImage}
-              className="w-full cursor-pointer border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+        <div>
+          <label className="label-cap mb-2 block">
+            Image <span className="text-danger">*</span>
+          </label>
+          <input type="file" onChange={uploadImage} className="file-field" />
+          {imageError && <span className="field-error">{imageError}</span>}
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt="Exhibition"
+              className="mt-3 h-32 w-full border border-line object-cover"
             />
-            <p className="text-sm text-meta-1">
-              {imageError && <span>{imageError}</span>}
-            </p>
-            {imageUrl && (
-              <div className="mt-4">
-                <img
-                  src={imageUrl}
-                  alt="Exhibition"
-                  className="max-w-full h-auto"
-                />
-              </div>
-            )}
-          </div>
+          )}
+        </div>
 
-          <button
-            type="submit"
-            className="flex w-full justify-center bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
-          >
-            Add Exhibition
+        <div className="flex gap-3 pt-2">
+          <button type="submit" className="btn-primary flex-1">
+            Save exhibition
+          </button>
+          <button type="button" onClick={onCancel} className="btn-outline">
+            Cancel
           </button>
         </div>
       </form>

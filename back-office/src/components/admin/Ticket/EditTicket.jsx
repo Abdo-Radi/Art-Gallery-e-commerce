@@ -22,6 +22,7 @@ const EditTicket = ({ ticket, onCancel }) => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
@@ -38,98 +39,93 @@ const EditTicket = ({ ticket, onCancel }) => {
   };
 
   useEffect(() => {
-    // High limit so the dropdown lists every exhibition, not just page 1.
-    dispatch(getExhibitions({ limit: 1000 }));
+    // Only fetch what we don't already have — the list is shared app-wide.
+    if (!exhibitions?.length) dispatch(getExhibitions({ limit: 1000 }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  // Wait for the dropdown data before rendering: a native select mounted
-  // without its options silently falls back to the placeholder.
-  if (!exhibitions?.length) {
-    return (
-      <div className="mx-4 w-96 border border-stroke bg-white p-6.5 shadow-default dark:border-strokedark dark:bg-boxdark">
-        Loading...
-      </div>
-    );
-  }
+  // A native select mounted before its options exist silently drops its value,
+  // so re-apply the ticket's own value once the list has arrived. (Blocking the
+  // form on this instead would hang forever when no exhibitions exist yet.)
+  useEffect(() => {
+    if (exhibitions?.length) setValue("exhibition", ticket.exhibition?._id ?? "");
+  }, [exhibitions, setValue, ticket]);
 
   return (
-    <div className="mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="sticky top-0 bg-white flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-        <h3 className="font-medium text-black dark:text-white">Edit Ticket</h3>
-        <button onClick={onCancel}>
-          <i className="ri-close-circle-line text-lg"></i>
+    <div className="modal-card">
+      <div className="modal-head">
+        <div>
+          <p className="admin-eyebrow">Programme</p>
+          <h3 className="modal-title">Edit ticket</h3>
+        </div>
+        <button onClick={onCancel} className="btn-icon" aria-label="Close">
+          <i className="ri-close-line text-xl" />
         </button>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="p-6.5">
-          <div className="mb-4.5 relative z-20 bg-transparent dark:bg-form-input">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Exhibition <span className="text-meta-1">*</span>
-            </label>
-            <select
-              {...register("exhibition")}
-              className="relative z-20 w-full appearance-none border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white"
-            >
-              <option
-                value=""
-                disabled
-                className="text-body dark:text-bodydark"
-              >
-                Select an exhibition
-              </option>
-              {exhibitions &&
-                exhibitions.map((exhibition, key) => (
-                  <option
-                    key={key}
-                    value={exhibition._id}
-                    className="text-body dark:text-bodydark"
-                  >
-                    {exhibition.name}
-                  </option>
-                ))}
-            </select>
-            <p className="text-sm text-meta-1">
-              {errors.exhibition && <span>{errors.exhibition.message}</span>}
-            </p>
-          </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="modal-body space-y-5">
+        <div>
+          <label className="label-cap mb-2 block">
+            Exhibition <span className="text-danger">*</span>
+          </label>
+          <select {...register("exhibition")} className="select-field">
+            <option value="" disabled>
+              Select an exhibition
+            </option>
+            {exhibitions &&
+              exhibitions.map((exhibition, key) => (
+                <option key={key} value={exhibition._id}>
+                  {exhibition.name}
+                </option>
+              ))}
+          </select>
+          {!exhibitions?.length && (
+            <span className="mt-1.5 block text-xs text-stone">
+              No exhibitions yet — add one under Programme → Exhibitions.
+            </span>
+          )}
+          {errors.exhibition && (
+            <span className="field-error">{errors.exhibition.message}</span>
+          )}
+        </div>
 
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Price <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("price", { valueAsNumber: true })}
-              defaultValue={ticket.price}
-              type="number"
-              placeholder="Enter price"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.price && <span>{errors.price.message}</span>}
-            </p>
-          </div>
+        <div>
+          <label className="label-cap mb-2 block">
+            Price <span className="text-danger">*</span>
+          </label>
+          <input
+            {...register("price", { valueAsNumber: true })}
+            defaultValue={ticket.price}
+            type="number"
+            placeholder="Price in DH"
+            className="input-field tabular-nums"
+          />
+          {errors.price && (
+            <span className="field-error">{errors.price.message}</span>
+          )}
+        </div>
 
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Quantity <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("quantity", { valueAsNumber: true })}
-              defaultValue={ticket.quantity}
-              type="number"
-              placeholder="Enter quantity"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.quantity && <span>{errors.quantity.message}</span>}
-            </p>
-          </div>
+        <div>
+          <label className="label-cap mb-2 block">
+            Quantity <span className="text-danger">*</span>
+          </label>
+          <input
+            {...register("quantity", { valueAsNumber: true })}
+            defaultValue={ticket.quantity}
+            type="number"
+            placeholder="Number of tickets"
+            className="input-field tabular-nums"
+          />
+          {errors.quantity && (
+            <span className="field-error">{errors.quantity.message}</span>
+          )}
+        </div>
 
-          <button
-            type="submit"
-            className="flex w-full justify-center bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
-          >
-            Edit Ticket
+        <div className="flex gap-3 pt-2">
+          <button type="submit" className="btn-primary flex-1">
+            Save changes
+          </button>
+          <button type="button" onClick={onCancel} className="btn-outline">
+            Cancel
           </button>
         </div>
       </form>

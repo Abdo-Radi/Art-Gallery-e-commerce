@@ -34,9 +34,22 @@ const ProtectedA = () => {
     return <Navigate to="/admin/login" replace />;
   }
 
-  return (
-    !isLoading && (loggedIn ? <Outlet /> : <Navigate to="/admin/login" replace />)
-  );
+  // A blank screen while the session resolves reads as a broken page.
+  if (isLoading) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-surface">
+        <div className="flex items-baseline gap-1.5">
+          <span className="font-display text-2xl font-bold text-ink">
+            Horizons
+          </span>
+          <span className="mb-0.5 inline-block h-1.5 w-1.5 animate-pulse bg-klein" />
+        </div>
+        <p className="label-cap">Loading your session…</p>
+      </div>
+    );
+  }
+
+  return loggedIn ? <Outlet /> : <Navigate to="/admin/login" replace />;
 };
 
 export default ProtectedA;

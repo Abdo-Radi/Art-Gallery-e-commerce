@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const compression = require("compression");
 const app = express();
 let path = require("path");
 
@@ -16,9 +17,16 @@ app.use(
   })
 );
 
+// gzip every JSON response — list payloads compress to a fraction of their size
+app.use(compression());
+
 app.use(express.json());
 
-app.use("/images", express.static(path.join(__dirname, "images")));
+// Artwork/exhibition images never change once written, so let the browser keep them
+app.use(
+  "/images",
+  express.static(path.join(__dirname, "images"), { maxAge: "7d" })
+);
 app.use("/v1", indexRoutes);
 
 app.use(errorHandler);

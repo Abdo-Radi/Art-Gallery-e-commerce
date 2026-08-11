@@ -3,6 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { fetchOrders, deleteOrder } from "../../redux/slices/order";
 
+const statusChip = {
+  Paid: "chip-success",
+  Open: "chip-accent",
+  Closed: "chip-neutral",
+  Canceled: "chip-danger",
+};
+
+const shortId = (id) =>
+  typeof id === "string" && id.length > 12
+    ? `${id.slice(0, 6)}…${id.slice(-4)}`
+    : id;
+
 const OrderPage = () => {
   const { orders, isLoading, error } = useSelector((state) => state.orders);
   const dispatch = useDispatch();
@@ -43,93 +55,118 @@ const OrderPage = () => {
   };
 
   return (
-    <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-      <div className="max-w-full">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-title-lg font-semibold text-black dark:text-white">
-            Orders
-          </h2>
+    <div className="animate-fade-up">
+      <div className="page-head">
+        <div>
+          <p className="admin-eyebrow">Sales</p>
+          <h1 className="page-title">Orders</h1>
         </div>
-
-        {isLoading ? (
-          <p>Loading orders...</p>
-        ) : error ? (
-          <p className="text-red-500">Error: {error}</p>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full table-auto">
-                <thead>
-                  <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                    <th className="p-4 font-medium text-black dark:text-white">
-                      Order ID
-                    </th>
-                    <th className="p-4 font-medium text-black dark:text-white">
-                      Customer ID
-                    </th>
-                    <th className="p-4 font-medium text-black dark:text-white">
-                      Total Amount
-                    </th>
-                    <th className="p-4 font-medium text-black dark:text-white">
-                      Status
-                    </th>
-                    <th className="p-4 font-medium text-black dark:text-white">
-                      Date
-                    </th>
-                    <th className="p-4 font-medium text-black dark:text-white">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedOrders.map((order) => (
-                    <tr key={order._id}>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        {order._id}
-                      </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        {order.customer}
-                      </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        {order.totalAmount?.toFixed(2)}
-                      </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        {order.status}
-                      </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        {new Date(order.date).toDateString()}
-                      </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        <div className="flex items-center text-lg gap-2.5">
-                          <button onClick={() => handleDelete(order._id)}>
-                            <i className="ri-delete-bin-6-line hover:text-primary"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {totalPages > 1 && (
-              <div className="mt-4 flex justify-center space-x-4">
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handlePageChange(i)}
-                    className={`px-3 py-1 ${
-                      currPage === i ? "bg-primary text-white" : "bg-gray-200"
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-            )}
-          </>
-        )}
       </div>
+
+      {isLoading ? (
+        <div className="panel-pad font-display text-base italic text-stone">
+          Loading orders…
+        </div>
+      ) : error ? (
+        <div className="panel-pad text-sm text-danger">Error: {error}</div>
+      ) : (
+        <>
+          <div className="panel overflow-x-auto">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Customer</th>
+                  <th className="text-right">Total</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th className="w-px text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedOrders.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="table-empty">
+                      No orders yet.
+                    </td>
+                  </tr>
+                )}
+                {paginatedOrders.map((order) => (
+                  <tr key={order._id}>
+                    <td>
+                      <span
+                        className="font-mono text-xs text-stone"
+                        title={order._id}
+                      >
+                        {shortId(order._id)}
+                      </span>
+                    </td>
+                    <td>
+                      {order.customer ? (
+                        <span
+                          className="font-mono text-xs text-stone"
+                          title={order.customer}
+                        >
+                          {shortId(order.customer)}
+                        </span>
+                      ) : (
+                        <span className="text-stone-light">—</span>
+                      )}
+                    </td>
+                    <td className="text-right tabular-nums">
+                      {order.totalAmount?.toFixed(2)}
+                    </td>
+                    <td>
+                      {order.status ? (
+                        <span
+                          className={`chip ${
+                            statusChip[order.status] || "chip-neutral"
+                          }`}
+                        >
+                          {order.status}
+                        </span>
+                      ) : (
+                        <span className="text-stone-light">—</span>
+                      )}
+                    </td>
+                    <td className="text-stone">
+                      {new Date(order.date).toDateString()}
+                    </td>
+                    <td className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          className="btn-icon-danger"
+                          title="Delete"
+                          aria-label="Delete order"
+                          onClick={() => handleDelete(order._id)}
+                        >
+                          <i className="ri-delete-bin-6-line" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => handlePageChange(i)}
+                  className={`page-btn ${
+                    currPage === i ? "page-btn-active" : ""
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

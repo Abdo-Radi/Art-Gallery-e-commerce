@@ -61,33 +61,31 @@ const getItems = async (req, res, next) => {
     }
 
     // Separate items by type
-    const artworkItems = cart.items.filter(
-      (item) => item.productType === "Artwork"
-    );
-    const ticketItems = cart.items.filter(
-      (item) => item.productType === "Exhibition"
-    );
+    const artworkIds = cart.items
+      .filter((item) => item.productType === "Artwork")
+      .map((item) => item.product);
+    const exhibitionIds = cart.items
+      .filter((item) => item.productType === "Exhibition")
+      .map((item) => item.product);
 
-    // Fetch details for each type
-    const artworkDetails = await Promise.all(
-      artworkItems.map(async (item) => {
-        const artwork = await Artwork.findById(item.product).populate({
-          path: "artist",
-          select: ["firstName", "lastName"],
-        });
-        return { ...item._doc, itemDetails: artwork };
-      })
-    );
+    // Two batched queries instead of one round trip per cart line, and both
+    // run concurrently.
+    const [artworks, exhibitions] = await Promise.all([
+      Artwork.find({ _id: { $in: artworkIds } })
+        .populate({ path: "artist", select: ["firstName", "lastName"] })
+        .lean(),
+      Exhibition.find({ _id: { $in: exhibitionIds } }).lean(),
+    ]);
 
-    const ticketDetails = await Promise.all(
-      ticketItems.map(async (item) => {
-        const exhibition = await Exhibition.findById(item.product);
-        return { ...item._doc, itemDetails: exhibition };
-      })
-    );
+    const byId = new Map();
+    artworks.forEach((doc) => byId.set(`Artwork:${doc._id}`, doc));
+    exhibitions.forEach((doc) => byId.set(`Exhibition:${doc._id}`, doc));
 
-    // Combine results
-    const detailedItems = [...artworkDetails, ...ticketDetails];
+    // Preserve the cart's own ordering rather than regrouping by type.
+    const detailedItems = cart.items.map((item) => ({
+      ...item._doc,
+      itemDetails: byId.get(`${item.productType}:${item.product}`) ?? null,
+    }));
     const detailedCart = { ...cart._doc, items: detailedItems };
 
     res.status(200).json(detailedCart);

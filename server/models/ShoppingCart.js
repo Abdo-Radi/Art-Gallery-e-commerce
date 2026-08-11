@@ -38,4 +38,7 @@ const shoppingCartSchema = new mongoose.Schema({
   },
 });
 
+// Every cart operation looks up by customer
+shoppingCartSchema.index({ customer: 1 });
+
 module.exports = mongoose.model("ShoppingCart", shoppingCartSchema);

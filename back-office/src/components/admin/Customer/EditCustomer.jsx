@@ -30,86 +30,94 @@ const EditCustomer = ({ customer, onCancel }) => {
   };
 
   return (
-    <div className="overflow-y-auto h-5/6 no-scrollbar mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="sticky top-0 bg-white flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-        <h3 className="font-medium text-black dark:text-white">
-          Edit Customer
-        </h3>
-        <button onClick={onCancel}>
-          <i className="ri-close-circle-line text-lg"></i>
+    <div className="modal-card">
+      <div className="modal-head">
+        <div>
+          <p className="admin-eyebrow">People</p>
+          <h3 className="modal-title">Edit customer</h3>
+        </div>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="btn-icon"
+          title="Close"
+          aria-label="Close"
+        >
+          <i className="ri-close-line text-xl" />
         </button>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="p-6.5">
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              First name <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("firstName")}
-              defaultValue={customer.firstName}
-              type="text"
-              placeholder="Enter the first name"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.firstName && <span>{errors.firstName.message}</span>}
-            </p>
-          </div>
 
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Last name <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("lastName")}
-              defaultValue={customer.lastName}
-              type="text"
-              placeholder="Enter the last name"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.lastName && <span>{errors.lastName.message}</span>}
-            </p>
-          </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="modal-body space-y-5">
+        <div>
+          <label className="label-cap mb-2 block">
+            First name <span className="text-danger">*</span>
+          </label>
+          <input
+            {...register("firstName")}
+            defaultValue={customer.firstName}
+            type="text"
+            placeholder="First name"
+            className="input-field"
+          />
+          {errors.firstName && (
+            <span className="field-error">{errors.firstName.message}</span>
+          )}
+        </div>
 
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Username <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("username")}
-              defaultValue={customer.username}
-              type="text"
-              placeholder="Enter the username"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.username && <span>{errors.username.message}</span>}
-            </p>
-          </div>
+        <div>
+          <label className="label-cap mb-2 block">
+            Last name <span className="text-danger">*</span>
+          </label>
+          <input
+            {...register("lastName")}
+            defaultValue={customer.lastName}
+            type="text"
+            placeholder="Last name"
+            className="input-field"
+          />
+          {errors.lastName && (
+            <span className="field-error">{errors.lastName.message}</span>
+          )}
+        </div>
 
-          <div className="mb-4.5">
-            <label className="mb-2.5 block text-black dark:text-white">
-              Email <span className="text-meta-1">*</span>
-            </label>
-            <input
-              {...register("email")}
-              defaultValue={customer.email}
-              type="email"
-              placeholder="Enter the email address"
-              className="w-full border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
-            <p className="text-sm text-meta-1">
-              {errors.email && <span>{errors.email.message}</span>}
-            </p>
-          </div>
+        <div>
+          <label className="label-cap mb-2 block">
+            Username <span className="text-danger">*</span>
+          </label>
+          <input
+            {...register("username")}
+            defaultValue={customer.username}
+            type="text"
+            placeholder="Username"
+            className="input-field"
+          />
+          {errors.username && (
+            <span className="field-error">{errors.username.message}</span>
+          )}
+        </div>
 
-          <button
-            type="submit"
-            className="flex w-full justify-center bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
-          >
-            Edit Customer
+        <div>
+          <label className="label-cap mb-2 block">
+            Email <span className="text-danger">*</span>
+          </label>
+          <input
+            {...register("email")}
+            defaultValue={customer.email}
+            type="email"
+            placeholder="Email address"
+            className="input-field"
+          />
+          {errors.email && (
+            <span className="field-error">{errors.email.message}</span>
+          )}
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <button type="submit" className="btn-primary flex-1">
+            Save changes
+          </button>
+          <button type="button" onClick={onCancel} className="btn-outline">
+            Cancel
           </button>
         </div>
       </form>

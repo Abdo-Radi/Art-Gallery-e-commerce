@@ -39,6 +39,9 @@ const artistSchema = new mongoose.Schema({
   },
 });
 
+// Search on the list endpoint matches either name
+artistSchema.index({ firstName: 1, lastName: 1 });
+
 artistSchema.plugin(mongoosePagination);
 
 module.exports = mongoose.model("Artist", artistSchema);

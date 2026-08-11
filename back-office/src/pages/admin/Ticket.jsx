@@ -63,119 +63,120 @@ const Ticket = () => {
   }, [dispatch, currentPage, reset]);
 
   return (
-    <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-      <div className="max-w-full">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-title-lg font-semibold text-black dark:text-white">
-            Tickets
-          </h2>
-
-          <button
-            onClick={showAddForm}
-            className="w-40 bg-primary py-2 text-white"
-          >
-            Add Ticket
+    <div className="animate-fade-up">
+      <div className="page-head">
+        <div>
+          <p className="admin-eyebrow">Programme</p>
+          <h1 className="page-title">Tickets</h1>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button onClick={showAddForm} className="btn-primary">
+            <i className="ri-add-line text-sm" />
+            Add ticket
           </button>
         </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Exhibition
-                </th>
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Price
-                </th>
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Quantity
-                </th>
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.map((ticket) => (
-                <tr key={ticket._id}>
-                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {ticket.exhibition?.name}
-                  </td>
-                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {ticket.price} DH
-                  </td>
-                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {ticket.quantity}
-                  </td>
-                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    <div className="flex items-center text-lg gap-2.5">
-                      <button onClick={() => showEditForm(ticket)}>
-                        <i className="ri-edit-box-line hover:text-primary"></i>
-                      </button>
-                      <button onClick={() => handleDelete(ticket._id)}>
-                        <i className="ri-delete-bin-6-line hover:text-primary"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {pages > 1 && (
-          <div className="my-4 flex justify-center space-x-2">
-            <button
-              disabled={currentPage == 1}
-              onClick={() => {
-                setCurrentPage((prev) => prev - 1);
-              }}
-              className={`w-8 h-8 border border-stroke ${
-                currentPage == 1 && "text-stroke"
-              }`}
-            >
-              <i className="ri-arrow-left-double-line"></i>
-            </button>
-            {Array.from({ length: pages }, (_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => handlePageChange(i + 1)}
-                className={`w-8 h-8 border border-stroke ${
-                  currentPage == i + 1
-                    ? "bg-primary text-white border-primary"
-                    : "bg-gray-200"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              disabled={currentPage == pages}
-              onClick={() => {
-                setCurrentPage((prev) => prev + 1);
-              }}
-              className={`w-8 h-8 border border-stroke ${
-                currentPage == pages && "text-stroke"
-              }`}
-            >
-              <i className="ri-arrow-right-double-line"></i>
-            </button>
-          </div>
-        )}
-
-        {addForm && (
-          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-            <AddTicket onCancel={hideAddForm} />
-          </div>
-        )}
-
-        {editForm && (
-          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-            <EditTicket ticket={editedTicket} onCancel={hideEditForm} />
-          </div>
-        )}
       </div>
+
+      <div className="panel overflow-x-auto">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Exhibition</th>
+              <th className="text-right">Price</th>
+              <th className="text-right">Quantity</th>
+              <th className="w-px text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.length === 0 && (
+              <tr>
+                <td colSpan={4} className="table-empty">
+                  No tickets yet.
+                </td>
+              </tr>
+            )}
+            {list.map((ticket) => (
+              <tr key={ticket._id}>
+                <td className="font-medium">
+                  {ticket.exhibition?.name || (
+                    <span className="text-stone-light">—</span>
+                  )}
+                </td>
+                <td className="text-right tabular-nums">{ticket.price} DH</td>
+                <td className="text-right tabular-nums">{ticket.quantity}</td>
+                <td className="text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <button
+                      className="btn-icon"
+                      title="Edit"
+                      aria-label="Edit ticket"
+                      onClick={() => showEditForm(ticket)}
+                    >
+                      <i className="ri-edit-box-line" />
+                    </button>
+                    <button
+                      className="btn-icon-danger"
+                      title="Delete"
+                      aria-label="Delete ticket"
+                      onClick={() => handleDelete(ticket._id)}
+                    >
+                      <i className="ri-delete-bin-6-line" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {pages > 1 && (
+        <div className="mt-6 flex items-center justify-center gap-2">
+          <button
+            disabled={currentPage == 1}
+            onClick={() => {
+              setCurrentPage((prev) => prev - 1);
+            }}
+            className="page-btn"
+            aria-label="Previous page"
+          >
+            <i className="ri-arrow-left-s-line" />
+          </button>
+          {Array.from({ length: pages }, (_, i) => (
+            <button
+              key={i + 1}
+              onClick={() => handlePageChange(i + 1)}
+              className={`page-btn ${
+                currentPage == i + 1 ? "page-btn-active" : ""
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            disabled={currentPage == pages}
+            onClick={() => {
+              setCurrentPage((prev) => prev + 1);
+            }}
+            className="page-btn"
+            aria-label="Next page"
+          >
+            <i className="ri-arrow-right-s-line" />
+          </button>
+        </div>
+      )}
+
+      {addForm && (
+        <div className="modal-scrim">
+          <AddTicket onCancel={hideAddForm} />
+        </div>
+      )}
+
+      {editForm && (
+        <div className="modal-scrim">
+          <EditTicket ticket={editedTicket} onCancel={hideEditForm} />
+        </div>
+      )}
     </div>
   );
 };

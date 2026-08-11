@@ -1,36 +1,82 @@
 const ArtworkViewPopup = ({ artwork, onClose }) => {
   return (
-    <div className="overflow-y-auto h-5/6 no-scrollbar mx-4 w-96 md:mx-0 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="sticky top-0 bg-white flex justify-between border-b border-stroke py-4 px-6.5 dark:border-strokedark z-9999">
-        <h3 className="font-medium text-black dark:text-white">
-          {artwork.title}
-        </h3>
-        <button onClick={onClose}>
-          <i className="ri-close-circle-line text-lg"></i>
+    <div className="modal-card-wide">
+      <div className="modal-head">
+        <div>
+          <p className="admin-eyebrow">Catalogue</p>
+          <h3 className="modal-title">{artwork.title}</h3>
+        </div>
+        <button onClick={onClose} className="btn-icon" aria-label="Close">
+          <i className="ri-close-line text-xl" />
         </button>
       </div>
-      <div className="p-6.5">
-        <img
-          className="border border-stroke mb-3"
-          src={artwork.image}
-          alt="Artwork"
-        />
-        <p>
-          <span className="font-bold">Title:</span> {artwork.title}
-        </p>
-        <p>
-          <span className="font-bold">Price:</span> {artwork.price} DH
-        </p>
-        <p>
-          <span className="font-bold">Category:</span> {artwork.category?.name}
-        </p>
-        <p>
-          <span className="font-bold">Artist:</span> {artwork.artist?.firstName}{" "}
-          {artwork.artist?.lastName}
-        </p>
-        <p>
-          <span className="font-bold">Description:</span> {artwork.description}{" "}
-        </p>
+
+      <div className="modal-body">
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div className="h-64 w-full border border-line bg-surface">
+            <img
+              className="h-full w-full object-cover"
+              src={artwork.image}
+              alt="Artwork"
+            />
+          </div>
+
+          <dl className="space-y-4">
+            <div>
+              <dt className="label-cap">Title</dt>
+              <dd className="mt-1.5 text-ink">{artwork.title}</dd>
+            </div>
+            <div>
+              <dt className="label-cap">Artist</dt>
+              <dd className="mt-1.5 text-ink">
+                {artwork.artist ? (
+                  <>
+                    {artwork.artist?.firstName} {artwork.artist?.lastName}
+                  </>
+                ) : (
+                  <span className="text-stone-light">—</span>
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt className="label-cap">Category</dt>
+              <dd className="mt-1.5 text-ink">
+                {artwork.category?.name || (
+                  <span className="text-stone-light">—</span>
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt className="label-cap">Price</dt>
+              <dd className="mt-1.5 tabular-nums text-ink">
+                {artwork.price} DH
+              </dd>
+            </div>
+            <div>
+              <dt className="label-cap">Status</dt>
+              <dd className="mt-1.5">
+                {artwork.status ? (
+                  <span
+                    className={`chip ${
+                      artwork.status === "sold" ? "chip-neutral" : "chip-success"
+                    }`}
+                  >
+                    {artwork.status}
+                  </span>
+                ) : (
+                  <span className="text-stone-light">—</span>
+                )}
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        <div className="mt-6 border-t border-line pt-5">
+          <p className="label-cap mb-2">Description</p>
+          <p className="text-sm leading-relaxed text-stone">
+            {artwork.description}
+          </p>
+        </div>
       </div>
     </div>
   );

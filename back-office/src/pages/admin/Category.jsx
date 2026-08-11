@@ -44,72 +44,78 @@ const Category = () => {
   }, [dispatch, reset]);
 
   return (
-    <div className="border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-      <div className="max-w-full">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-title-lg font-semibold text-black dark:text-white">
-            Categories
-          </h2>
-          <button
-            onClick={showAddForm}
-            className="w-40 bg-primary py-2 px-6 text-white"
-          >
-            Add Category
+    <div className="animate-fade-up">
+      <div className="page-head">
+        <div>
+          <p className="admin-eyebrow">Taxonomy</p>
+          <h1 className="page-title">Categories</h1>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button onClick={showAddForm} className="btn-primary">
+            <i className="ri-add-line text-sm" />
+            Add category
           </button>
         </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Name
-                </th>
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Description
-                </th>
-                <th className="p-4 font-medium text-black dark:text-white">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.map((category) => (
-                <tr key={category._id}>
-                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {category.name}
-                  </td>
-                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    {category.description}
-                  </td>
-                  <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                    <div className="flex items-center text-lg gap-2.5">
-                      <button onClick={() => showEditForm(category)}>
-                        <i className="ri-edit-box-line hover:text-primary"></i>
-                      </button>
-                      <button onClick={() => handleDelete(category._id)}>
-                        <i className="ri-delete-bin-6-line hover:text-primary"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {addForm && (
-          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-            <AddCategory onCancel={hideAddForm} />
-          </div>
-        )}
-
-        {editForm && (
-          <div className="w-full h-full fixed top-0 left-0 flex items-center justify-center z-9999 bg-graydark bg-opacity-70">
-            <EditCategory category={editedCategory} onCancel={hideEditForm} />
-          </div>
-        )}
       </div>
+
+      <div className="panel overflow-x-auto">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th className="w-px text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.length === 0 && (
+              <tr>
+                <td colSpan={3} className="table-empty">
+                  No categories yet.
+                </td>
+              </tr>
+            )}
+            {list.map((category) => (
+              <tr key={category._id}>
+                <td className="font-medium">{category.name}</td>
+                <td className="text-stone">{category.description}</td>
+                <td className="text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <button
+                      className="btn-icon"
+                      title="Edit category"
+                      aria-label="Edit category"
+                      onClick={() => showEditForm(category)}
+                    >
+                      <i className="ri-edit-box-line" />
+                    </button>
+                    <button
+                      className="btn-icon-danger"
+                      title="Delete category"
+                      aria-label="Delete category"
+                      onClick={() => handleDelete(category._id)}
+                    >
+                      <i className="ri-delete-bin-6-line" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {addForm && (
+        <div className="modal-scrim">
+          <AddCategory onCancel={hideAddForm} />
+        </div>
+      )}
+
+      {editForm && (
+        <div className="modal-scrim">
+          <EditCategory category={editedCategory} onCancel={hideEditForm} />
+        </div>
+      )}
     </div>
   );
 };
