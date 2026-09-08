@@ -4,11 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { editExhibition } from "../../../redux/slices/exhibition";
+import ImageField from "../ImageField";
 import axios from "axios";
 
 const EditExhibition = ({ exhibition, onCancel }) => {
   const dispatch = useDispatch();
-  const [imageUrl, setImageUrl] = useState(""); // Initialize with existing image URL if available
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const schema = z.object({
     name: z.string().nonempty("Field cannot be empty"),
@@ -21,9 +23,16 @@ const EditExhibition = ({ exhibition, onCancel }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
+    defaultValues: {
+      name: exhibition.name,
+      description: exhibition.description,
+      date: new Date(exhibition.date).toISOString().split("T")[0],
+      quantity: exhibition.quantity,
+      price: exhibition.price,
+    },
   });
 
   const uploadImage = async (e) => {
@@ -32,11 +41,12 @@ const EditExhibition = ({ exhibition, onCancel }) => {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "bg6v1o5p"); // Replace with your Cloudinary upload preset
+    formData.append("upload_preset", "bg6v1o5p");
 
+    setUploading(true);
     try {
       const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/dxzfk8kss/image/upload", // Replace with your Cloudinary API endpoint
+        "https://api.cloudinary.com/v1_1/dxzfk8kss/image/upload",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -45,125 +55,151 @@ const EditExhibition = ({ exhibition, onCancel }) => {
       setImageUrl(response.data.secure_url);
     } catch (error) {
       console.error("Image upload failed:", error);
+    } finally {
+      setUploading(false);
     }
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const exhibitionData = {
       ...data,
       image: imageUrl,
     };
 
-    dispatch(editExhibition({ id: exhibition._id, body: exhibitionData }));
+    await dispatch(editExhibition({ id: exhibition._id, body: exhibitionData }));
     onCancel();
   };
 
   return (
-    <div className="modal-card">
+    <div className="modal-card-wide">
       <div className="modal-head">
         <div>
           <p className="admin-eyebrow">Programme</p>
           <h3 className="modal-title">Edit exhibition</h3>
         </div>
-        <button onClick={onCancel} className="btn-icon" aria-label="Close">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="btn-icon"
+          title="Close"
+          aria-label="Close"
+        >
           <i className="ri-close-line text-xl" />
         </button>
       </div>
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         encType="multipart/form-data"
-        className="modal-body space-y-5"
+        className="modal-form"
       >
-        <div>
-          <label className="label-cap mb-2 block">
-            Name <span className="text-danger">*</span>
-          </label>
-          <input
-            {...register("name")}
-            defaultValue={exhibition.name}
-            type="text"
-            placeholder="Exhibition name"
-            className="input-field"
-          />
-          {errors.name && (
-            <span className="field-error">{errors.name.message}</span>
-          )}
+        <div className="modal-body">
+          <div className="grid gap-6 sm:grid-cols-2">
+            {/* Details */}
+            <div className="space-y-5">
+              <div>
+                <label className="label-cap mb-2 block">
+                  Name <span className="text-danger">*</span>
+                </label>
+                <input
+                  {...register("name")}
+                  type="text"
+                  placeholder="Exhibition name"
+                  className="input-field"
+                />
+                {errors.name && (
+                  <span className="field-error">{errors.name.message}</span>
+                )}
+              </div>
+
+              <div>
+                <label className="label-cap mb-2 block">
+                  Opening date <span className="text-danger">*</span>
+                </label>
+                <input {...register("date")} type="date" className="input-field" />
+                {errors.date && (
+                  <span className="field-error">{errors.date.message}</span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label-cap mb-2 block">
+                    Tickets <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    {...register("quantity", { valueAsNumber: true })}
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    className="input-field tabular-nums"
+                  />
+                  {errors.quantity && (
+                    <span className="field-error">
+                      {errors.quantity.message}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <label className="label-cap mb-2 block">
+                    Price <span className="text-danger">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      {...register("price", { valueAsNumber: true })}
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      className="input-field pr-12 tabular-nums"
+                    />
+                    <span className="field-unit">DH</span>
+                  </div>
+                  {errors.price && (
+                    <span className="field-error">{errors.price.message}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Image + description */}
+            <div className="space-y-5">
+              <ImageField
+                label="Poster image"
+                value={imageUrl || exhibition.image}
+                onChange={uploadImage}
+                uploading={uploading}
+                currentLabel={imageUrl ? "New image" : "Current image"}
+                hint="Leave as is to keep the current image"
+              />
+
+              <div>
+                <label className="label-cap mb-2 block">
+                  Description <span className="text-danger">*</span>
+                </label>
+                <textarea
+                  {...register("description")}
+                  placeholder="What the exhibition is about"
+                  className="textarea-field resize-none"
+                  rows="5"
+                />
+                {errors.description && (
+                  <span className="field-error">
+                    {errors.description.message}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="label-cap mb-2 block">
-            Date <span className="text-danger">*</span>
-          </label>
-          <input
-            {...register("date")}
-            defaultValue={new Date(exhibition.date).toISOString().split("T")[0]}
-            type="date"
-            placeholder="Exhibition date"
-            className="input-field"
-          />
-          {errors.date && (
-            <span className="field-error">{errors.date.message}</span>
-          )}
-        </div>
-
-        <div>
-          <label className="label-cap mb-2 block">
-            Ticket quantity <span className="text-danger">*</span>
-          </label>
-          <input
-            {...register("quantity", { valueAsNumber: true })}
-            defaultValue={exhibition.quantity}
-            type="number"
-            placeholder="Number of tickets"
-            className="input-field tabular-nums"
-          />
-          {errors.quantity && (
-            <span className="field-error">{errors.quantity.message}</span>
-          )}
-        </div>
-
-        <div>
-          <label className="label-cap mb-2 block">
-            Ticket price <span className="text-danger">*</span>
-          </label>
-          <input
-            {...register("price", { valueAsNumber: true })}
-            defaultValue={exhibition.price}
-            type="number"
-            placeholder="Price in DH"
-            className="input-field tabular-nums"
-          />
-          {errors.price && (
-            <span className="field-error">{errors.price.message}</span>
-          )}
-        </div>
-
-        <div>
-          <label className="label-cap mb-2 block">
-            Description <span className="text-danger">*</span>
-          </label>
-          <textarea
-            {...register("description")}
-            defaultValue={exhibition.description}
-            placeholder="Short description"
-            className="textarea-field"
-            rows="4"
-          />
-          {errors.description && (
-            <span className="field-error">{errors.description.message}</span>
-          )}
-        </div>
-
-        <div>
-          <label className="label-cap mb-2 block">
-            Image <span className="text-danger">*</span>
-          </label>
-          <input type="file" onChange={uploadImage} className="file-field" />
-        </div>
-
-        <div className="flex gap-3 pt-2">
-          <button type="submit" className="btn-primary flex-1">
-            Save changes
+        <div className="modal-foot">
+          <button
+            type="submit"
+            disabled={isSubmitting || uploading}
+            className="btn-primary flex-1"
+          >
+            {isSubmitting ? "Saving…" : "Save changes"}
           </button>
           <button type="button" onClick={onCancel} className="btn-outline">
             Cancel

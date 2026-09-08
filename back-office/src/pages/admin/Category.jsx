@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { deleteCategory, getCategories } from "../../redux/slices/category";
 import AddCategory from "../../components/admin/Category/AddCategory";
 import EditCategory from "../../components/admin/Category/EditCategory";
+import Modal from "../../components/admin/Modal";
 
 const Category = () => {
   const { list, reset } = useSelector((state) => state.categories);
@@ -106,15 +107,15 @@ const Category = () => {
       </div>
 
       {addForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideAddForm} label="Add category">
           <AddCategory onCancel={hideAddForm} />
-        </div>
+        </Modal>
       )}
 
       {editForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideEditForm} label="Edit category">
           <EditCategory category={editedCategory} onCancel={hideEditForm} />
-        </div>
+        </Modal>
       )}
     </div>
   );

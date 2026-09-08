@@ -1,10 +1,32 @@
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { RiCloseFill } from "react-icons/ri";
 
+/**
+ * Full-screen navigation overlay.
+ *
+ * Portalled to <body> for the same reason as Modal: the site header carries
+ * `backdrop-blur-md`, which makes it the containing block and stacking context
+ * for any position:fixed descendant. Rendered inline, this menu would be
+ * positioned against the header's box rather than the viewport.
+ */
 const MobileMenu = ({ menu, onClose }) => {
-  return (
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") onClose?.();
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  return createPortal(
     <div className="lg:hidden">
-      <nav className="fixed left-0 top-0 z-50 flex h-screen w-full flex-col justify-center bg-paper px-8">
+      <nav
+        className="fixed inset-0 z-[100] flex flex-col justify-center bg-paper px-8"
+        aria-label="Main menu"
+      >
         <p className="eyebrow mb-8">Menu</p>
         <ul className="flex flex-col gap-2">
           {menu.map((navLink, key) => (
@@ -32,7 +54,8 @@ const MobileMenu = ({ menu, onClose }) => {
           <RiCloseFill size={32} />
         </button>
       </nav>
-    </div>
+    </div>,
+    document.body
   );
 };
 

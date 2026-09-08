@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounced } from "../../hooks/useDebounced";
 import AddArtist from "../../components/admin/Artist/AddArtist";
 import EditArtist from "../../components/admin/Artist/EditArtist";
+import Modal from "../../components/admin/Modal";
 import Swal from "sweetalert2";
 
 const Artist = () => {
@@ -184,19 +185,19 @@ const Artist = () => {
       )}
 
       {addForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideAddForm} label="Add artist">
           <AddArtist onCancel={hideAddForm} resetPage={() => setCurrentPage(1)} />
-        </div>
+        </Modal>
       )}
 
       {editForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideEditForm} label="Edit artist">
           <EditArtist
             artist={editedArtist}
             onCancel={hideEditForm}
             currentPage={currentPage}
           />
-        </div>
+        </Modal>
       )}
     </div>
   );

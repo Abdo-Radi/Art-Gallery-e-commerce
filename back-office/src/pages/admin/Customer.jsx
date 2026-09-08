@@ -4,6 +4,7 @@ import Swal from "sweetalert2"; // Import SweetAlert2
 import { deleteCustomer, getCustomers } from "../../redux/slices/customer";
 import AddCustomer from "../../components/admin/Customer/AddCustomer";
 import EditCustomer from "../../components/admin/Customer/EditCustomer";
+import Modal from "../../components/admin/Modal";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounced } from "../../hooks/useDebounced";
 
@@ -184,15 +185,15 @@ const CustomerPage = () => {
       )}
 
       {addForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideAddForm} label="Add customer">
           <AddCustomer onCancel={hideAddForm} />
-        </div>
+        </Modal>
       )}
 
       {editForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideEditForm} label="Edit customer">
           <EditCustomer customer={editedCustomer} onCancel={hideEditForm} />
-        </div>
+        </Modal>
       )}
     </div>
   );

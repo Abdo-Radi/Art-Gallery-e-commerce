@@ -4,6 +4,7 @@ import Swal from "sweetalert2"; // Import SweetAlert2
 import { deleteAdmin, getAdmins } from "../../redux/slices/admin"; // Ensure these actions are correct
 import AddAdmin from "../../components/admin/Admin/AddAdmin";
 import EditAdmin from "../../components/admin/Admin/EditAdmin";
+import Modal from "../../components/admin/Modal";
 
 const AdminPage = () => {
   const { admins } = useSelector((state) => state.admin); // Ensure `state.admin` is correct
@@ -114,15 +115,15 @@ const AdminPage = () => {
       </div>
 
       {addForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideAddForm} label="Add admin">
           <AddAdmin onCancel={hideAddForm} />
-        </div>
+        </Modal>
       )}
 
       {editForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideEditForm} label="Edit admin">
           <EditAdmin admin={editedAdmin} onCancel={hideEditForm} />
-        </div>
+        </Modal>
       )}
     </div>
   );

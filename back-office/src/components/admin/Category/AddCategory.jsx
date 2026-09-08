@@ -13,15 +13,15 @@ const AddCategory = ({ onCancel }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
   });
 
   const dispatch = useDispatch();
 
-  const onSubmit = (data) => {
-    dispatch(addCategory(data));
+  const onSubmit = async (data) => {
+    await dispatch(addCategory(data));
     onCancel();
   };
 
@@ -32,44 +32,57 @@ const AddCategory = ({ onCancel }) => {
           <p className="admin-eyebrow">Taxonomy</p>
           <h3 className="modal-title">Add category</h3>
         </div>
-        <button onClick={onCancel} className="btn-icon" title="Close" aria-label="Close">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="btn-icon"
+          title="Close"
+          aria-label="Close"
+        >
           <i className="ri-close-line text-xl" />
         </button>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="modal-body space-y-5">
-        <div>
-          <label className="label-cap mb-2 block">
-            Name <span className="text-danger">*</span>
-          </label>
-          <input
-            {...register("name")}
-            type="text"
-            placeholder="Name"
-            className="input-field"
-          />
-          {errors.name && (
-            <span className="field-error">{errors.name.message}</span>
-          )}
+
+      <form onSubmit={handleSubmit(onSubmit)} className="modal-form">
+        <div className="modal-body space-y-5">
+          <div>
+            <label className="label-cap mb-2 block">
+              Name <span className="text-danger">*</span>
+            </label>
+            <input
+              {...register("name")}
+              type="text"
+              placeholder="e.g. Abstract"
+              className="input-field"
+            />
+            {errors.name && (
+              <span className="field-error">{errors.name.message}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="label-cap mb-2 block">
+              Description <span className="text-danger">*</span>
+            </label>
+            <textarea
+              {...register("description")}
+              placeholder="How this category is used across the collection"
+              className="textarea-field resize-none"
+              rows="4"
+            />
+            {errors.description && (
+              <span className="field-error">{errors.description.message}</span>
+            )}
+          </div>
         </div>
 
-        <div>
-          <label className="label-cap mb-2 block">
-            Description <span className="text-danger">*</span>
-          </label>
-          <textarea
-            {...register("description")}
-            placeholder="Enter description"
-            className="textarea-field"
-            rows="4"
-          />
-          {errors.description && (
-            <span className="field-error">{errors.description.message}</span>
-          )}
-        </div>
-
-        <div className="flex gap-3 pt-2">
-          <button type="submit" className="btn-primary flex-1">
-            Save category
+        <div className="modal-foot">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="btn-primary flex-1"
+          >
+            {isSubmitting ? "Saving…" : "Save category"}
           </button>
           <button type="button" onClick={onCancel} className="btn-outline">
             Cancel

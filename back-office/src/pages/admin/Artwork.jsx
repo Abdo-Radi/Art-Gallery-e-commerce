@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import AddArtwork from "../../components/admin/Artwork/AddArtwork";
 import EditArtwork from "../../components/admin/Artwork/EditArtwork";
 import ArtworkViewPopup from "../../components/admin/Artwork/ArtworkView";
+import Modal from "../../components/admin/Modal";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounced } from "../../hooks/useDebounced";
 
@@ -229,21 +230,21 @@ const Artwork = () => {
       )}
 
       {addForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideAddForm} label="Add artwork">
           <AddArtwork onCancel={hideAddForm} />
-        </div>
+        </Modal>
       )}
 
       {editForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideEditForm} label="Edit artwork">
           <EditArtwork artwork={editedArtwork} onCancel={hideEditForm} />
-        </div>
+        </Modal>
       )}
 
       {isViewPopupVisible && (
-        <div className="modal-scrim">
+        <Modal onClose={hideViewPopup} label="Artwork details">
           <ArtworkViewPopup artwork={selectedArtwork} onClose={hideViewPopup} />
-        </div>
+        </Modal>
       )}
     </div>
   );

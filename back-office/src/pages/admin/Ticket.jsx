@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import AddTicket from "../../components/admin/Ticket/AddTicket";
 import EditTicket from "../../components/admin/Ticket/EditTicket";
+import Modal from "../../components/admin/Modal";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getTickets, deleteTicket } from "../../redux/slices/ticket";
 
@@ -167,15 +168,15 @@ const Ticket = () => {
       )}
 
       {addForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideAddForm} label="Add ticket">
           <AddTicket onCancel={hideAddForm} />
-        </div>
+        </Modal>
       )}
 
       {editForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideEditForm} label="Edit ticket">
           <EditTicket ticket={editedTicket} onCancel={hideEditForm} />
-        </div>
+        </Modal>
       )}
     </div>
   );

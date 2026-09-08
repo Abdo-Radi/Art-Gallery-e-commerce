@@ -107,16 +107,31 @@
     @apply w-full border border-line bg-paper px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-stone-light focus:border-klein;
   }
 
+  /* Native selects lose their arrow to `appearance-none`, so draw one back in —
+     without it a select is indistinguishable from a text input. */
   .select-field {
-    @apply h-10 w-full appearance-none border border-line bg-paper px-3 text-sm text-ink outline-none transition-colors focus:border-klein;
+    @apply h-10 w-full appearance-none border border-line bg-paper pl-3 pr-10 text-sm text-ink outline-none transition-colors focus:border-klein;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2355545C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem 1rem;
   }
 
-  .file-field {
-    @apply w-full cursor-pointer border border-line bg-paper text-sm text-stone outline-none transition-colors file:mr-4 file:cursor-pointer file:border-0 file:border-r file:border-line file:bg-surface file:px-4 file:py-2.5 file:text-[11px] file:font-semibold file:uppercase file:tracking-[0.14em] file:text-ink hover:file:bg-line focus:border-klein;
+  /* Unit suffix pinned inside a number field (DH, qty…) */
+  .field-unit {
+    @apply pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone;
+  }
+
+  .upload-zone {
+    @apply flex w-full cursor-pointer flex-col items-center justify-center gap-1.5 border border-dashed border-line bg-surface/50 px-4 py-8 text-center transition-colors hover:border-klein hover:bg-klein/5 disabled:cursor-wait;
   }
 
   .field-error {
     @apply mt-1.5 block text-xs text-danger;
+  }
+
+  .field-hint {
+    @apply mt-1.5 block text-xs text-stone;
   }
 
   /* ——— Tables ——— */
@@ -173,28 +188,47 @@
 
   /* ——— Modals ——— */
 
+  /*
+    Sits above the sidebar (z-9999) and header (z-999). `inset-0` rather than
+    h/w-full so it always resolves against the viewport — see Modal.jsx for why
+    this element must be portalled out of the page's transformed wrapper.
+  */
   .modal-scrim {
-    @apply fixed left-0 top-0 z-9999 flex h-full w-full items-center justify-center bg-stone/50 p-4 backdrop-blur-sm;
+    @apply fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto bg-stone/50 p-4 backdrop-blur-sm;
   }
 
+  /*
+    Modal anatomy: a flex column that never exceeds the viewport. The head and
+    foot hold their size while only the body scrolls, so the primary action is
+    always on screen — a long form must never push "Save" below the fold.
+  */
   .modal-card {
-    @apply no-scrollbar max-h-[88vh] w-[26rem] max-w-full overflow-y-auto border border-line bg-paper shadow-2xl;
+    @apply flex max-h-[88vh] w-[26rem] max-w-full flex-col border border-line bg-paper shadow-2xl;
   }
 
   .modal-card-wide {
-    @apply no-scrollbar max-h-[88vh] w-[40rem] max-w-full overflow-y-auto border border-line bg-paper shadow-2xl;
+    @apply flex max-h-[88vh] w-[44rem] max-w-full flex-col border border-line bg-paper shadow-2xl;
   }
 
   .modal-head {
-    @apply sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-line bg-paper px-7 py-5;
+    @apply flex shrink-0 items-start justify-between gap-4 border-b border-line px-7 py-5;
   }
 
   .modal-title {
     @apply font-display text-xl font-bold text-ink;
   }
 
+  /* The form itself sits between head and foot and must be allowed to shrink. */
+  .modal-form {
+    @apply flex min-h-0 flex-1 flex-col;
+  }
+
   .modal-body {
-    @apply px-7 py-6;
+    @apply min-h-0 flex-1 overflow-y-auto px-7 py-6;
+  }
+
+  .modal-foot {
+    @apply flex shrink-0 items-center gap-3 border-t border-line bg-surface/60 px-7 py-4;
   }
 
   /* ——— Pagination ——— */

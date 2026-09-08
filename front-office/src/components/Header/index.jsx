@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 import MobileMenu from "./MobileMenu";
 import Login from "../Login";
+import Modal from "../Modal";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -148,17 +149,21 @@ const Header = () => {
             </button>
           </div>
         </div>
-        {open && <MobileMenu menu={menu} onClose={close} />}
       </header>
 
+      {/* Both overlays live outside <header>: its backdrop-blur makes it the
+          containing block and stacking context for fixed descendants, which
+          would trap them inside the header's own box. */}
+      {open && <MobileMenu menu={menu} onClose={close} />}
+
       {loginForm && (
-        <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-stone/50 backdrop-blur-sm">
+        <Modal onClose={() => setLoginForm(false)} label="Sign in">
           <Login
             onClose={() => {
               setLoginForm(false);
             }}
           />
-        </div>
+        </Modal>
       )}
     </>
   );

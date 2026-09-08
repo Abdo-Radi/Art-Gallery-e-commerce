@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch } from "react-redux";
-import { addExhibition } from "../../../redux/slices/exhibition"; // Import the addExhibition action
+import { addExhibition } from "../../../redux/slices/exhibition";
+import ImageField from "../ImageField";
 
 const AddExhibition = ({ onCancel }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [imageError, setImageError] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const errorMessage = "Field cannot be empty";
 
@@ -23,7 +25,7 @@ const AddExhibition = ({ onCancel }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
   });
@@ -38,6 +40,7 @@ const AddExhibition = ({ onCancel }) => {
     formData.append("file", file);
     formData.append("upload_preset", "bg6v1o5p");
 
+    setUploading(true);
     try {
       const response = await axios.post(
         "https://api.cloudinary.com/v1_1/dxzfk8kss/image/upload",
@@ -51,10 +54,12 @@ const AddExhibition = ({ onCancel }) => {
     } catch (error) {
       console.error("Image upload failed:", error);
       setImageError("Image upload failed, please try again");
+    } finally {
+      setUploading(false);
     }
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // The Exhibition model requires an image; block submit until one is uploaded.
     if (!imageUrl) {
       setImageError("Please upload an image");
@@ -66,119 +71,141 @@ const AddExhibition = ({ onCancel }) => {
       image: imageUrl,
     };
 
-    dispatch(addExhibition(exhibitionData));
+    await dispatch(addExhibition(exhibitionData));
     onCancel();
   };
 
   return (
-    <div className="modal-card">
+    <div className="modal-card-wide">
       <div className="modal-head">
         <div>
           <p className="admin-eyebrow">Programme</p>
           <h3 className="modal-title">Add exhibition</h3>
         </div>
-        <button onClick={onCancel} className="btn-icon" aria-label="Close">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="btn-icon"
+          title="Close"
+          aria-label="Close"
+        >
           <i className="ri-close-line text-xl" />
         </button>
       </div>
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         encType="multipart/form-data"
-        className="modal-body space-y-5"
+        className="modal-form"
       >
-        <div>
-          <label className="label-cap mb-2 block">
-            Name <span className="text-danger">*</span>
-          </label>
-          <input
-            {...register("name")}
-            type="text"
-            placeholder="Exhibition name"
-            className="input-field"
-          />
-          {errors.name && (
-            <span className="field-error">{errors.name.message}</span>
-          )}
+        <div className="modal-body">
+          <div className="grid gap-6 sm:grid-cols-2">
+            {/* Details */}
+            <div className="space-y-5">
+              <div>
+                <label className="label-cap mb-2 block">
+                  Name <span className="text-danger">*</span>
+                </label>
+                <input
+                  {...register("name")}
+                  type="text"
+                  placeholder="e.g. Digital Dreams Expo"
+                  className="input-field"
+                />
+                {errors.name && (
+                  <span className="field-error">{errors.name.message}</span>
+                )}
+              </div>
+
+              <div>
+                <label className="label-cap mb-2 block">
+                  Opening date <span className="text-danger">*</span>
+                </label>
+                <input {...register("date")} type="date" className="input-field" />
+                {errors.date && (
+                  <span className="field-error">{errors.date.message}</span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label-cap mb-2 block">
+                    Tickets <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    {...register("quantity", { valueAsNumber: true })}
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    className="input-field tabular-nums"
+                  />
+                  {errors.quantity && (
+                    <span className="field-error">
+                      {errors.quantity.message}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <label className="label-cap mb-2 block">
+                    Price <span className="text-danger">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      {...register("price", { valueAsNumber: true })}
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      className="input-field pr-12 tabular-nums"
+                    />
+                    <span className="field-unit">DH</span>
+                  </div>
+                  {errors.price && (
+                    <span className="field-error">{errors.price.message}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Image + description */}
+            <div className="space-y-5">
+              <ImageField
+                label="Poster image"
+                required
+                value={imageUrl}
+                onChange={uploadImage}
+                uploading={uploading}
+                error={imageError}
+                hint="JPG or PNG, landscape works best"
+              />
+
+              <div>
+                <label className="label-cap mb-2 block">
+                  Description <span className="text-danger">*</span>
+                </label>
+                <textarea
+                  {...register("description")}
+                  placeholder="What the exhibition is about"
+                  className="textarea-field resize-none"
+                  rows="5"
+                />
+                {errors.description && (
+                  <span className="field-error">
+                    {errors.description.message}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="label-cap mb-2 block">
-            Date <span className="text-danger">*</span>
-          </label>
-          <input
-            {...register("date")}
-            type="date"
-            placeholder="Exhibition date"
-            className="input-field"
-          />
-          {errors.date && (
-            <span className="field-error">{errors.date.message}</span>
-          )}
-        </div>
-
-        <div>
-          <label className="label-cap mb-2 block">
-            Ticket quantity <span className="text-danger">*</span>
-          </label>
-          <input
-            {...register("quantity", { valueAsNumber: true })}
-            type="number"
-            placeholder="Number of tickets"
-            className="input-field tabular-nums"
-          />
-          {errors.quantity && (
-            <span className="field-error">{errors.quantity.message}</span>
-          )}
-        </div>
-
-        <div>
-          <label className="label-cap mb-2 block">
-            Ticket price <span className="text-danger">*</span>
-          </label>
-          <input
-            {...register("price", { valueAsNumber: true })}
-            type="number"
-            placeholder="Price in DH"
-            className="input-field tabular-nums"
-          />
-          {errors.price && (
-            <span className="field-error">{errors.price.message}</span>
-          )}
-        </div>
-
-        <div>
-          <label className="label-cap mb-2 block">
-            Description <span className="text-danger">*</span>
-          </label>
-          <textarea
-            {...register("description")}
-            placeholder="Short description"
-            className="textarea-field"
-            rows="4"
-          />
-          {errors.description && (
-            <span className="field-error">{errors.description.message}</span>
-          )}
-        </div>
-
-        <div>
-          <label className="label-cap mb-2 block">
-            Image <span className="text-danger">*</span>
-          </label>
-          <input type="file" onChange={uploadImage} className="file-field" />
-          {imageError && <span className="field-error">{imageError}</span>}
-          {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="Exhibition"
-              className="mt-3 h-32 w-full border border-line object-cover"
-            />
-          )}
-        </div>
-
-        <div className="flex gap-3 pt-2">
-          <button type="submit" className="btn-primary flex-1">
-            Save exhibition
+        <div className="modal-foot">
+          <button
+            type="submit"
+            disabled={isSubmitting || uploading}
+            className="btn-primary flex-1"
+          >
+            {isSubmitting ? "Saving…" : "Save exhibition"}
           </button>
           <button type="button" onClick={onCancel} className="btn-outline">
             Cancel

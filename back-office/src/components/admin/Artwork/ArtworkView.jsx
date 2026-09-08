@@ -6,7 +6,13 @@ const ArtworkViewPopup = ({ artwork, onClose }) => {
           <p className="admin-eyebrow">Catalogue</p>
           <h3 className="modal-title">{artwork.title}</h3>
         </div>
-        <button onClick={onClose} className="btn-icon" aria-label="Close">
+        <button
+          type="button"
+          onClick={onClose}
+          className="btn-icon"
+          title="Close"
+          aria-label="Close"
+        >
           <i className="ri-close-line text-xl" />
         </button>
       </div>
@@ -17,7 +23,7 @@ const ArtworkViewPopup = ({ artwork, onClose }) => {
             <img
               className="h-full w-full object-cover"
               src={artwork.image}
-              alt="Artwork"
+              alt={artwork.title}
             />
           </div>
 
@@ -74,9 +80,17 @@ const ArtworkViewPopup = ({ artwork, onClose }) => {
         <div className="mt-6 border-t border-line pt-5">
           <p className="label-cap mb-2">Description</p>
           <p className="text-sm leading-relaxed text-stone">
-            {artwork.description}
+            {artwork.description || (
+              <span className="text-stone-light">No description recorded.</span>
+            )}
           </p>
         </div>
+      </div>
+
+      <div className="modal-foot">
+        <button type="button" onClick={onClose} className="btn-outline ml-auto">
+          Close
+        </button>
       </div>
     </div>
   );

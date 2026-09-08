@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounced } from "../../hooks/useDebounced";
 import AddExhibition from "../../components/admin/Exhibition/AddExhibition";
 import EditExhibition from "../../components/admin/Exhibition/EditExhibition";
+import Modal from "../../components/admin/Modal";
 import Swal from "sweetalert2";
 import {
   getExhibitions,
@@ -206,18 +207,18 @@ const Exhibition = () => {
       )}
 
       {addForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideAddForm} label="Add exhibition">
           <AddExhibition onCancel={hideAddForm} />
-        </div>
+        </Modal>
       )}
 
       {editForm && (
-        <div className="modal-scrim">
+        <Modal onClose={hideEditForm} label="Edit exhibition">
           <EditExhibition
             exhibition={editedExhibition}
             onCancel={hideEditForm}
           />
-        </div>
+        </Modal>
       )}
     </div>
   );

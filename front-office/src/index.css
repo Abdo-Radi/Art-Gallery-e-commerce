@@ -96,6 +96,36 @@
   .nav-link:hover::after {
     @apply w-full;
   }
+
+  /* ——— Dialogs ———
+     Rendered through a portal (see components/Modal.jsx) so no transformed or
+     backdrop-filtered ancestor can trap them inside its own box.
+     The card is a flex column capped to the viewport: head and foot hold their
+     size and only the body scrolls, so the primary action is never pushed
+     below the fold on a long form. */
+  .modal-scrim {
+    @apply fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-stone/50 p-4 backdrop-blur-sm;
+  }
+
+  .modal-card {
+    @apply flex max-h-[90vh] w-[26rem] max-w-full flex-col border border-line bg-paper shadow-2xl;
+  }
+
+  .modal-head {
+    @apply flex shrink-0 items-start justify-between gap-4 border-b border-line px-8 py-6;
+  }
+
+  .modal-form {
+    @apply flex min-h-0 flex-1 flex-col;
+  }
+
+  .modal-body {
+    @apply min-h-0 flex-1 overflow-y-auto px-8 py-6;
+  }
+
+  .modal-foot {
+    @apply shrink-0 border-t border-line bg-secondary/50 px-8 py-5;
+  }
 }
 
 @layer utilities {

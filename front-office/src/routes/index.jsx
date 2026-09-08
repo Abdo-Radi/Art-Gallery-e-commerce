@@ -30,7 +30,7 @@ const ScrollToTop = () => {
 const LoginPage = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-paper">
+    <div className="flex min-h-screen w-full items-center justify-center bg-secondary p-4">
       <Login onClose={() => navigate("/")} />
     </div>
   );
