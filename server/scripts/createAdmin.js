@@ -15,8 +15,7 @@ if (!username || !email || !password) {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
     const hash = await bcrypt.hash(password, 10);
-    const result = await mongoose.connection.db.collecti
-    on("admins").updateOne(
+    const result = await mongoose.connection.db.collection("admins").updateOne(
       { username },
       {
         $set: { email, password: hash },

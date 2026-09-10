@@ -62,13 +62,23 @@ database or temporarily via an existing admin, then sign in at `/admin/login`.
 
 ```bash
 cd server/helpers
-pip install -r requirements.txt
-python flaskapi.py   # serves POST /chat on port 5000
+python -m venv myenv                 # myenv/ is already git-ignored
+./myenv/Scripts/python.exe -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+./myenv/Scripts/python.exe -m pip install -r requirements.txt
+./myenv/Scripts/python.exe flaskapi.py   # serves POST /chat on port 5000
 ```
+
+Installing CPU-only PyTorch first (second line) keeps the download near 200 MB
+instead of ~2.5 GB; the model only embeds 58 short sentences, so a GPU build
+buys nothing. On first run it downloads `all-MiniLM-L6-v2` (~90 MB) from
+Hugging Face, so that run needs internet.
+
+On Linux/macOS the interpreter is `myenv/bin/python` instead.
 
 The storefront chat widget calls `http://localhost:5000/chat` (configurable via
 `VITE_CHATBOT_URL`). Answers come from semantic matching against
-`helpers/data.json`.
+`helpers/data.json`; a question below `SIMILARITY_THRESHOLD` in `flaskapi.py`
+falls back to a "don't know" reply.
 
 ## API overview
 

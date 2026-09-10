@@ -24,12 +24,17 @@ sentence_model = SentenceTransformer(model_path)
 def load_cache():
     global cache, encoded_cache
     if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, "r") as f:
+        # data.json is UTF-8; without this Windows falls back to cp1252 and
+        # turns curly quotes into mojibake ("you’re" -> "youâ€™re").
+        with open(CACHE_FILE, "r", encoding="utf-8") as f:
             cache = json.load(f)
             cache = OrderedDict(cache)  # Ensure it's an OrderedDict
             encoded_cache = OrderedDict((question, encode_sentence(question)) for question in cache.keys())
     else:
         cache = OrderedDict()
+
+# Minimum cosine similarity before we trust a cached answer (see chat() below).
+SIMILARITY_THRESHOLD = 0.55
 
 app = Flask(__name__)
 CORS(app)
@@ -51,7 +56,11 @@ def chat():
             max_similarity = similarity
             best_answer = cache[cached_question]
 
-    if max_similarity > 0.65:
+    # all-MiniLM-L6-v2 scores real paraphrases lower than 0.65: "how do i reach
+    # customer service" matches "How can I contact support?" at only 0.563. The
+    # nearest wrong match measured ("can i return a painting" -> "Can I delete an
+    # artwork?") sits at 0.540, and off-topic questions land below 0.30.
+    if max_similarity > SIMILARITY_THRESHOLD:
         return jsonify({"answer": best_answer})
     else:
         return jsonify({"answer": "sry I don't know. you can ask the support for it"})

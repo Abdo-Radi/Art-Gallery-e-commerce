@@ -1,4 +1,12 @@
-scipy==1.11.1
-sentence-transformers==2.2.2
-flask
-flask-cors
+# Python 3.12 compatible pins.
+# The old pins did not install here: scipy 1.11.1 ships no cp312 wheel, and
+# sentence-transformers 2.2.2 calls huggingface_hub.cached_download, which was
+# removed in huggingface_hub 0.26.
+flask>=3.0
+flask-cors>=5.0
+scipy>=1.12
+sentence-transformers>=3.0
+
+# Installing the above pulls PyTorch (~2.5 GB, includes CUDA). For a much
+# smaller CPU-only install, run this first:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
