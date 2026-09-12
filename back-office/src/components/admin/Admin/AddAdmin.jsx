@@ -26,6 +26,7 @@ const AddAdmin = ({ onCancel }) => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
@@ -34,7 +35,13 @@ const AddAdmin = ({ onCancel }) => {
   const dispatch = useDispatch();
 
   const onSubmit = async (data) => {
-    await dispatch(addAdmin(data));
+    const result = await dispatch(addAdmin(data));
+    if (addAdmin.rejected.match(result)) {
+      setError("root.serverError", {
+        message: result.payload ?? result.error.message,
+      });
+      return;
+    }
     onCancel();
   };
 
@@ -154,6 +161,12 @@ const AddAdmin = ({ onCancel }) => {
             </div>
           </div>
         </div>
+
+        {errors.root?.serverError && (
+          <p role="alert" className="modal-error">
+            {errors.root.serverError.message}
+          </p>
+        )}
 
         <div className="modal-foot">
           <button

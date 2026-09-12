@@ -1,9 +1,12 @@
 const router = require("express").Router();
 
 const shoppingCartController = require("../controllers/shoppingCartController");
+const { isAuthorized } = require("../middleware/authorization");
 const { verifyToken } = require("../middleware/jwt");
 
 router.use(verifyToken);
+// Carts belong to storefront customers
+router.use(isAuthorized("customer"));
 
 router.get("/:customer", shoppingCartController.getItems);
 router.post("/add", shoppingCartController.addItem);

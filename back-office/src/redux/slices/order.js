@@ -41,6 +41,20 @@ export const deleteOrder = createAsyncThunk(
   }
 );
 
+export const updateOrderStatus = createAsyncThunk(
+  "orders/updateOrderStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(`/orders/${id}`, { status });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ?? "Error updating order"
+      );
+    }
+  }
+);
+
 const initialState = {
   orders: [],
   isLoading: false,
@@ -90,6 +104,15 @@ const orderSlice = createSlice({
       .addCase(deleteOrder.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload?.message ?? action.payload ?? "Error";
+      })
+      // No isLoading/error here: both swap the whole table out, and the order
+      // view shows its own errors. Merging keeps the row's payment details.
+      .addCase(updateOrderStatus.fulfilled, (state, action) => {
+        state.orders = state.orders.map((order) =>
+          order._id === action.payload._id
+            ? { ...order, ...action.payload }
+            : order
+        );
       });
   },
 });

@@ -221,6 +221,7 @@ const Artworks = () => {
                     </p>
                   </div>
                   <button
+                    disabled={artwork.status === "sold"}
                     onClick={() => {
                       if (!userData) {
                         showToastMessage(
@@ -243,9 +244,9 @@ const Artworks = () => {
                         );
                       });
                     }}
-                    className="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-klein transition-colors hover:text-klein-deep"
+                    className="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-klein transition-colors hover:text-klein-deep disabled:pointer-events-none disabled:text-stone"
                   >
-                    Add to cart +
+                    {artwork.status === "sold" ? "Sold" : "Add to cart +"}
                   </button>
                 </div>
               </div>

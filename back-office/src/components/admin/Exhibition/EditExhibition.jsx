@@ -11,6 +11,7 @@ const EditExhibition = ({ exhibition, onCancel }) => {
   const dispatch = useDispatch();
   const [imageUrl, setImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   const schema = z.object({
     name: z.string().nonempty("Field cannot be empty"),
@@ -23,6 +24,7 @@ const EditExhibition = ({ exhibition, onCancel }) => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
@@ -53,8 +55,10 @@ const EditExhibition = ({ exhibition, onCancel }) => {
         }
       );
       setImageUrl(response.data.secure_url);
+      setImageError("");
     } catch (error) {
       console.error("Image upload failed:", error);
+      setImageError("Image upload failed, please try again");
     } finally {
       setUploading(false);
     }
@@ -66,7 +70,13 @@ const EditExhibition = ({ exhibition, onCancel }) => {
       image: imageUrl,
     };
 
-    await dispatch(editExhibition({ id: exhibition._id, body: exhibitionData }));
+    const result = await dispatch(editExhibition({ id: exhibition._id, body: exhibitionData }));
+    if (editExhibition.rejected.match(result)) {
+      setError("root.serverError", {
+        message: result.payload ?? result.error.message,
+      });
+      return;
+    }
     onCancel();
   };
 
@@ -169,6 +179,7 @@ const EditExhibition = ({ exhibition, onCancel }) => {
                 value={imageUrl || exhibition.image}
                 onChange={uploadImage}
                 uploading={uploading}
+                error={imageError}
                 currentLabel={imageUrl ? "New image" : "Current image"}
                 hint="Leave as is to keep the current image"
               />
@@ -192,6 +203,12 @@ const EditExhibition = ({ exhibition, onCancel }) => {
             </div>
           </div>
         </div>
+
+        {errors.root?.serverError && (
+          <p role="alert" className="modal-error">
+            {errors.root.serverError.message}
+          </p>
+        )}
 
         <div className="modal-foot">
           <button

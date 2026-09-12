@@ -61,8 +61,12 @@ const Artwork = () => {
     });
 
     if (result.isConfirmed) {
-      dispatch(deleteArtwork(id));
-      Swal.fire("Deleted!", "Artwork has been deleted.", "success");
+      const action = await dispatch(deleteArtwork(id));
+      if (deleteArtwork.rejected.match(action)) {
+        Swal.fire("Not deleted", action.payload ?? action.error.message, "error");
+      } else {
+        Swal.fire("Deleted!", "Artwork has been deleted.", "success");
+      }
     }
   };
 

@@ -198,6 +198,7 @@ const Exhibitions = () => {
                       {exhibition.quantity} tickets left
                     </span>
                     <button
+                      disabled={exhibition.quantity <= 0}
                       onClick={() => {
                         if (!userData) {
                           showToastMessage("Please login to buy tickets!");
@@ -218,9 +219,9 @@ const Exhibitions = () => {
                           );
                         });
                       }}
-                      className="text-[11px] font-semibold uppercase tracking-[0.18em] text-klein transition-colors hover:text-klein-deep"
+                      className="text-[11px] font-semibold uppercase tracking-[0.18em] text-klein transition-colors hover:text-klein-deep disabled:pointer-events-none disabled:text-stone"
                     >
-                      Book ticket +
+                      {exhibition.quantity <= 0 ? "Sold out" : "Book ticket +"}
                     </button>
                   </div>
                 </div>

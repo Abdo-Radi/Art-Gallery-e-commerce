@@ -32,6 +32,7 @@ const AddArtwork = ({ onCancel }) => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
@@ -77,7 +78,13 @@ const AddArtwork = ({ onCancel }) => {
       image: imageUrl,
     };
 
-    await dispatch(addArtwork(artworkData));
+    const result = await dispatch(addArtwork(artworkData));
+    if (addArtwork.rejected.match(result)) {
+      setError("root.serverError", {
+        message: result.payload ?? result.error.message,
+      });
+      return;
+    }
     onCancel();
   };
 
@@ -239,6 +246,12 @@ const AddArtwork = ({ onCancel }) => {
             </div>
           </div>
         </div>
+
+        {errors.root?.serverError && (
+          <p role="alert" className="modal-error">
+            {errors.root.serverError.message}
+          </p>
+        )}
 
         <div className="modal-foot">
           <button

@@ -35,8 +35,12 @@ const Category = () => {
     });
 
     if (result.isConfirmed) {
-      dispatch(deleteCategory(id)); // Delete the category
-      Swal.fire("Deleted!", "The category has been deleted.", "success"); // Show success message
+      const action = await dispatch(deleteCategory(id));
+      if (deleteCategory.rejected.match(action)) {
+        Swal.fire("Not deleted", action.payload ?? action.error.message, "error");
+      } else {
+        Swal.fire("Deleted!", "The category has been deleted.", "success");
+      }
     }
   };
 

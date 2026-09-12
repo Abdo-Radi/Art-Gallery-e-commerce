@@ -47,8 +47,12 @@ const Artist = () => {
     });
 
     if (result.isConfirmed) {
-      dispatch(deleteArtist(id));
-      Swal.fire("Deleted!", "The artist has been deleted.", "success");
+      const action = await dispatch(deleteArtist(id));
+      if (deleteArtist.rejected.match(action)) {
+        Swal.fire("Not deleted", action.payload ?? action.error.message, "error");
+      } else {
+        Swal.fire("Deleted!", "The artist has been deleted.", "success");
+      }
     }
   };
 

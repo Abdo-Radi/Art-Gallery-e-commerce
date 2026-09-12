@@ -74,7 +74,7 @@ const Header = () => {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 max-[359px]:gap-2">
             <Link
               to="/cart"
               className="relative p-1 text-ink transition-colors hover:text-klein"
@@ -132,7 +132,7 @@ const Header = () => {
             ) : (
               <Button
                 onClick={() => setLoginForm(true)}
-                className="hidden h-9 px-5 text-[12px] font-semibold uppercase tracking-[0.15em] sm:inline-flex"
+                className="h-9 px-3 text-[12px] font-semibold uppercase tracking-[0.15em] sm:px-5"
               >
                 Sign in
               </Button>

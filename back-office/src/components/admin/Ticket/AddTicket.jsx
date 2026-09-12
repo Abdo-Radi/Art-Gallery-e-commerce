@@ -22,13 +22,20 @@ const AddTicket = ({ onCancel }) => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data) => {
-    await dispatch(addTicket(data));
+    const result = await dispatch(addTicket(data));
+    if (addTicket.rejected.match(result)) {
+      setError("root.serverError", {
+        message: result.payload ?? result.error.message,
+      });
+      return;
+    }
     onCancel();
   };
 
@@ -124,6 +131,12 @@ const AddTicket = ({ onCancel }) => {
             </div>
           </div>
         </div>
+
+        {errors.root?.serverError && (
+          <p role="alert" className="modal-error">
+            {errors.root.serverError.message}
+          </p>
+        )}
 
         <div className="modal-foot">
           <button

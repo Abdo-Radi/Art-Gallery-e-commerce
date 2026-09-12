@@ -43,8 +43,12 @@ const AdminPage = () => {
     });
 
     if (result.isConfirmed) {
-      dispatch(deleteAdmin(id)); // Check if this action is correct
-      Swal.fire("Deleted!", "The admin has been deleted.", "success");
+      const action = await dispatch(deleteAdmin(id));
+      if (deleteAdmin.rejected.match(action)) {
+        Swal.fire("Not deleted", action.payload ?? action.error.message, "error");
+      } else {
+        Swal.fire("Deleted!", "The admin has been deleted.", "success");
+      }
     }
   };
 

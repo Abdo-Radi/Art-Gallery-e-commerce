@@ -12,8 +12,9 @@ const getStats = async (req, res, next) => {
         Artwork.countDocuments(),
         Order.aggregate([
           {
+            // Closed orders were paid too; open and canceled ones aren't sales.
             $match: {
-              status: "Paid",
+              status: { $in: ["Paid", "Closed"] },
             },
           },
           {

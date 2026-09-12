@@ -14,6 +14,7 @@ const EditArtwork = ({ artwork, onCancel }) => {
 
   const [imageUrl, setImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   const { list: categories } = useSelector((state) => state.categories);
   const { list: artists } = useSelector((state) => state.artists);
@@ -32,6 +33,7 @@ const EditArtwork = ({ artwork, onCancel }) => {
     register,
     handleSubmit,
     setValue,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
@@ -62,8 +64,10 @@ const EditArtwork = ({ artwork, onCancel }) => {
         }
       );
       setImageUrl(response.data.secure_url);
+      setImageError("");
     } catch (error) {
       console.error("Image upload failed:", error);
+      setImageError("Image upload failed, please try again");
     } finally {
       setUploading(false);
     }
@@ -76,7 +80,13 @@ const EditArtwork = ({ artwork, onCancel }) => {
       image: imageUrl,
     };
 
-    await dispatch(editArtwork({ id: artwork._id, body: artworkData }));
+    const result = await dispatch(editArtwork({ id: artwork._id, body: artworkData }));
+    if (editArtwork.rejected.match(result)) {
+      setError("root.serverError", {
+        message: result.payload ?? result.error.message,
+      });
+      return;
+    }
     onCancel();
   };
 
@@ -216,6 +226,7 @@ const EditArtwork = ({ artwork, onCancel }) => {
                 value={imageUrl || artwork.image}
                 onChange={uploadImage}
                 uploading={uploading}
+                error={imageError}
                 currentLabel={imageUrl ? "New image" : "Current image"}
                 hint="Leave as is to keep the current image"
               />
@@ -239,6 +250,12 @@ const EditArtwork = ({ artwork, onCancel }) => {
             </div>
           </div>
         </div>
+
+        {errors.root?.serverError && (
+          <p role="alert" className="modal-error">
+            {errors.root.serverError.message}
+          </p>
+        )}
 
         <div className="modal-foot">
           <button

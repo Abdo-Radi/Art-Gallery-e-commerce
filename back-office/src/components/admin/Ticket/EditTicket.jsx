@@ -23,6 +23,7 @@ const EditTicket = ({ ticket, onCancel }) => {
     register,
     handleSubmit,
     setValue,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
@@ -34,7 +35,13 @@ const EditTicket = ({ ticket, onCancel }) => {
   });
 
   const onSubmit = async (data) => {
-    await dispatch(editTicket({ id: ticket._id, body: data }));
+    const result = await dispatch(editTicket({ id: ticket._id, body: data }));
+    if (editTicket.rejected.match(result)) {
+      setError("root.serverError", {
+        message: result.payload ?? result.error.message,
+      });
+      return;
+    }
     onCancel();
   };
 
@@ -132,6 +139,12 @@ const EditTicket = ({ ticket, onCancel }) => {
             </div>
           </div>
         </div>
+
+        {errors.root?.serverError && (
+          <p role="alert" className="modal-error">
+            {errors.root.serverError.message}
+          </p>
+        )}
 
         <div className="modal-foot">
           <button

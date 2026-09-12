@@ -27,6 +27,7 @@ const AddCustomer = ({ onCancel }) => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
@@ -35,7 +36,13 @@ const AddCustomer = ({ onCancel }) => {
   const dispatch = useDispatch();
 
   const onSubmit = async (data) => {
-    await dispatch(addCustomer(data));
+    const result = await dispatch(addCustomer(data));
+    if (addCustomer.rejected.match(result)) {
+      setError("root.serverError", {
+        message: result.payload ?? result.error.message,
+      });
+      return;
+    }
     onCancel();
   };
 
@@ -155,6 +162,12 @@ const AddCustomer = ({ onCancel }) => {
             </div>
           </div>
         </div>
+
+        {errors.root?.serverError && (
+          <p role="alert" className="modal-error">
+            {errors.root.serverError.message}
+          </p>
+        )}
 
         <div className="modal-foot">
           <button

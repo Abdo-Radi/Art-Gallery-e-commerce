@@ -6,7 +6,7 @@ const { verifyToken } = require('../middleware/jwt');
 router.use(verifyToken);
 
 // Customers record a payment from the storefront checkout
-router.post('/', paymentController.recordPayment);
+router.post('/', isAuthorized('customer'), paymentController.recordPayment);
 
 // Everything else is admin-only
 router.get('/', isAuthorized('admin'), paymentController.getPayments);

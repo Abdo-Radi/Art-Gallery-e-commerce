@@ -3,7 +3,15 @@ const { escapeRegex } = require("../utils/regexUtils");
 
 const createArtwork = async (req, res, next) => {
   try {
-    const newArtwork = new Artwork(req.body);
+    const fields = { ...req.body };
+    // Artists can only publish under their own name, and a new work always
+    // starts out available.
+    if (req.user.accountType === "artist") {
+      fields.artist = req.user.userId;
+      delete fields.status;
+    }
+
+    const newArtwork = new Artwork(fields);
     const savedArtwork = await newArtwork.save();
 
     const dataToSend = await Artwork.findById(savedArtwork._id)
@@ -21,7 +29,11 @@ const getArtworks = async (req, res, next) => {
     const { search, page, category, priceSort, maxPrice } = req.query;
     const options = {
       lean: true,
-      populate: ["artist", "category"],
+      // Public list: never send more of the artist than their name
+      populate: [
+        { path: "artist", select: ["firstName", "lastName"] },
+        { path: "category", select: "name" },
+      ],
       page: page || 1,
       limit: 9,
     };
@@ -71,6 +83,18 @@ const updateArtwork = async (req, res, next) => {
       return res.status(404).json({ message: "Artwork not found" });
     }
 
+    // Artists may only edit their own works, and can neither hand a work to
+    // another artist nor change whether it has been sold.
+    if (req.user.accountType === "artist") {
+      if (String(artwork.artist) !== req.user.userId) {
+        return res
+          .status(403)
+          .json({ message: "You can only change your own artworks" });
+      }
+      delete updateFields.artist;
+      delete updateFields.status;
+    }
+
     if (updateFields.image === "") {
       updateFields.image = artwork.image;
     }
@@ -92,6 +116,19 @@ const updateArtwork = async (req, res, next) => {
 const deleteArtwork = async (req, res, next) => {
   try {
     const artworkId = req.params.id;
+
+    if (req.user.accountType === "artist") {
+      const artwork = await Artwork.findById(artworkId).select("artist").lean();
+      if (!artwork) {
+        return res.status(404).json({ message: "Artwork not found" });
+      }
+      if (String(artwork.artist) !== req.user.userId) {
+        return res
+          .status(403)
+          .json({ message: "You can only delete your own artworks" });
+      }
+    }
+
     const deletedArtwork = await Artwork.findByIdAndDelete(artworkId);
 
     if (!deletedArtwork) {

@@ -1,14 +1,34 @@
 const Payment = require('../models/Payment');
+const Order = require('../models/Order');
 const mongoose = require('mongoose');
 
+// A customer can only pay for their own order, once, and the amount is the
+// total the server priced when the order was created.
 const recordPayment = async (req, res, next) => {
   try {
-    const { orderId, amount, date } = req.body;
+    const { orderId } = req.body;
+
+    if (!mongoose.isObjectIdOrHexString(orderId)) {
+      return res.status(400).json({ message: "Invalid order ID" });
+    }
+
+    const order = await Order.findById(orderId).select('customer totalAmount').lean();
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.customer.toString() !== req.user.userId) {
+      return res.status(403).json({ message: "You are not allowed to perform this action" });
+    }
+
+    if (await Payment.exists({ orderId })) {
+      return res.status(409).json({ message: "This order has already been paid" });
+    }
 
     const newPayment = new Payment({
       orderId,
-      amount,
-      date
+      amount: order.totalAmount
     });
 
     const savedPayment = await newPayment.save();

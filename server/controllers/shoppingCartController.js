@@ -1,12 +1,78 @@
+const mongoose = require("mongoose");
 const ShoppingCart = require("../models/ShoppingCart");
 const Artwork = require("../models/Artwork");
 const Exhibition = require("../models/Exhibition");
 
+// Every handler works on the logged-in customer's own cart (req.user comes from
+// the JWT). Any customer id sent by the browser is ignored, so nobody can read
+// or change someone else's cart by swapping ids.
+
+const ticketsLeftMessage = (left) =>
+  left > 0
+    ? `Only ${left} ticket${left === 1 ? "" : "s"} left for this exhibition`
+    : "This exhibition is sold out";
+
 const addItem = async (req, res, next) => {
   try {
-    const { customer, product, productType, quantity } = req.body;
+    const customer = req.user.userId;
+    const { product, productType } = req.body;
 
-    let cart = await ShoppingCart.findOne({ customer });
+    if (
+      !mongoose.isObjectIdOrHexString(product) ||
+      !["Artwork", "Exhibition"].includes(productType)
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid product" });
+    }
+
+    // An artwork is one of a kind, so its cart line is always a single unit.
+    const quantity =
+      productType === "Artwork" ? 1 : Number(req.body.quantity ?? 1);
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Quantity must be at least 1" });
+    }
+
+    const [existingCart, productDoc] = await Promise.all([
+      ShoppingCart.findOne({ customer }),
+      productType === "Artwork"
+        ? Artwork.findById(product).select("status").lean()
+        : Exhibition.findById(product).select("quantity").lean(),
+    ]);
+    let cart = existingCart;
+
+    if (!productDoc) {
+      return res
+        .status(404)
+        .json({ success: false, message: `${productType} not found` });
+    }
+
+    const itemIndex = cart
+      ? cart.items.findIndex(
+          (item) =>
+            item.product.toString() === product &&
+            item.productType === productType
+        )
+      : -1;
+
+    // Only let into the cart what can still be bought.
+    if (productType === "Artwork" && productDoc.status === "sold") {
+      return res
+        .status(409)
+        .json({ success: false, message: "This artwork has already been sold" });
+    }
+    if (productType === "Exhibition") {
+      const inCart = itemIndex > -1 ? cart.items[itemIndex].quantity : 0;
+      if (inCart + quantity > productDoc.quantity) {
+        return res.status(409).json({
+          success: false,
+          message: ticketsLeftMessage(productDoc.quantity),
+        });
+      }
+    }
 
     let message = "";
 
@@ -19,12 +85,6 @@ const addItem = async (req, res, next) => {
       message = "New cart created and item added successfully";
     } else {
       // Cart exists, check if item exists
-      const itemIndex = cart.items.findIndex(
-        (item) =>
-          item.product.toString() === product &&
-          item.productType === productType
-      );
-
       if (itemIndex > -1) {
         // Item exists in cart, update quantity if productType is "Ticket"
         if (productType === "Exhibition") {
@@ -52,7 +112,13 @@ const addItem = async (req, res, next) => {
 
 const getItems = async (req, res, next) => {
   try {
-    const { customer } = req.params;
+    const customer = req.user.userId;
+
+    if (req.params.customer !== customer) {
+      return res
+        .status(403)
+        .json({ message: "You are not allowed to perform this action" });
+    }
 
     const cart = await ShoppingCart.findOne({ customer });
 
@@ -96,7 +162,8 @@ const getItems = async (req, res, next) => {
 
 const removeItem = async (req, res, next) => {
   try {
-    const { customer, product, productType } = req.body;
+    const customer = req.user.userId;
+    const { product, productType } = req.body;
 
     const cart = await ShoppingCart.findOne({ customer });
 
@@ -120,7 +187,8 @@ const removeItem = async (req, res, next) => {
 
 const increaseItemQuantity = async (req, res, next) => {
   try {
-    const { customer, product, productType } = req.body;
+    const customer = req.user.userId;
+    const { product, productType } = req.body;
 
     const cart = await ShoppingCart.findOne({ customer });
 
@@ -132,6 +200,27 @@ const increaseItemQuantity = async (req, res, next) => {
       );
 
       if (itemIndex > -1) {
+        // Artworks are one of a kind; tickets are capped by what's left.
+        if (productType !== "Exhibition") {
+          return res
+            .status(409)
+            .json({ success: false, message: "Each artwork is one of a kind" });
+        }
+        const exhibition = await Exhibition.findById(product)
+          .select("quantity")
+          .lean();
+        if (!exhibition) {
+          return res
+            .status(404)
+            .json({ success: false, message: "Exhibition not found" });
+        }
+        if (cart.items[itemIndex].quantity + 1 > exhibition.quantity) {
+          return res.status(409).json({
+            success: false,
+            message: ticketsLeftMessage(exhibition.quantity),
+          });
+        }
+
         // Item exists in cart, increase quantity
         cart.items[itemIndex].quantity += 1;
         cart.updatedAt = Date.now();
@@ -156,7 +245,8 @@ const increaseItemQuantity = async (req, res, next) => {
 
 const decreaseItemQuantity = async (req, res, next) => {
   try {
-    const { customer, product, productType } = req.body;
+    const customer = req.user.userId;
+    const { product, productType } = req.body;
 
     const cart = await ShoppingCart.findOne({ customer });
 
@@ -196,7 +286,7 @@ const decreaseItemQuantity = async (req, res, next) => {
 
 const clearCart = async (req, res, next) => {
   try {
-    const { customer } = req.body;
+    const customer = req.user.userId;
 
     await ShoppingCart.findOneAndUpdate(
       { customer },

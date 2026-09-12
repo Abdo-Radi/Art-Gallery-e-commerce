@@ -43,8 +43,12 @@ const Ticket = () => {
     });
 
     if (result.isConfirmed) {
-      dispatch(deleteTicket(id));
-      Swal.fire("Deleted!", "The ticket has been deleted.", "success");
+      const action = await dispatch(deleteTicket(id));
+      if (deleteTicket.rejected.match(action)) {
+        Swal.fire("Not deleted", action.payload ?? action.error.message, "error");
+      } else {
+        Swal.fire("Deleted!", "The ticket has been deleted.", "success");
+      }
     }
   };
 

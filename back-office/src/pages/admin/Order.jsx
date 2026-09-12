@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { fetchOrders, deleteOrder } from "../../redux/slices/order";
+import Modal from "../../components/admin/Modal";
+import OrderView from "../../components/admin/Order/OrderView";
 
 const statusChip = {
   Paid: "chip-success",
@@ -29,6 +31,10 @@ const OrderPage = () => {
 
   const [refreshFlag, setRefreshFlag] = useState(false);
 
+  // Track the id, not a copy, so the view reflects status changes in the store.
+  const [viewedOrderId, setViewedOrderId] = useState(null);
+  const viewedOrder = orders.find((order) => order._id === viewedOrderId);
+
   useEffect(() => {
     dispatch(fetchOrders());
   }, [dispatch, refreshFlag]);
@@ -44,8 +50,18 @@ const OrderPage = () => {
     });
 
     if (result.isConfirmed) {
-      dispatch(deleteOrder(orderId));
-      Swal.fire("Deleted!", "The order has been deleted.", "success");
+      const action = await dispatch(deleteOrder(orderId));
+      if (deleteOrder.rejected.match(action)) {
+        Swal.fire(
+          "Not deleted",
+          action.payload?.message ?? action.payload ?? action.error.message,
+          "error"
+        );
+      } else {
+        Swal.fire("Deleted!", "The order has been deleted.", "success");
+      }
+      // Refetch either way: this also clears the error a failed delete leaves
+      // in the slice, which would otherwise replace the table.
       setRefreshFlag((prev) => !prev);
     }
   };
@@ -103,14 +119,16 @@ const OrderPage = () => {
                     </td>
                     <td>
                       {order.customer ? (
-                        <span
-                          className="font-mono text-xs text-stone"
-                          title={order.customer}
-                        >
-                          {shortId(order.customer)}
-                        </span>
+                        <>
+                          <p className="text-ink">
+                            {order.customer.firstName} {order.customer.lastName}
+                          </p>
+                          <p className="text-xs text-stone">
+                            {order.customer.email}
+                          </p>
+                        </>
                       ) : (
-                        <span className="text-stone-light">—</span>
+                        <span className="text-stone-light">Deleted customer</span>
                       )}
                     </td>
                     <td className="text-right tabular-nums">
@@ -134,6 +152,14 @@ const OrderPage = () => {
                     </td>
                     <td className="text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <button
+                          className="btn-icon"
+                          title="View"
+                          aria-label="View order"
+                          onClick={() => setViewedOrderId(order._id)}
+                        >
+                          <i className="ri-eye-line" />
+                        </button>
                         <button
                           className="btn-icon-danger"
                           title="Delete"
@@ -166,6 +192,16 @@ const OrderPage = () => {
             </div>
           )}
         </>
+      )}
+
+      {viewedOrder && (
+        <Modal onClose={() => setViewedOrderId(null)} label="Order details">
+          <OrderView
+            order={viewedOrder}
+            chipClass={statusChip[viewedOrder.status] || "chip-neutral"}
+            onClose={() => setViewedOrderId(null)}
+          />
+        </Modal>
       )}
     </div>
   );

@@ -50,8 +50,12 @@ const Exhibition = () => {
     });
 
     if (result.isConfirmed) {
-      dispatch(deleteExhibition(id));
-      Swal.fire("Deleted!", "The exhibition has been deleted.", "success");
+      const action = await dispatch(deleteExhibition(id));
+      if (deleteExhibition.rejected.match(action)) {
+        Swal.fire("Not deleted", action.payload ?? action.error.message, "error");
+      } else {
+        Swal.fire("Deleted!", "The exhibition has been deleted.", "success");
+      }
     }
   };
 
